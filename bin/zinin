@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# ZININ v2 — собственный REPL на Bun (мульти-LLM, не обёртка claude).
+set -euo pipefail
+ZININ_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if ! command -v bun >/dev/null 2>&1; then
+  echo "Нужен Bun. Ставлю: curl -fsSL https://bun.sh/install | bash" >&2
+  curl -fsSL https://bun.sh/install | bash
+  export PATH="$HOME/.bun/bin:$PATH"
+fi
+exec bun "$ZININ_HOME/src/repl.ts" "$@"

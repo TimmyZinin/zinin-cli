@@ -1,0 +1,15 @@
+{
+  "name": "zinin-cli",
+  "version": "0.2.0",
+  "description": "ZININ — авторский AI-харнес (собственный REPL, мульти-LLM, bootstrap Claude Code/Codex)",
+  "bin": { "zinin": "./bin/zinin" },
+  "scripts": {
+    "start": "bun src/repl.ts",
+    "dev": "bun src/repl.ts",
+    "build": "bun build --compile src/repl.ts --outfile dist/zinin"
+  },
+  "dependencies": {
+    "figlet": "^1.7.0",
+    "gradient-string": "^2.0.2"
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+leads/
+*.env
+.env
+.zinin/
+*.log
+deploy/
+.DS_Store
+
+.*.bun-build
+.claude/
