@@ -8,6 +8,7 @@ import { homedir, platform } from "node:os";
 import banner from "./banner-v2.js";
 import { streamChatFallback, defaultModel, MODELS, loadKey, type Msg } from "./llm.ts";
 import { track, anonId, VERSION } from "./telemetry.ts";
+import { loadConfig, saveConfig } from "./config.ts";
 
 // Relay для сигнала /call → Тиму в Telegram (токен живёт на сервере, не в клиенте).
 const RELAY_URL = process.env.ZININ_RELAY_URL || "https://scope.timzinin.com/harness/call";
@@ -97,10 +98,45 @@ async function call(rl: any) {
   console.log("  " + dim("Выбрать время сразу: ") + col(CYAN, "https://calendly.com/timzinin/30min") + "\n");
 }
 
+// --- /key — подключить свой LLM (OpenRouter / OpenAI-совместимый endpoint) ---
+async function connectKey(rl: any) {
+  console.log("\n  " + MASCOT + " " + col(GOLD, "Подключи свой LLM."));
+  console.log("  " + dim("OpenRouter — самый простой: один ключ → все модели. Получить: ") + col(CYAN, "https://openrouter.ai/keys"));
+  const key = (await rl.question("  Ключ API " + dim("(или Enter — остаёшься на бесплатном движке): "))).trim();
+  if (!key) { console.log("  " + dim("Ок, остаёшься на бесплатном движке.\n")); return; }
+  const url = (await rl.question("  Свой endpoint URL? " + dim("(Enter = OpenRouter): "))).trim();
+  saveConfig({ apiKey: key, ...(url ? { baseURL: url } : {}) });
+  track("cli_key_connected", { custom_endpoint: !!url });
+  console.log("  " + col(CYAN, "✓") + " Подключено. Теперь работаешь на своём ключе" + (url ? " и endpoint." : ".") + "\n");
+}
+
+// --- онбординг новичка при первом запуске: живой разговор + цель = /setup ---
+async function onboard() {
+  const intro: Msg = {
+    role: "user",
+    content:
+      "[СИСТЕМА: первый запуск. Перед тобой новичок, который вообще ничего не знает про AI, терминалы и код. " +
+      "Поздоровайся тепло и очень просто, без жаргона. В 3-4 коротких предложениях объясни, что ты — AI-инженер прямо в терминале и чем реально поможешь его бизнесу. " +
+      "Затем скажи САМОЕ ГЛАВНОЕ: первым делом стоит набрать команду /setup — ты сам поставишь ему два мощных инструмента, Claude Code и Codex, и проведёшь за руку. " +
+      "В конце спроси, чем он занимается. Дружелюбно, как живой человек, короткими абзацами.]",
+  };
+  history.push(intro);
+  stdout.write("\n  " + col(GOLD, "zinin") + dim(" › "));
+  try {
+    const { text } = await streamChatFallback(history, model, (t) => stdout.write(t));
+    history.push({ role: "assistant", content: text });
+  } catch {
+    stdout.write(dim("(движок недоступен — набери /setup, чтобы поставить Claude Code и Codex)"));
+  }
+  stdout.write("\n\n");
+  saveConfig({ onboarded: true });
+}
+
 function help() {
   console.log(`
   ${MASCOT} ${col(GOLD, "команды:")}
-    ${col(CYAN, "/setup")}  — проверю и поставлю Claude Code / Codex
+    ${col(CYAN, "/setup")}  ${col(RED, "★ ГЛАВНОЕ")} — поставлю тебе Claude Code и Codex (проведу за руку)
+    ${col(CYAN, "/key")}    — подключить свой LLM (свой ключ / endpoint)
     ${col(CYAN, "/call")}   — позвать Тима на разговор (живой инженер, помощь с настройкой)
     ${col(CYAN, "/model")}  — сменить LLM (бесплатные / платные)
     ${col(CYAN, "/help")}   — это меню
@@ -127,6 +163,8 @@ async function main() {
   track("cli_start", { key: hasKey, mode: hasKey ? "direct" : "proxy" });
   // без своего ключа харнес работает через прокси Тима (бесплатные модели) — это норма, не ошибка
   await showMotd();
+  // первый запуск новичка → живой онбординг, ведущий к /setup
+  if (!loadConfig().onboarded) { await onboard(); }
   const rl = createInterface({ input: stdin, output: stdout });
   while (true) {
     let input: string;
@@ -140,6 +178,7 @@ async function main() {
     if (cmd === "/setup") { track("cli_setup"); await setup(rl); continue; }
     if (cmd === "/call") { await call(rl); continue; }
     if (cmd === "/model") { track("cli_model"); await pickModel(rl); continue; }
+    if (cmd === "/key") { await connectKey(rl); continue; }
 
     history.push({ role: "user", content: input });
     track("cli_query", { model });           // факт запроса — БЕЗ текста промпта

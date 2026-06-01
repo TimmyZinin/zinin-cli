@@ -8,7 +8,7 @@ import { randomUUID } from "node:crypto";
 
 const UMAMI = "https://stats.timzinin.com";
 const WEBSITE = "3c0744af-dfdb-4476-8a4a-b0fc21ec1af0"; // zinin.ai website (тот же, что на сайте)
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 
 function enabled(): boolean {
   return !process.env.ZININ_NO_TELEMETRY;

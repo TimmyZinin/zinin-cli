@@ -1,6 +1,6 @@
 {
   "name": "zinin-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ZININ — авторский AI-харнес (собственный REPL, мульти-LLM, bootstrap Claude Code/Codex)",
   "bin": { "zinin": "./bin/zinin" },
   "scripts": {

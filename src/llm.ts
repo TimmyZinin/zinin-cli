@@ -6,6 +6,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { loadConfig } from "./config.ts";
 
 const OR_URL = "https://openrouter.ai/api/v1/chat/completions";
 // Прокси на Contabo: если у юзера нет своего ключа — ходим через него (серверный ключ, :free).
@@ -33,10 +34,12 @@ export function defaultModel(): string {
   return MODELS.free[0].id;
 }
 
-// --- загрузка ключа: env → ~/.secrets (локальный dev-режим) ---
+// --- загрузка ключа: env → config юзера → ~/.secrets (dev) → null(прокси) ---
 export function loadKey(): string | null {
   if (process.env.ZININ_FORCE_PROXY) return null;     // форс прокси-режима (тест / приватность)
   if (process.env.OPENROUTER_API_KEY) return process.env.OPENROUTER_API_KEY;
+  const cfg = loadConfig();
+  if (cfg.apiKey) return cfg.apiKey;                  // ключ, подключённый юзером через /key
   for (const f of ["hermes-llm.env", "superjob.env"]) {
     const p = join(homedir(), ".secrets", f);
     if (existsSync(p)) {
@@ -45,6 +48,11 @@ export function loadKey(): string | null {
     }
   }
   return null;
+}
+
+// База для прямого режима: свой endpoint юзера или OpenRouter.
+export function directURL(): string {
+  return loadConfig().baseURL || OR_URL;
 }
 
 export type Msg = { role: "system" | "user" | "assistant"; content: string };
@@ -65,7 +73,7 @@ export async function streamChat(
   };
   if (direct) headers.Authorization = `Bearer ${key}`;
 
-  const res = await fetch(direct ? OR_URL : PROXY_URL, {
+  const res = await fetch(direct ? directURL() : PROXY_URL, {
     method: "POST",
     headers,
     body: JSON.stringify({ model, messages, stream: true }),
