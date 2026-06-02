@@ -14,8 +14,26 @@ const dim = (s) => `\x1b[2m${s}\x1b[0m`;
 const MASCOT = c(RED, '[◉‿◉]');           // путешествующий знак бренда
 const TIER = process.env.ZININ_TIER || 'FREE';
 
+// Статический логотип (ANSI Shadow, шрифт "ZININ"). Вшит в код, потому что
+// bun --compile НЕ кладёт .flf-файлы figlet в бинарь → на Linux/Windows
+// figlet.textSync падает с ENOENT по пути сборочной машины. Фоллбэк гарантирует
+// запуск на любой ОС; на dev-машине с node_modules используется живой figlet.
+const STATIC_LOGO = [
+  '███████╗██╗███╗   ██╗██╗███╗   ██╗',
+  '╚══███╔╝██║████╗  ██║██║████╗  ██║',
+  '  ███╔╝ ██║██╔██╗ ██║██║██╔██╗ ██║',
+  ' ███╔╝  ██║██║╚██╗██║██║██║╚██╗██║',
+  '███████╗██║██║ ╚████║██║██║ ╚████║',
+  '╚══════╝╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝',
+].join('\n');
+
 function splash() {
-  const logo = figlet.textSync('ZININ', { font: 'ANSI Shadow' });
+  let logo;
+  try {
+    logo = figlet.textSync('ZININ', { font: 'ANSI Shadow' });
+  } catch {
+    logo = STATIC_LOGO;   // скомпилированный бинарь без .flf → статика
+  }
   console.log('');
   console.log(redGrad.multiline(logo));
   console.log('  ' + MASCOT + '  ' + c(GOLD,'AI-инженер в твоём терминале') + dim('  ·  zinin.ai'));
