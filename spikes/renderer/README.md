@@ -89,3 +89,10 @@ Drafts are in-memory only; tools display the selected synthetic fixture event.
 scroll-away, tool focus, resize, synthetic interrupt and jump-to-live. It checks
 selected-run new counts independently of renderer state and writes stderr to
 files to avoid diagnostic pipe backpressure. See [results 07](../../docs/e1/renderer-results-07.md).
+
+Decision evidence: `latency-check.py NEW-NAME --fps=29` collects 30 acknowledged
+input-visibility samples per case and nearest-rank p95. It differs from the
+historical open-loop run; see [results 08](../../docs/e1/renderer-results-08.md).
+`budget-check.py NEW-NAME` generates a 2101-event fixture under runtime and
+checks screen/plain output; payload counts are not RSS or archive acceptance.
+The [renderer ADR](../../docs/e1/renderer-adr-proposed.md) is PROPOSED pending S0/Jev.
