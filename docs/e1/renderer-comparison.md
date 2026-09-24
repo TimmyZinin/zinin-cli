@@ -90,3 +90,9 @@ using one fixture, then fill the matrix with actual results. Canonical mascot
 assets remain unavailable. Present a new Jev packet with threshold 0.8 and a
 results table before selecting a renderer. The current document requests no
 renderer decision and gives no acceptance verdict.
+
+## Measurement update
+
+The original NOT RUN matrix above is the initial protocol snapshot. First actual
+measurements and limitations are in [renderer-results-01.md](renderer-results-01.md).
+These are batch model results, not terminal renderer acceptance or a selection.
