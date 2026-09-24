@@ -60,3 +60,13 @@ See [third results](../../docs/e1/renderer-results-03.md) for transfer reproduct
 The Go input framer is Linux-only and bounded to six seconds/1MiB input; it is
 spike code, not a portable production decoder. Run `pty-check.py` with a fresh
 evidence name and `--semantics` to check synthetic routes/edit/interrupt notices.
+
+## Finite streaming workload
+
+After rebuilding Go, run `python3 zinin-cli/spikes/renderer/load-check.py load-N`
+from the harness root with a fresh evidence name. The opt-in `--load` mode adds
+512 synthetic 16KiB chunks round-robin across 3 or 7 runs, target interval 5ms,
+inside the existing five-second PTY lifetime. No provider or archive is involved.
+The probe retains raw ANSI, timestamps, input bytes, final state and predicates.
+A failed predicate deliberately produces a nonzero exit after saving evidence.
+See renderer-results-04.md for interpretation and measurement limits.

@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
@@ -11,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -36,6 +38,8 @@ type model struct {
 	selected, anchor, unseen, w, h, count int
 	horizontal                            int
 	cursor                                int
+	load                                  bool
+	loaded                                int
 	notices                               []string
 	plain                                 bool
 	drafts                                map[string]string
@@ -56,12 +60,50 @@ func (m model) run() Run    { return m.f.Runs[m.selected] }
 func (m model) key() string { r := m.run(); return r.Task + "/" + r.ID }
 
 type timeoutMsg struct{}
+type loadMsg struct{}
+
+func loadTick() tea.Cmd {
+	return tea.Tick(5*time.Millisecond, func(time.Time) tea.Msg { return loadMsg{} })
+}
+
+// Capture actual standard-renderer flush writes (each ends in CursorBackward(width)).
+// Setup/cleanup control writes do not have this suffix. Fixed geometry load probe only.
+type measuredOutput struct {
+	mu    sync.Mutex
+	start time.Time
+	times []float64
+	width int
+}
+
+func (o *measuredOutput) Fd() uintptr                { return os.Stdout.Fd() }
+func (o *measuredOutput) Read(b []byte) (int, error) { return os.Stdout.Read(b) }
+func (o *measuredOutput) Close() error               { return nil }
+func (o *measuredOutput) Write(b []byte) (int, error) {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+	n, err := os.Stdout.Write(b)
+	if bytes.HasSuffix(b, []byte(fmt.Sprintf("\x1b[%dD", o.width))) {
+		o.times = append(o.times, float64(time.Since(o.start).Microseconds())/1000)
+	}
+	return n, err
+}
 
 func (m model) Init() tea.Cmd {
-	return tea.Tick(5*time.Second, func(time.Time) tea.Msg { return timeoutMsg{} })
+	timeout := tea.Tick(5*time.Second, func(time.Time) tea.Msg { return timeoutMsg{} })
+	if m.load {
+		return tea.Batch(timeout, loadTick())
+	}
+	return timeout
 }
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch a := msg.(type) {
+	case loadMsg:
+		m.loaded++
+		m.f.Events = append(m.f.Events, Event{Seq: 3000 + m.loaded, ID: fmt.Sprintf("load-%d", m.loaded), Run: fmt.Sprintf("r%d", 1+(m.loaded-1)%m.count), Tool: "synthetic", Text: strings.Repeat("L", 16384), Timestamp: m.loaded})
+		if m.loaded < 512 {
+			return m, loadTick()
+		}
+		return m, nil
 	case timeoutMsg:
 		return m, tea.Quit
 	case tea.KeyMsg:
@@ -280,12 +322,24 @@ func main() {
 	count, _ := strconv.Atoi(os.Args[4])
 	m := model{f: f, anchor: -1, w: w, h: h, count: count, plain: os.Args[5] == "plain", drafts: map[string]string{}}
 	if len(os.Args) > 6 && os.Args[6] == "--tty" {
-		final, err := tea.NewProgram(m, tea.WithFPS(30), tea.WithInput(newFramedInput(os.Stdin))).Run()
+		m.load = len(os.Args) > 7 && os.Args[7] == "--load"
+		measured := &measuredOutput{start: time.Now(), width: w}
+		opts := []tea.ProgramOption{tea.WithFPS(30), tea.WithInput(newFramedInput(os.Stdin))}
+		if m.load {
+			opts = append(opts, tea.WithOutput(measured))
+		}
+		final, err := tea.NewProgram(m, opts...).Run()
 		if err != nil {
 			panic(err)
 		}
 		last := final.(model)
-		json.NewEncoder(os.Stderr).Encode(map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State})
+		diagnostic := map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State}
+		if m.load {
+			diagnostic["loaded"] = last.loaded
+			diagnostic["loadBytes"] = last.loaded * 16384
+			diagnostic["frameTimes"] = measured.times
+		}
+		json.NewEncoder(os.Stderr).Encode(diagnostic)
 		return
 	}
 	start := time.Now()

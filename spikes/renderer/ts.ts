@@ -95,10 +95,14 @@ if(process.argv[7]==='--tty') {
  process.stdout.write('\x1b[?2004h');
  const resize=()=>{m.w=process.stdout.columns||width;m.h=process.stdout.rows||height;dirty=true;};
  process.stdout.on('resize',resize);resize();
+ const load=process.argv.includes('--load'); let loaded=0; const frameTimes:number[]=[]; const started=performance.now();
+ const loadTimer=load?setInterval(()=>{if(loaded>=512)return;loaded++;
+ m.update({kind:'append',event:{seq:3000+loaded,id:`load-${loaded}`,run:`r${1+(loaded-1)%count}`,tool:'synthetic',text:'L'.repeat(16384),timestamp:loaded}});dirty=true;
+ },5):undefined;
  const timeout=setTimeout(()=>{quit=true;},5000);
- await new Promise<void>(resolve=>{const timer=setInterval(()=>{if(dirty){process.stdout.write('\x1b[H\x1b[2J'+m.view());frames++;dirty=false;}if(quit){clearInterval(timer);resolve();}},34);});
- clearTimeout(timeout);clearTimeout(escapeTimer);process.stdin.off('data',onInput);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
- console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state}));
+ await new Promise<void>(resolve=>{const timer=setInterval(()=>{if(dirty){process.stdout.write('\x1b[H\x1b[2J'+m.view());frames++;if(load)frameTimes.push(performance.now()-started);dirty=false;}if(quit){clearInterval(timer);resolve();}},34);});
+ clearInterval(loadTimer);clearTimeout(timeout);clearTimeout(escapeTimer);process.stdin.off('data',onInput);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
+ console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,...(load?{loaded,loadBytes:loaded*16384,frameTimes}: {})}));
  process.exit(0);
 }
 const started=performance.now();
