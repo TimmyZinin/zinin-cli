@@ -1,0 +1,110 @@
+{
+  "packet_id": "E1-004",
+  "version": 2,
+  "threshold": 0.8,
+  "status": "PROPOSED_AWAITING_S0_RECEIPT",
+  "prior_receipt": {
+    "verdict": "REWORK_SIGNAL",
+    "facts": 0.83,
+    "decision": 0.71,
+    "risk": 0.76
+  },
+  "decision": "Условно выбрать TypeScript/Bun для следующего implementation этапа; production и E1 PASS не заявлять",
+  "candidate_source_commit": "cad907f",
+  "requested_rework_evidence": {
+    "repeats": "10 trials per candidate per 3/7 streams (40 sequential children, 1200 acknowledged samples); alternating order; same stand manifest and hashes",
+    "spread": [
+      {
+        "candidate": "ts",
+        "streams": 3,
+        "trials": 10,
+        "complete_trials": 10,
+        "min_ms": 30.548006063327193,
+        "median_ms": 33.396540908142924,
+        "max_ms": 43.24558610096574,
+        "stdev_ms": 4.480970294770984,
+        "q1_ms": 32.475268526468426,
+        "q3_ms": 36.00373526569456,
+        "trials_below_50ms": 10,
+        "failed_checks": []
+      },
+      {
+        "candidate": "ts",
+        "streams": 7,
+        "trials": 10,
+        "complete_trials": 10,
+        "min_ms": 29.880831949412823,
+        "median_ms": 33.63422746770084,
+        "max_ms": 102.90622315369546,
+        "stdev_ms": 24.00919887231588,
+        "q1_ms": 31.109239149373025,
+        "q3_ms": 50.12555548455566,
+        "trials_below_50ms": 7,
+        "failed_checks": []
+      },
+      {
+        "candidate": "go",
+        "streams": 3,
+        "trials": 10,
+        "complete_trials": 10,
+        "min_ms": 30.32044298015535,
+        "median_ms": 62.28148459922522,
+        "max_ms": 321.603124961257,
+        "stdev_ms": 85.82539856745808,
+        "q1_ms": 42.88308066315949,
+        "q3_ms": 64.05304628424346,
+        "trials_below_50ms": 4,
+        "failed_checks": []
+      },
+      {
+        "candidate": "go",
+        "streams": 7,
+        "trials": 10,
+        "complete_trials": 10,
+        "min_ms": 33.11534901149571,
+        "median_ms": 45.060474425554276,
+        "max_ms": 114.86921110190451,
+        "stdev_ms": 29.731632028913047,
+        "q1_ms": 36.860732187051326,
+        "q3_ms": 59.698627213947475,
+        "trials_below_50ms": 6,
+        "failed_checks": []
+      }
+    ],
+    "parity": "renderer-adr-v2-proposed.md: every canonical PTY/keyboard/focus/history/streaming predicate with TS/Go counts and log links",
+    "risks_and_fallback": "ADR explicit TS gap/control table, measured fallback rules, additive rollback plan"
+  },
+  "rationale": [
+    "TS/3 p95 proxy<50ms in10/10 trials (30.55–43.25ms); Go/3 only4/10 (30.32–321.60ms); keep outlier, do not assert cause",
+    "TS uses existing Bun/CLI/core toolchain; current tested behavior parity gives no unique Go requirement",
+    "Go fallback is retained but currently fails repeat performance criterion; cannot switch blindly"
+  ],
+  "risk_limits": [
+    "TS/7 max102.91ms and Go/7 max114.87ms; both degrade, no invented7-run SLA",
+    "Acknowledged visibility proxy, not physical paint or input-handler tracing; shared-host contention not controlled, actual event cadence differs",
+    "Cache/archive/preview budgets, input hardening, help/accessibility, event lag<250ms, approval/real cancellation, native/IME/color/canonical sprites remain open",
+    "Neither E1 completion nor production acceptance follows from this packet"
+  ],
+  "fallback_conditions": [
+    "Reopen TS if >=2/10 complete 3-run trials miss50ms after one bounded correction while Go passes all10 and parity; 2/10 is proposed decision rule",
+    "Immediate reopen for reproducible TS input/draft loss, wrong recipient, unsafe controls or required native blocker demonstrated passing in Go",
+    "If both fail, repair and remeasure; actual Go switch requires new S0/Jev receipt"
+  ],
+  "rollback_plan": [
+    "Retain de75ac1 baseline, cad907f implementation, both candidates and pinned manifests",
+    "Isolate future TS changes in additive review commits; preserve shared projection semantics",
+    "Halt TS rollout on trigger; preserve drafts/logs and stop only owned test CLI, never providers as renderer rollback",
+    "Additive git revert of TS-specific new commits; rebuild baseline; rerun parity plus ten-repeat benchmark",
+    "No schema migration or production change in this proposal; future live draft recovery/storage backup requires its own approved mechanism"
+  ],
+  "artifacts": [
+    "docs/e1/renderer-adr-v2-proposed.md",
+    "spikes/renderer/evidence/latency-v2-ten/manifest.json",
+    "spikes/renderer/evidence/latency-v2-ten/aggregate.json"
+  ],
+  "evidence_sha256": {
+    "manifest.json": "80df98f51164ae49dd4437a331df0a2de48ed4e5eb15ef8c00cb4d439a6e1bc1",
+    "aggregate.json": "074b73f3d682eb29c22ac3386be13075f30d574a35de305817165fd8f25c635f"
+  },
+  "requested_receipt": "S0 выполняет локальный jev_gate.py для E1-004 v2 threshold0.8, возвращает verdict/facts/decision/risk и ограничения через say; до квитанции статус PROPOSED."
+}

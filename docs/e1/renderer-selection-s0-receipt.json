@@ -1,0 +1,22 @@
+{
+  "packet_id": "E1-004",
+  "version": 2,
+  "jev": {
+    "verdict": "REWORK_SIGNAL",
+    "facts": 0.78,
+    "decision": 0.74,
+    "risk": 0.74,
+    "threshold": 0.8
+  },
+  "authority": "S0 explicit user instruction",
+  "decision": "ACCEPTED-CONDITIONAL",
+  "direction": "TypeScript/Bun working E1 direction",
+  "conditions": [
+    "No production changes",
+    "Preserve Go spike as archived fallback",
+    "Investigate and close TS seven-window degradation (max per-trial p95 102.91ms) before production acceptance",
+    "Reconcile ADR facts with logs"
+  ],
+  "fact_audit": "renderer-fact-audit.json",
+  "e2_handoff": "renderer-e2-handoff.md"
+}

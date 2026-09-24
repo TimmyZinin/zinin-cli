@@ -1,0 +1,62 @@
+[
+  {
+    "candidate": "ts",
+    "case": "zwj",
+    "checks": {
+      "cluster_boundary": true
+    }
+  },
+  {
+    "candidate": "go",
+    "case": "zwj",
+    "checks": {
+      "cluster_boundary": true
+    }
+  },
+  {
+    "candidate": "ts",
+    "case": "combining",
+    "checks": {
+      "cluster_boundary": true
+    }
+  },
+  {
+    "candidate": "go",
+    "case": "combining",
+    "checks": {
+      "cluster_boundary": true
+    }
+  },
+  {
+    "candidate": "ts",
+    "case": "cjk",
+    "checks": {
+      "cluster_boundary": true
+    }
+  },
+  {
+    "candidate": "go",
+    "case": "cjk",
+    "checks": {
+      "cluster_boundary": true
+    }
+  },
+  {
+    "candidate": "ts",
+    "case": "horizontal",
+    "checks": {
+      "cluster_boundary": true,
+      "detail_reachable": true,
+      "footer_preserved": true
+    }
+  },
+  {
+    "candidate": "go",
+    "case": "horizontal",
+    "checks": {
+      "cluster_boundary": true,
+      "detail_reachable": true,
+      "footer_preserved": true
+    }
+  }
+]

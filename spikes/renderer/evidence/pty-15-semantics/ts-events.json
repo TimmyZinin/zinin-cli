@@ -1,0 +1,220 @@
+{
+  "chunks": [
+    {
+      "t": 0.0446,
+      "bytes": 8
+    },
+    {
+      "t": 0.0864,
+      "bytes": 982
+    },
+    {
+      "t": 0.6566,
+      "bytes": 998
+    },
+    {
+      "t": 0.6605,
+      "bytes": 192
+    },
+    {
+      "t": 0.6606,
+      "bytes": 260
+    },
+    {
+      "t": 0.6606,
+      "bytes": 57
+    },
+    {
+      "t": 0.6606,
+      "bytes": 57
+    },
+    {
+      "t": 0.6606,
+      "bytes": 2
+    },
+    {
+      "t": 0.6606,
+      "bytes": 55
+    },
+    {
+      "t": 0.6606,
+      "bytes": 2
+    },
+    {
+      "t": 0.6607,
+      "bytes": 57
+    },
+    {
+      "t": 0.6607,
+      "bytes": 188
+    },
+    {
+      "t": 0.6607,
+      "bytes": 2
+    },
+    {
+      "t": 0.6607,
+      "bytes": 37
+    },
+    {
+      "t": 0.6607,
+      "bytes": 42
+    },
+    {
+      "t": 0.7353,
+      "bytes": 988
+    },
+    {
+      "t": 0.8408,
+      "bytes": 972
+    },
+    {
+      "t": 0.9442,
+      "bytes": 1007
+    },
+    {
+      "t": 1.0184,
+      "bytes": 1011
+    },
+    {
+      "t": 1.0883,
+      "bytes": 35
+    },
+    {
+      "t": 1.0887,
+      "bytes": 972
+    },
+    {
+      "t": 1.1687,
+      "bytes": 35
+    },
+    {
+      "t": 1.1697,
+      "bytes": 964
+    },
+    {
+      "t": 1.2424,
+      "bytes": 975
+    },
+    {
+      "t": 1.2773,
+      "bytes": 973
+    },
+    {
+      "t": 1.3814,
+      "bytes": 969
+    },
+    {
+      "t": 1.4834,
+      "bytes": 951
+    },
+    {
+      "t": 1.5189,
+      "bytes": 955
+    },
+    {
+      "t": 1.5922,
+      "bytes": 1297
+    },
+    {
+      "t": 1.6956,
+      "bytes": 1639
+    },
+    {
+      "t": 1.8345,
+      "bytes": 956
+    },
+    {
+      "t": 1.9738,
+      "bytes": 955
+    },
+    {
+      "t": 5.0729,
+      "bytes": 8
+    }
+  ],
+  "sent": [
+    {
+      "t": 0.2955,
+      "hex": "2f746f646f0d"
+    },
+    {
+      "t": 0.4963,
+      "hex": "2f6167656e74730d"
+    },
+    {
+      "t": 0.6357,
+      "hex": "2f73636f70650d"
+    },
+    {
+      "t": 0.7262,
+      "hex": "2f636f6e746578740d"
+    },
+    {
+      "t": 0.8165,
+      "hex": "2f68616e646f66660d"
+    },
+    {
+      "t": 0.9068,
+      "hex": "2f68656c700d"
+    },
+    {
+      "t": 0.9973,
+      "hex": "626301610564"
+    },
+    {
+      "t": 1.0777,
+      "hex": "03"
+    },
+    {
+      "t": 1.145,
+      "hex": "03"
+    },
+    {
+      "t": 1.2053,
+      "hex": "03"
+    },
+    {
+      "t": 1.2662,
+      "hex": "2f6167656e747320340d"
+    },
+    {
+      "t": 1.3487,
+      "hex": "03"
+    },
+    {
+      "t": 1.4089,
+      "hex": "1b"
+    },
+    {
+      "t": 1.4914,
+      "hex": "626301610564"
+    },
+    {
+      "resize": [
+        100,
+        30
+      ]
+    },
+    {
+      "resize": [
+        120,
+        36
+      ]
+    },
+    {
+      "resize": [
+        79,
+        24
+      ]
+    },
+    {
+      "resize": [
+        80,
+        24
+      ]
+    }
+  ],
+  "stderr": "{\"selected\":\"r4\",\"drafts\":{\"t1/r1\":\"\",\"t4/r4\":\"abcd\"},\"frames\":18,\"width\":80,\"height\":24,\"notices\":[\"/todo s1 required working owner=a1; s2 required queued; done=0/2\",\"/agents r1:working r2:working r3:working r4:waiting r5:waiting r6:waiting r7:waiting\",\"/scope svc/grp/t1\",\"/context r1 context=unknown quota=unknown cost=unknown\",\"/handoff r1->r2 preview synthetic only\",\"/help /todo /agents /scope /context /handoff /quit; Tab focus; agents:1-7; history:PgUp/PgDn Home/End Enter; Ctrl+A/E edit; Esc back\",\"interrupt requested r1 synthetic; repeat has no owned provider\",\"no owned provider; escalation disabled\",\"idle: /quit or Ctrl+D exits client\",\"back to composer\"],\"state\":\"waiting\",\"focus\":\"composer\",\"tool\":\"\",\"navigation\":[{\"key\":\"esc\",\"focus\":\"composer\",\"selected\":\"r4\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"\"}]}\n",
+  "returncode": 0
+}

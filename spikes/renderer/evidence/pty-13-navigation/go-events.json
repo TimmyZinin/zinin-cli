@@ -1,0 +1,204 @@
+{
+  "chunks": [
+    {
+      "t": 0.0135,
+      "bytes": 14
+    },
+    {
+      "t": 0.0568,
+      "bytes": 1023
+    },
+    {
+      "t": 0.2802,
+      "bytes": 88
+    },
+    {
+      "t": 0.347,
+      "bytes": 698
+    },
+    {
+      "t": 0.4811,
+      "bytes": 387
+    },
+    {
+      "t": 0.5157,
+      "bytes": 88
+    },
+    {
+      "t": 0.58,
+      "bytes": 645
+    },
+    {
+      "t": 0.7141,
+      "bytes": 79
+    },
+    {
+      "t": 0.7476,
+      "bytes": 89
+    },
+    {
+      "t": 0.8475,
+      "bytes": 645
+    },
+    {
+      "t": 0.9478,
+      "bytes": 79
+    },
+    {
+      "t": 0.9805,
+      "bytes": 78
+    },
+    {
+      "t": 1.0806,
+      "bytes": 374
+    },
+    {
+      "t": 1.1475,
+      "bytes": 346
+    },
+    {
+      "t": 1.281,
+      "bytes": 400
+    },
+    {
+      "t": 1.3149,
+      "bytes": 340
+    },
+    {
+      "t": 1.3837,
+      "bytes": 374
+    },
+    {
+      "t": 1.4807,
+      "bytes": 373
+    },
+    {
+      "t": 1.5486,
+      "bytes": 374
+    },
+    {
+      "t": 1.6478,
+      "bytes": 346
+    },
+    {
+      "t": 1.7135,
+      "bytes": 1298
+    },
+    {
+      "t": 1.8477,
+      "bytes": 1628
+    },
+    {
+      "t": 1.9468,
+      "bytes": 976
+    },
+    {
+      "t": 2.0813,
+      "bytes": 973
+    },
+    {
+      "t": 5.0195,
+      "bytes": 43
+    }
+  ],
+  "sent": [
+    {
+      "t": 0.2502,
+      "hex": "647261667431"
+    },
+    {
+      "t": 0.3305,
+      "hex": "0932"
+    },
+    {
+      "t": 0.4107,
+      "hex": "1b"
+    },
+    {
+      "t": 0.4909,
+      "hex": "647261667432"
+    },
+    {
+      "t": 0.5717,
+      "hex": "0931"
+    },
+    {
+      "t": 0.6521,
+      "hex": "1b"
+    },
+    {
+      "t": 0.7325,
+      "hex": "21"
+    },
+    {
+      "t": 0.8128,
+      "hex": "0932"
+    },
+    {
+      "t": 0.893,
+      "hex": "1b"
+    },
+    {
+      "t": 0.9733,
+      "hex": "0909"
+    },
+    {
+      "t": 1.0536,
+      "hex": "1b5b48"
+    },
+    {
+      "t": 1.1343,
+      "hex": "0d"
+    },
+    {
+      "t": 1.2145,
+      "hex": "1b"
+    },
+    {
+      "t": 1.2947,
+      "hex": "1b5b367e"
+    },
+    {
+      "t": 1.375,
+      "hex": "1b5b357e"
+    },
+    {
+      "t": 1.4553,
+      "hex": "1b5b46"
+    },
+    {
+      "t": 1.5356,
+      "hex": "1b5b48"
+    },
+    {
+      "t": 1.6158,
+      "hex": "0d"
+    },
+    {
+      "resize": [
+        100,
+        30
+      ]
+    },
+    {
+      "resize": [
+        120,
+        36
+      ]
+    },
+    {
+      "resize": [
+        79,
+        24
+      ]
+    },
+    {
+      "resize": [
+        80,
+        24
+      ]
+    }
+  ],
+  "stderr": "{\"drafts\":{\"t1/r1\":\"draft1!\",\"t2/r2\":\"draft2\"},\"focus\":\"tool\",\"height\":24,\"navigation\":[{\"anchor\":-1,\"draft\":\"draft1\",\"focus\":\"agents\",\"key\":\"tab\",\"selected\":\"r1\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"\",\"focus\":\"agents\",\"key\":\"2\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"\",\"focus\":\"composer\",\"key\":\"esc\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft2\",\"focus\":\"agents\",\"key\":\"tab\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft1\",\"focus\":\"agents\",\"key\":\"1\",\"selected\":\"r1\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft1\",\"focus\":\"composer\",\"key\":\"esc\",\"selected\":\"r1\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft1!\",\"focus\":\"agents\",\"key\":\"tab\",\"selected\":\"r1\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft2\",\"focus\":\"agents\",\"key\":\"2\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft2\",\"focus\":\"composer\",\"key\":\"esc\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft2\",\"focus\":\"agents\",\"key\":\"tab\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"tab\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":0,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"home\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":0,\"draft\":\"draft2\",\"focus\":\"tool\",\"key\":\"enter\",\"selected\":\"r2\",\"tool\":\"e2\"},{\"anchor\":0,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"esc\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":4,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"pgdown\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":0,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"pgup\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":-1,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"end\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":0,\"draft\":\"draft2\",\"focus\":\"history\",\"key\":\"home\",\"selected\":\"r2\",\"tool\":\"\"},{\"anchor\":0,\"draft\":\"draft2\",\"focus\":\"tool\",\"key\":\"enter\",\"selected\":\"r2\",\"tool\":\"e2\"}],\"notices\":[\"back to composer\",\"back to composer\",\"back to composer\",\"back to history\"],\"selected\":\"r2\",\"state\":\"working\",\"tool\":\"e2\",\"width\":80}\n",
+  "returncode": 0
+}

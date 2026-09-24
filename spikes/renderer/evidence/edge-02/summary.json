@@ -1,0 +1,35 @@
+[
+  {
+    "candidate": "ts",
+    "criterion": "TUI §5 wcwidth; §1 geometry",
+    "cells": 80,
+    "columns": 80,
+    "status": "PASS",
+    "line": "A 界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界",
+    "command": [
+      "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+      "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+      "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/evidence/edge-02/wide-fixture.json",
+      "80",
+      "24",
+      "7",
+      "screen"
+    ]
+  },
+  {
+    "candidate": "go",
+    "criterion": "TUI §5 wcwidth; §1 geometry",
+    "cells": 80,
+    "columns": 80,
+    "status": "PASS",
+    "line": "A 界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界界",
+    "command": [
+      "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+      "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/evidence/edge-02/wide-fixture.json",
+      "80",
+      "24",
+      "7",
+      "screen"
+    ]
+  }
+]

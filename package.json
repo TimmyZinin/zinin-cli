@@ -3,7 +3,9 @@
   "version": "0.2.1",
   "description": "ZININ — авторский AI-харнес (собственный REPL, мульти-LLM, bootstrap Claude Code/Codex)",
   "bin": { "zinin": "./bin/zinin" },
+  "packageManager": "bun@1.3.0",
   "scripts": {
+    "test:e1": "bun test tests/protocol tests/core",
     "start": "bun src/repl.ts",
     "dev": "bun src/repl.ts",
     "build": "bun build --compile src/repl.ts --outfile dist/zinin"

@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "method": "Raw ANSI prefixes + timed chunks + sent bytes -> all sample latencies -> nearest-rank p95 -> spread and ADR rounded tables; parity predicate counts vs suite logs",
+  "samples_verified": 1200,
+  "cases_verified": 40,
+  "parity_rows_verified": 60,
+  "aggregate_sha256": "074b73f3d682eb29c22ac3386be13075f30d574a35de305817165fd8f25c635f"
+}

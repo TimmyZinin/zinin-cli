@@ -1,0 +1,71 @@
+{
+  "initial": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=0 anchor=live\n1919 e1919>s1>r1>tool1>res1 line-1919 synthetic ts=1081\n1926 e1926>s1>r1>tool1>res1 line-1926 synthetic ts=1074\n1933 e1933>s1>r1>tool1>res1 line-1933 synthetic ts=1067\n1940 e1940>s1>r1>tool1>res1 line-1940 synthetic ts=1060\n1947 e1947>s1>r1>tool1>res1 line-1947 synthetic ts=1053\n1954 e1954>s1>r1>tool1>res1 line-1954 synthetic ts=1046\n1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039\n1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032\n1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025\n1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018\n1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011\n1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft= queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n",
+  "trace": [
+    {
+      "kind": "draft",
+      "selected": "r1",
+      "draft": "draft-one",
+      "anchor": -1,
+      "unseen": 0,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=0 anchor=live\n1919 e1919>s1>r1>tool1>res1 line-1919 synthetic ts=1081\n1926 e1926>s1>r1>tool1>res1 line-1926 synthetic ts=1074\n1933 e1933>s1>r1>tool1>res1 line-1933 synthetic ts=1067\n1940 e1940>s1>r1>tool1>res1 line-1940 synthetic ts=1060\n1947 e1947>s1>r1>tool1>res1 line-1947 synthetic ts=1053\n1954 e1954>s1>r1>tool1>res1 line-1954 synthetic ts=1046\n1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039\n1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032\n1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025\n1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018\n1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011\n1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft=draft-one queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "select",
+      "selected": "r2",
+      "draft": "",
+      "anchor": -1,
+      "unseen": 0,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t2 owner=a2 result=res1\nB executor/synthetic/r2/t2 working waiting=4\nC history new=0 anchor=live\n1920 e1920>s1>r2>tool1>res1 line-1920 synthetic ts=1080\n1927 e1927>s1>r2>tool1>res1 line-1927 synthetic ts=1073\n1934 e1934>s1>r2>tool1>res1 line-1934 synthetic ts=1066\n1941 e1941>s1>r2>tool1>res1 line-1941 synthetic ts=1059\n1948 e1948>s1>r2>tool1>res1 line-1948 synthetic ts=1052\n1955 e1955>s1>r2>tool1>res1 line-1955 synthetic ts=1045\n1962 e1962>s1>r2>tool1>res1 line-1962 synthetic ts=1038\n1969 e1969>s1>r2>tool1>res1 line-1969 synthetic ts=1031\n1976 e1976>s1>r2>tool1>res1 line-1976 synthetic ts=1024\n1983 e1983>s1>r2>tool1>res1 line-1983 synthetic ts=1017\n1990 e1990>s1>r2>tool1>res1 line-1990 synthetic ts=1010\n1997 e1997>s1>r2>tool1>res1 line-1997 synthetic ts=1003\nD step=s1 owner=a2 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r2->r2 phase=preview\nE t2/r2 draft= queue=1 (steering unsupported)\nF r2 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "draft",
+      "selected": "r2",
+      "draft": "draft-two",
+      "anchor": -1,
+      "unseen": 0,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t2 owner=a2 result=res1\nB executor/synthetic/r2/t2 working waiting=4\nC history new=0 anchor=live\n1920 e1920>s1>r2>tool1>res1 line-1920 synthetic ts=1080\n1927 e1927>s1>r2>tool1>res1 line-1927 synthetic ts=1073\n1934 e1934>s1>r2>tool1>res1 line-1934 synthetic ts=1066\n1941 e1941>s1>r2>tool1>res1 line-1941 synthetic ts=1059\n1948 e1948>s1>r2>tool1>res1 line-1948 synthetic ts=1052\n1955 e1955>s1>r2>tool1>res1 line-1955 synthetic ts=1045\n1962 e1962>s1>r2>tool1>res1 line-1962 synthetic ts=1038\n1969 e1969>s1>r2>tool1>res1 line-1969 synthetic ts=1031\n1976 e1976>s1>r2>tool1>res1 line-1976 synthetic ts=1024\n1983 e1983>s1>r2>tool1>res1 line-1983 synthetic ts=1017\n1990 e1990>s1>r2>tool1>res1 line-1990 synthetic ts=1010\n1997 e1997>s1>r2>tool1>res1 line-1997 synthetic ts=1003\nD step=s1 owner=a2 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r2->r2 phase=preview\nE t2/r2 draft=draft-two queue=1 (steering unsupported)\nF r2 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "select",
+      "selected": "r1",
+      "draft": "draft-one",
+      "anchor": -1,
+      "unseen": 0,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=0 anchor=live\n1919 e1919>s1>r1>tool1>res1 line-1919 synthetic ts=1081\n1926 e1926>s1>r1>tool1>res1 line-1926 synthetic ts=1074\n1933 e1933>s1>r1>tool1>res1 line-1933 synthetic ts=1067\n1940 e1940>s1>r1>tool1>res1 line-1940 synthetic ts=1060\n1947 e1947>s1>r1>tool1>res1 line-1947 synthetic ts=1053\n1954 e1954>s1>r1>tool1>res1 line-1954 synthetic ts=1046\n1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039\n1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032\n1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025\n1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018\n1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011\n1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft=draft-one queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "scroll",
+      "selected": "r1",
+      "draft": "draft-one",
+      "anchor": 10,
+      "unseen": 0,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=0 anchor=10\n71 e71>s1>r1>tool1>res1 line-71 synthetic ts=2929\n78 e78>s1>r1>tool1>res1 line-78 synthetic ts=2922\n85 e85>s1>r1>tool1>res1 line-85 synthetic ts=2915\n92 e92>s1>r1>tool1>res1 line-92 synthetic ts=2908\n99 e99>s1>r1>tool1>res1 line-99 synthetic ts=2901\n106 e106>s1>r1>tool1>res1 line-106 synthetic ts=2894\n113 e113>s1>r1>tool1>res1 line-113 synthetic ts=2887\n120 e120>s1>r1>tool1>res1 line-120 synthetic ts=2880\n127 e127>s1>r1>tool1>res1 line-127 synthetic ts=2873\n134 e134>s1>r1>tool1>res1 line-134 synthetic ts=2866\n141 e141>s1>r1>tool1>res1 line-141 synthetic ts=2859\n148 e148>s1>r1>tool1>res1 line-148 synthetic ts=2852\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft=draft-one queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "append",
+      "selected": "r1",
+      "draft": "draft-one",
+      "anchor": 10,
+      "unseen": 1,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=1 anchor=10\n71 e71>s1>r1>tool1>res1 line-71 synthetic ts=2929\n78 e78>s1>r1>tool1>res1 line-78 synthetic ts=2922\n85 e85>s1>r1>tool1>res1 line-85 synthetic ts=2915\n92 e92>s1>r1>tool1>res1 line-92 synthetic ts=2908\n99 e99>s1>r1>tool1>res1 line-99 synthetic ts=2901\n106 e106>s1>r1>tool1>res1 line-106 synthetic ts=2894\n113 e113>s1>r1>tool1>res1 line-113 synthetic ts=2887\n120 e120>s1>r1>tool1>res1 line-120 synthetic ts=2880\n127 e127>s1>r1>tool1>res1 line-127 synthetic ts=2873\n134 e134>s1>r1>tool1>res1 line-134 synthetic ts=2866\n141 e141>s1>r1>tool1>res1 line-141 synthetic ts=2859\n148 e148>s1>r1>tool1>res1 line-148 synthetic ts=2852\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft=draft-one queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "resize",
+      "selected": "r1",
+      "draft": "draft-one",
+      "anchor": 10,
+      "unseen": 1,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=1 anchor=10\n71 e71>s1>r1>tool1>res1 line-71 synthetic ts=2929\n78 e78>s1>r1>tool1>res1 line-78 synthetic ts=2922\n85 e85>s1>r1>tool1>res1 line-85 synthetic ts=2915\n92 e92>s1>r1>tool1>res1 line-92 synthetic ts=2908\n99 e99>s1>r1>tool1>res1 line-99 synthetic ts=2901\n106 e106>s1>r1>tool1>res1 line-106 synthetic ts=2894\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft=draft-one queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    },
+    {
+      "kind": "live",
+      "selected": "r1",
+      "draft": "draft-one",
+      "anchor": -1,
+      "unseen": 0,
+      "frame": "SYNTHETIC ZININ [o..] native\nTREE orchestrator waiting\n r1 a1 synthetic working\n r2 a2 synthetic working\n r3 a3 synthetic working\n r4 a4 synthetic waiting\n r5 a5 synthetic waiting\n r6 a6 synthetic waiting\n r7 a7 synthetic waiting\nA svc/grp/t1 owner=a1 result=res1\nB executor/synthetic/r1/t1 working waiting=4\nC history new=0 anchor=live\n1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032\n1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025\n1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018\n1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011\n1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004\n2002 e2002>s1>r1>tool1>res1 late synthetic ts=1\nD step=s1 owner=a1 required working next=s2 done=0/2 /todo\nResult res1 rev=1 digest=synthetic evidence=fixture\nHandoff r1->r2 phase=preview\nE t1/r1 draft=draft-one queue=1 (steering unsupported)\nF r1 context=unknown status=working\nquota=unknown cost=unknown fresh=unknown\n"
+    }
+  ],
+  "elapsed_ms": 27.286351000000003,
+  "scope": "batch Update/View only"
+}
