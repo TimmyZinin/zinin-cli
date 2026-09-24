@@ -40,6 +40,9 @@ type model struct {
 	cursor                                int
 	load                                  bool
 	loaded                                int
+	loadStarted                           time.Time
+	completedMs                           float64
+	inputProgress                         []map[string]any
 	notices                               []string
 	plain                                 bool
 	drafts                                map[string]string
@@ -100,6 +103,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case loadMsg:
 		m.loaded++
 		m.f.Events = append(m.f.Events, Event{Seq: 3000 + m.loaded, ID: fmt.Sprintf("load-%d", m.loaded), Run: fmt.Sprintf("r%d", 1+(m.loaded-1)%m.count), Tool: "synthetic", Text: strings.Repeat("L", 16384), Timestamp: m.loaded})
+		if m.loaded == 512 {
+			m.completedMs = float64(time.Since(m.loadStarted).Microseconds()) / 1000
+		}
 		if m.loaded < 512 {
 			return m, loadTick()
 		}
@@ -107,6 +113,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case timeoutMsg:
 		return m, tea.Quit
 	case tea.KeyMsg:
+		if m.load && len(m.inputProgress) < 32 {
+			m.inputProgress = append(m.inputProgress, map[string]any{"ms": float64(time.Since(m.loadStarted).Microseconds()) / 1000, "loaded": m.loaded})
+		}
 		d := m.drafts[m.key()]
 		switch a.Type {
 		case tea.KeyCtrlD:
@@ -323,8 +332,15 @@ func main() {
 	m := model{f: f, anchor: -1, w: w, h: h, count: count, plain: os.Args[5] == "plain", drafts: map[string]string{}}
 	if len(os.Args) > 6 && os.Args[6] == "--tty" {
 		m.load = len(os.Args) > 7 && os.Args[7] == "--load"
-		measured := &measuredOutput{start: time.Now(), width: w}
-		opts := []tea.ProgramOption{tea.WithFPS(30), tea.WithInput(newFramedInput(os.Stdin))}
+		m.loadStarted = time.Now()
+		measured := &measuredOutput{start: m.loadStarted, width: w}
+		fps := 30
+		for _, arg := range os.Args[7:] {
+			if arg == "--fps=29" {
+				fps = 29
+			}
+		}
+		opts := []tea.ProgramOption{tea.WithFPS(fps), tea.WithInput(newFramedInput(os.Stdin))}
 		if m.load {
 			opts = append(opts, tea.WithOutput(measured))
 		}
@@ -338,6 +354,9 @@ func main() {
 			diagnostic["loaded"] = last.loaded
 			diagnostic["loadBytes"] = last.loaded * 16384
 			diagnostic["frameTimes"] = measured.times
+			diagnostic["completedMs"] = last.completedMs
+			diagnostic["inputProgress"] = last.inputProgress
+			diagnostic["fps"] = fps
 		}
 		json.NewEncoder(os.Stderr).Encode(diagnostic)
 		return

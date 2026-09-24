@@ -70,3 +70,10 @@ inside the existing five-second PTY lifetime. No provider or archive is involved
 The probe retains raw ANSI, timestamps, input bytes, final state and predicates.
 A failed predicate deliberately produces a nonzero exit after saving evidence.
 See renderer-results-04.md for interpretation and measurement limits.
+
+Streaming follow-up: `load-check.py NEW-NAME --fps=29` opts the Go candidate
+into FPS29; the default remains FPS30. Both candidates now record load
+completion time and up to 32 input-handling samples with the current loaded
+chunk count. New predicates verify input handling while load is incomplete and
+match flush timestamps to raw ANSI markers. This mode retains the same workload
+and five-second child lifetime; it is an experiment, not a renderer selection.

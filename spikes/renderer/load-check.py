@@ -6,11 +6,12 @@ runtime = here.parents[2] / 'runtime'
 out = here / 'evidence' / sys.argv[1]
 out.mkdir(exist_ok=False)
 summary = []
+fps29 = '--fps=29' in sys.argv
 for count in (3, 7):
  for name, cmd in [('ts', [str(runtime/'bun-1.3.0/bun'), str(here/'ts.ts')]), ('go', [str(runtime/'renderer-go')])]:
   master, slave = pty.openpty()
   fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH',24,80,0,0))
-  p = subprocess.Popen([*cmd,str(here/'fixture.json'),'80','24',str(count),'screen','--tty','--load'],stdin=slave,stdout=slave,stderr=subprocess.PIPE,env={**os.environ,'TERM':'xterm-256color','NO_COLOR':'1'})
+  p = subprocess.Popen([*cmd,str(here/'fixture.json'),'80','24',str(count),'screen','--tty','--load',*(['--fps=29'] if name=='go' and fps29 else [])],stdin=slave,stdout=slave,stderr=subprocess.PIPE,env={**os.environ,'TERM':'xterm-256color','NO_COLOR':'1'})
   start=time.monotonic(); raw=bytearray(); chunks=[]; sent=[]; seen={}
   try:
    while p.poll() is None and time.monotonic()-start<6.5:
@@ -34,8 +35,10 @@ for count in (3, 7):
    times=state['frameTimes'] or []
    peak=max((sum(t<=x<t+1000 for x in times) for t in times),default=0)
    latency=[{'token':s['token'],'sent_ms':s['t']*1000,'visible_ms':seen.get(s['token'],0)*1000,'latency_ms':(seen[s['token']]-s['t'])*1000 if s['token'] in seen else None} for s in sent]
-   checks={'exit_clean':rc==0,'no_stderr_errors':len(stderr.strip().splitlines())==1,'load_complete':state['loaded']==512 and state['loadBytes']==8388608,'input_preserved':state['drafts'].get('t1/r1')=='P2','all_probes_visible':len(seen)==3,'probes_visible_before_end':len(seen)==3 and max(seen.values())<5,'redraw_observed':len(times)>30,'redraw_at_most_30_per_sliding_second':len(times)>0 and peak<=30}
-   row={'candidate':name,'streams':count,'checks':checks,'peak_redraws_per_second':peak,'latencies':latency,'output_bytes':len(raw),'final':state}
+   marker=b'\x1b[80D' if name=='go' else b'\x1b[H\x1b[2J'
+   progress=state.get('inputProgress') or []
+   checks={'exit_clean':rc==0,'no_stderr_errors':len(stderr.strip().splitlines())==1,'load_complete':state['loaded']==512 and state['loadBytes']==8388608,'input_preserved':state['drafts'].get('t1/r1')=='P2','all_probes_visible':len(seen)==3,'probes_visible_before_end':len(seen)==3 and max(seen.values())<5,'input_handled_during_load':bool(progress) and all(0<x['loaded']<512 for x in progress),'completion_observed':0<state.get('completedMs',0)<5000,'flush_count_matches_raw':raw.count(marker)==len(times),'redraw_observed':len(times)>30,'redraw_at_most_30_per_sliding_second':len(times)>0 and peak<=30}
+   row={'candidate':name,'streams':count,'checks':checks,'peak_redraws_per_second':peak,'latencies':latency,'output_bytes':len(raw),'completion_ms':state.get('completedMs'),'minimum_flush_gap_ms':min((b-a for a,b in zip(times,times[1:])),default=None),'final':state}
    summary.append(row)
    prefix=f'{name}-{count}'
    (out/(prefix+'.ansi')).write_bytes(raw)
@@ -44,5 +47,5 @@ for count in (3, 7):
   finally:
    if p.poll() is None:p.kill();p.wait()
    os.close(master);os.close(slave)
-(out/'summary.json').write_text(json.dumps({'workload':{'chunks':512,'bytes_per_chunk':16384,'target_interval_ms':5,'fixture_sha256':hashlib.sha256((here/'fixture.json').read_bytes()).hexdigest()},'results':summary},indent=2)+'\n')
+(out/'summary.json').write_text(json.dumps({'workload':{'chunks':512,'bytes_per_chunk':16384,'target_interval_ms':5,'go_fps':29 if fps29 else 30,'fixture_sha256':hashlib.sha256((here/'fixture.json').read_bytes()).hexdigest()},'results':summary},indent=2)+'\n')
 assert all(all(r['checks'].values()) for r in summary)

@@ -69,6 +69,7 @@ if(process.argv[7]==='--tty') {
   cursor=graphemes(m.drafts.get(m.key)??'').length;dirty=true;
  }
  function onInput(chunk:Buffer) {
+  if(load && inputProgress.length<32)inputProgress.push({ms:performance.now()-started,loaded});
   clearTimeout(escapeTimer);pending+=decoder.decode(chunk,{stream:true});
   while(pending.length) {
    if(paste) {const end=pending.indexOf('\x1b[201~');if(end<0){return;} pasted+=pending.slice(0,end);pending=pending.slice(end+6);edit(pasted.replace(/\r\n?/g,'\n'));pasted='';paste=false;continue;}
@@ -95,14 +96,14 @@ if(process.argv[7]==='--tty') {
  process.stdout.write('\x1b[?2004h');
  const resize=()=>{m.w=process.stdout.columns||width;m.h=process.stdout.rows||height;dirty=true;};
  process.stdout.on('resize',resize);resize();
- const load=process.argv.includes('--load'); let loaded=0; const frameTimes:number[]=[]; const started=performance.now();
+ const load=process.argv.includes('--load'); let loaded=0, completedMs=0; const inputProgress:{ms:number,loaded:number}[]=[]; const frameTimes:number[]=[]; const started=performance.now();
  const loadTimer=load?setInterval(()=>{if(loaded>=512)return;loaded++;
- m.update({kind:'append',event:{seq:3000+loaded,id:`load-${loaded}`,run:`r${1+(loaded-1)%count}`,tool:'synthetic',text:'L'.repeat(16384),timestamp:loaded}});dirty=true;
+ m.update({kind:'append',event:{seq:3000+loaded,id:`load-${loaded}`,run:`r${1+(loaded-1)%count}`,tool:'synthetic',text:'L'.repeat(16384),timestamp:loaded}});if(loaded===512)completedMs=performance.now()-started;dirty=true;
  },5):undefined;
  const timeout=setTimeout(()=>{quit=true;},5000);
  await new Promise<void>(resolve=>{const timer=setInterval(()=>{if(dirty){process.stdout.write('\x1b[H\x1b[2J'+m.view());frames++;if(load)frameTimes.push(performance.now()-started);dirty=false;}if(quit){clearInterval(timer);resolve();}},34);});
  clearInterval(loadTimer);clearTimeout(timeout);clearTimeout(escapeTimer);process.stdin.off('data',onInput);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
- console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,...(load?{loaded,loadBytes:loaded*16384,frameTimes}: {})}));
+ console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,...(load?{loaded,loadBytes:loaded*16384,frameTimes,completedMs,inputProgress}: {})}));
  process.exit(0);
 }
 const started=performance.now();
