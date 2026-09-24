@@ -1,0 +1,1779 @@
+[?25l[?2004hTREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=0 anchor=live focus=composer[K
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032[K
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft= queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[80D[23A
+
+
+
+
+
+
+
+
+
+
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3008 load-8>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3008 load-8>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3015 load-15>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3008 load-8>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3015 load-15>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3008 load-8>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3015 load-15>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3029 load-29>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3008 load-8>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3015 load-15>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3029 load-29>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3036 load-36>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+3008 load-8>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3015 load-15>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3029 load-29>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3036 load-36>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+3015 load-15>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3029 load-29>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3036 load-36>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3050 load-50>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=0 anchor=0 focus=tool[K
+TOOL e1 tool1 safelink text[K
+1 e1>s1>r1>tool1>res1 safelink text ts=2999[K
+8 e8>s1>r1>tool1>res1 line-8 synthetic ts=2992[K
+15 e15>s1>r1>tool1>res1 line-15 synthetic ts=2985[K
+22 e22>s1>r1>tool1>res1 line-22 synthetic ts=2978[K
+29 e29>s1>r1>tool1>res1 line-29 synthetic ts=2971[K
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=1 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=2 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=3 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=4 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=5 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=6 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=7 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=8 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=9 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+C history new=10 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[80D[23ATREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=11 anchor=0 focus=tool[K
+TOOL e1 tool1 safelink text[K
+1 e1>s1>r1>tool1>res1 safelink text ts=2999[K
+8 e8>s1>r1>tool1>res1 line-8 synthetic ts=2992[K
+15 e15>s1>r1>tool1>res1 line-15 synthetic ts=2985[K
+22 e22>s1>r1>tool1>res1 line-22 synthetic ts=2978[K
+29 e29>s1>r1>tool1>res1 line-29 synthetic ts=2971[K
+36 e36>s1>r1>tool1>res1 line-36 synthetic ts=2964[K
+43 e43>s1>r1>tool1>res1 line-43 synthetic ts=2957[K
+50 e50>s1>r1>tool1>res1 line-50 synthetic ts=2950[K
+57 e57>s1>r1>tool1>res1 line-57 synthetic ts=2943[K
+64 e64>s1>r1>tool1>res1 line-64 synthetic ts=2936[K
+71 e71>s1>r1>tool1>res1 line-71 synthetic ts=2929[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft= queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[100D[29A
+
+
+
+
+
+
+
+
+
+C history new=12 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[100D[29A
+
+
+
+
+
+
+
+
+
+C history new=13 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[100D[29A
+
+
+
+
+
+
+
+
+
+C history new=14 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[100D[29A
+
+
+
+
+
+
+
+
+
+C history new=15 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[100D[29ATREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=16 anchor=0 focus=tool[K
+TOOL e1 tool1 safelink text[K
+1 e1>s1>r1>tool1>res1 safelink text ts=2999[K
+8 e8>s1>r1>tool1>res1 line-8 synthetic ts=2992[K
+15 e15>s1>r1>tool1>res1 line-15 synthetic ts=2985[K
+22 e22>s1>r1>tool1>res1 line-22 synthetic ts=2978[K
+29 e29>s1>r1>tool1>res1 line-29 synthetic ts=2971[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft= queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[J[79D[23A
+
+
+
+
+
+
+
+
+
+C history new=17 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+C history new=18 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+C history new=19 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+C history new=20 anchor=0 focus=tool[K
+
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+NOTICE back to history[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=21 anchor=0 focus=history[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=22 anchor=0 focus=history[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=23 anchor=0 focus=history[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=24 anchor=0 focus=history[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+NOTICE back to composer[K
+
+
+
+
+
+
+
+
+
+C history new=25 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=26 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=27 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+NOTICE interrupt requested r1 synthetic; repeat has no owned provider[K
+ r1 a1 synthetic stopping[K
+
+
+
+
+
+
+
+B executor/synthetic/r1/t1 stopping waiting=4[K
+
+
+
+
+
+
+
+
+
+
+F r1 context=unknown status=stopping[K
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=28 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=29 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=30 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=31 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=32 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+NOTICE no owned provider; escalation disabled[K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=33 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=34 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=35 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=36 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=37 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=38 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=39 anchor=0 focus=composer[K
+
+
+
+
+
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+C history new=0 anchor=live focus=history[K
+3309 load-309>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3323 load-323>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3330 load-330>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3323 load-323>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3330 load-330>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3344 load-344>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+
+3323 load-323>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3330 load-330>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3344 load-344>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3351 load-351>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+
+3330 load-330>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3344 load-344>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3351 load-351>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3344 load-344>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3351 load-351>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3365 load-365>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+
+3344 load-344>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3351 load-351>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3365 load-365>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3372 load-372>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23A
+
+
+
+
+
+
+
+
+
+
+
+3351 load-351>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3365 load-365>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3372 load-372>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[79D[23ATREE orchestrator waiting[K
+NOTICE no owned provider; escalation disabled[K
+ r1 a1 synthetic stopping[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 stopping waiting=4[K
+C history new=0 anchor=live focus=history[K
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3365 load-365>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3372 load-372>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3386 load-386>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft= queue=1 (steering unsupported)[K
+F r1 context=unknown status=stopping[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3365 load-365>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3372 load-372>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3386 load-386>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3393 load-393>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3372 load-372>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3386 load-386>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3393 load-393>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3386 load-386>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3393 load-393>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3407 load-407>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3386 load-386>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3393 load-393>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3407 load-407>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3414 load-414>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3393 load-393>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3407 load-407>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3414 load-414>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3407 load-407>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3414 load-414>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3428 load-428>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3407 load-407>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3414 load-414>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3428 load-428>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3435 load-435>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3414 load-414>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3428 load-428>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3435 load-435>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3428 load-428>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3435 load-435>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3449 load-449>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3428 load-428>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3435 load-435>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3449 load-449>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3456 load-456>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3435 load-435>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3449 load-449>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3456 load-456>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3449 load-449>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3456 load-456>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3470 load-470>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3449 load-449>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3456 load-456>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3470 load-470>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3477 load-477>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3456 load-456>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3470 load-470>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3477 load-477>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3470 load-470>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3477 load-477>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3491 load-491>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3470 load-470>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3477 load-477>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3491 load-491>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3498 load-498>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3477 load-477>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3491 load-491>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3498 load-498>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3505 load-505>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[23A
+
+
+
+
+
+
+
+
+
+
+
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3491 load-491>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3498 load-498>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3505 load-505>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3512 load-512>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+
+
+
+
+
+
+[80D[2K[?2004l[?25h[?1002l[?1003l[?1006l

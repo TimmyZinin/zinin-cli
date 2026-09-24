@@ -40,6 +40,7 @@ type model struct {
 	cursor                                int
 	load                                  bool
 	loaded                                int
+	interruptLoaded                       int
 	loadStarted                           time.Time
 	completedMs                           float64
 	inputProgress                         []map[string]any
@@ -60,6 +61,12 @@ func safe(s string) string {
 		}
 		return r
 	}, csi.ReplaceAllString(osc.ReplaceAllString(s, ""), ""))
+}
+func (m *model) appendEvent(e Event) {
+	m.f.Events = append(m.f.Events, e)
+	if m.anchor >= 0 && e.Run == m.run().ID {
+		m.unseen++
+	}
 }
 func (m model) run() Run    { return m.f.Runs[m.selected] }
 func (m model) key() string { r := m.run(); return r.Task + "/" + r.ID }
@@ -104,7 +111,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch a := msg.(type) {
 	case loadMsg:
 		m.loaded++
-		m.f.Events = append(m.f.Events, Event{Seq: 3000 + m.loaded, ID: fmt.Sprintf("load-%d", m.loaded), Run: fmt.Sprintf("r%d", 1+(m.loaded-1)%m.count), Tool: "synthetic", Text: strings.Repeat("L", 16384), Timestamp: m.loaded})
+		m.appendEvent(Event{Seq: 3000 + m.loaded, ID: fmt.Sprintf("load-%d", m.loaded), Run: fmt.Sprintf("r%d", 1+(m.loaded-1)%m.count), Tool: "synthetic", Text: strings.Repeat("L", 16384), Timestamp: m.loaded})
 		if m.loaded == 512 {
 			m.completedMs = float64(time.Since(m.loadStarted).Microseconds()) / 1000
 		}
@@ -153,6 +160,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = 0
 			} else if m.run().State == "working" {
 				m.f.Runs[m.selected].State = "stopping"
+				m.interruptLoaded = m.loaded
 				m.notices = append(m.notices, "interrupt requested "+m.run().ID+" synthetic; repeat has no owned provider")
 			} else if m.run().State == "stopping" {
 				m.notices = append(m.notices, "no owned provider; escalation disabled")
@@ -203,6 +211,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.w = a.Width
 		m.h = a.Height
+		if m.focus == "tool" && len(m.navigation) < 64 {
+			m.navigation = append(m.navigation, map[string]any{"key": "resize", "focus": m.focus, "selected": m.run().ID, "anchor": m.anchor, "tool": m.tool, "loaded": m.loaded, "unseen": m.unseen, "width": m.w, "height": m.h})
+		}
 	case Action:
 		switch a.Kind {
 		case "horizontal":
@@ -214,10 +225,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "scroll":
 			m.anchor = a.Anchor
 		case "append":
-			m.f.Events = append(m.f.Events, a.Event)
-			if m.anchor >= 0 {
-				m.unseen++
-			}
+			m.appendEvent(a.Event)
 		case "live":
 			m.anchor = -1
 			m.unseen = 0
@@ -371,7 +379,7 @@ func (m *model) navigate(key string) bool {
 		}
 	}
 	if len(m.navigation) < 64 {
-		m.navigation = append(m.navigation, map[string]any{"key": key, "focus": m.focus, "selected": m.run().ID, "anchor": m.anchor, "tool": m.tool, "draft": m.drafts[m.key()]})
+		m.navigation = append(m.navigation, map[string]any{"key": key, "focus": m.focus, "selected": m.run().ID, "anchor": m.anchor, "tool": m.tool, "draft": m.drafts[m.key()], "loaded": m.loaded, "unseen": m.unseen, "width": m.w, "height": m.h})
 	}
 	return true
 }
@@ -454,7 +462,7 @@ func main() {
 			panic(err)
 		}
 		last := final.(model)
-		diagnostic := map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State, "focus": last.focus, "tool": last.tool, "navigation": last.navigation, "anchor": last.anchor}
+		diagnostic := map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State, "focus": last.focus, "tool": last.tool, "navigation": last.navigation, "anchor": last.anchor, "unseen": last.unseen, "interruptLoaded": last.interruptLoaded}
 		if m.load {
 			diagnostic["loaded"] = last.loaded
 			diagnostic["loadBytes"] = last.loaded * 16384

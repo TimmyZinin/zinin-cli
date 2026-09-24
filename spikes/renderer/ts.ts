@@ -11,7 +11,7 @@ function crop(s:string, width:number, offset=0) {
  let pos=0,out=""; for(const {segment} of segments.segment(s)) {const n=Bun.stringWidth(segment); if(pos>=offset && pos+n<=offset+width) out+=segment; else if(pos<offset && pos+n>offset) out+=" ".repeat(Math.min(pos+n-offset,width)); pos+=n; if(pos>=offset+width) break;} return out;
 }
 class Model {
-  horizontal=0; notices:string[]=[]; focus=''; tool=''; navigation:any[]=[];
+  interruptLoaded=-1; horizontal=0; notices:string[]=[]; focus=''; tool=''; navigation:any[]=[];
   selected = 0; anchor = -1; unseen = 0; w = width; h = height;
   drafts = new Map<string,string>(); events = [...input.events];
   get run() { return input.runs[this.selected]; }
@@ -21,7 +21,7 @@ class Model {
     if(a.kind === 'select') this.selected = a.index;
     if(a.kind === 'draft') this.drafts.set(this.key,a.text);
     if(a.kind === 'scroll') this.anchor=a.anchor;
-    if(a.kind === 'append') { this.events.push(a.event); if(this.anchor>=0) this.unseen++; }
+    if(a.kind === 'append') { this.events.push(a.event); if(this.anchor>=0 && a.event.run===this.run.id) this.unseen++; }
     if(a.kind === 'resize') {this.w=a.width;this.h=a.height;}
     if(a.kind === 'live') {this.anchor=-1;this.unseen=0;}
   }
@@ -73,7 +73,7 @@ if(process.argv[7]==='--tty') {
    else if(key==='pgdown')m.anchor=Math.min(last,(m.anchor<0?last:m.anchor)+page);
    else if(key==='enter' && ev.length){m.tool=ev[m.anchor<0?last:Math.min(m.anchor,ev.length-1)].id;m.focus='tool';}
   }
-  if(m.navigation.length<64)m.navigation.push({key,focus:m.focus,selected:m.run.id,anchor:m.anchor,tool:m.tool,draft:m.drafts.get(m.key)??''});dirty=true;return true;
+  if(m.navigation.length<64)m.navigation.push({key,focus:m.focus,selected:m.run.id,anchor:m.anchor,tool:m.tool,draft:m.drafts.get(m.key)??'',loaded,unseen:m.unseen,width:m.w,height:m.h});dirty=true;return true;
  }
  function enter() {
   const d=m.drafts.get(m.key)??'';
@@ -106,7 +106,7 @@ if(process.argv[7]==='--tty') {
    else if(c==='\x01') cursor=0;
    else if(c==='\x05') cursor=graphemes(m.drafts.get(m.key)??'').length;
    else if(c==='\x03') {if(m.drafts.get(m.key)){m.drafts.set(m.key,'');cursor=0;}
-    else if(m.run.state==='working'){m.run.state='stopping';notice('interrupt requested '+m.run.id+' synthetic; repeat has no owned provider');}
+    else if(m.run.state==='working'){m.run.state='stopping';m.interruptLoaded=loaded;notice('interrupt requested '+m.run.id+' synthetic; repeat has no owned provider');}
     else if(m.run.state==='stopping')notice('no owned provider; escalation disabled');
     else notice('idle: /quit or Ctrl+D exits client');dirty=true;}
 
@@ -116,7 +116,7 @@ if(process.argv[7]==='--tty') {
  }
  process.stdin.setRawMode(true);process.stdin.resume();process.stdin.on('data',onInput);
  process.stdout.write('\x1b[?2004h');
- const resize=()=>{m.w=process.stdout.columns||width;m.h=process.stdout.rows||height;dirty=true;};
+ const resize=()=>{m.w=process.stdout.columns||width;m.h=process.stdout.rows||height;if(m.focus==='tool' && m.navigation.length<64)m.navigation.push({key:'resize',focus:m.focus,selected:m.run.id,anchor:m.anchor,tool:m.tool,loaded,unseen:m.unseen,width:m.w,height:m.h});dirty=true;};
  process.stdout.on('resize',resize);resize();
  const load=process.argv.includes('--load'); let loaded=0, completedMs=0; const inputProgress:{ms:number,loaded:number}[]=[]; const frameTimes:number[]=[]; const started=performance.now();
  const loadTimer=load?setInterval(()=>{if(loaded>=512)return;loaded++;
@@ -125,7 +125,7 @@ if(process.argv[7]==='--tty') {
  const timeout=setTimeout(()=>{quit=true;},5000);
  await new Promise<void>(resolve=>{const timer=setInterval(()=>{if(dirty){process.stdout.write('\x1b[H\x1b[2J'+m.view());frames++;if(load)frameTimes.push(performance.now()-started);dirty=false;}if(quit){clearInterval(timer);resolve();}},34);});
  clearInterval(loadTimer);clearTimeout(timeout);clearTimeout(escapeTimer);process.stdin.off('data',onInput);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
- console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,focus:m.focus,tool:m.tool,anchor:m.anchor,navigation:m.navigation,...(load?{loaded,loadBytes:loaded*16384,frameTimes,completedMs,inputProgress}: {})}));
+ console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,focus:m.focus,tool:m.tool,anchor:m.anchor,unseen:m.unseen,interruptLoaded:m.interruptLoaded,navigation:m.navigation,...(load?{loaded,loadBytes:loaded*16384,frameTimes,completedMs,inputProgress}: {})}));
  process.exit(0);
 }
 const started=performance.now();

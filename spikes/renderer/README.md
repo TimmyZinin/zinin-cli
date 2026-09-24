@@ -84,3 +84,8 @@ and five-second child lifetime; it is an experiment, not a renderer selection.
 agent selection, history paging/arrows/Home/End, tool Enter/Esc and resize.
 See [results 06](../../docs/e1/renderer-results-06.md) for bindings and limits.
 Drafts are in-memory only; tools display the selected synthetic fixture event.
+
+`history-load-check.py NEW-NAME` combines the finite 8MiB workload with history
+scroll-away, tool focus, resize, synthetic interrupt and jump-to-live. It checks
+selected-run new counts independently of renderer state and writes stderr to
+files to avoid diagnostic pipe backpressure. See [results 07](../../docs/e1/renderer-results-07.md).
