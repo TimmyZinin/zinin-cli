@@ -77,3 +77,10 @@ completion time and up to 32 input-handling samples with the current loaded
 chunk count. New predicates verify input handling while load is incomplete and
 match flush timestamps to raw ANSI markers. This mode retains the same workload
 and five-second child lifetime; it is an experiment, not a renderer selection.
+
+## Keyboard navigation probe
+
+`pty-check.py NEW-NAME --navigation` exercises Tab focus, draft-preserving
+agent selection, history paging/arrows/Home/End, tool Enter/Esc and resize.
+See [results 06](../../docs/e1/renderer-results-06.md) for bindings and limits.
+Drafts are in-memory only; tools display the selected synthetic fixture event.

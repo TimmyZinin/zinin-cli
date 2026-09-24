@@ -44,6 +44,8 @@ type model struct {
 	completedMs                           float64
 	inputProgress                         []map[string]any
 	notices                               []string
+	focus, tool                           string
+	navigation                            []map[string]any
 	plain                                 bool
 	drafts                                map[string]string
 }
@@ -115,6 +117,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		if m.load && len(m.inputProgress) < 32 {
 			m.inputProgress = append(m.inputProgress, map[string]any{"ms": float64(time.Since(m.loadStarted).Microseconds()) / 1000, "loaded": m.loaded})
+		}
+		key := a.String()
+		if a.Type == tea.KeyTab {
+			key = "tab"
+		}
+		if a.Type == tea.KeyPgUp {
+			key = "pgup"
+		}
+		if a.Type == tea.KeyPgDown {
+			key = "pgdown"
+		}
+		if m.navigate(key) {
+			return m, nil
 		}
 		d := m.drafts[m.key()]
 		switch a.Type {
@@ -234,7 +249,15 @@ func (m model) View() string {
 	if m.anchor >= 0 {
 		anchor = strconv.Itoa(m.anchor)
 	}
-	lines = append(lines, fmt.Sprintf("A %s/%s/%s owner=%s result=res1", m.f.Service, m.f.Group, r.Task, r.Owner), fmt.Sprintf("B executor/%s/%s/%s %s waiting=%d", r.Engine, r.ID, r.Task, r.State, waiting), fmt.Sprintf("C history new=%d anchor=%s", m.unseen, anchor))
+	lines = append(lines, fmt.Sprintf("A %s/%s/%s owner=%s result=res1", m.f.Service, m.f.Group, r.Task, r.Owner), fmt.Sprintf("B executor/%s/%s/%s %s waiting=%d", r.Engine, r.ID, r.Task, r.State, waiting), fmt.Sprintf("C history new=%d anchor=%s%s", m.unseen, anchor, m.focusLabel()))
+	if m.tool != "" {
+		for _, e := range m.f.Events {
+			if e.ID == m.tool && e.Run == r.ID {
+				lines = append(lines, "TOOL "+e.ID+" "+e.Tool+" "+e.Text)
+				break
+			}
+		}
+	}
 	tail := []string{fmt.Sprintf("D step=s1 owner=%s required working next=s2 done=0/2 /todo", r.Owner), "Result res1 rev=1 digest=synthetic evidence=fixture", fmt.Sprintf("Handoff %s->r2 phase=preview", r.ID), fmt.Sprintf("E %s/%s draft=%s queue=1 (steering unsupported)", r.Task, r.ID, m.drafts[m.key()]), fmt.Sprintf("F %s context=%s status=%s", r.ID, r.Context, r.State), fmt.Sprintf("quota=%s cost=%s fresh=%s", r.Quota, r.Cost, r.Freshness)}
 	ev := []Event{}
 	for _, e := range m.f.Events {
@@ -271,6 +294,87 @@ func (m model) View() string {
 	}
 	return strings.Join(lines, "\n") + "\n"
 }
+func (m model) focusLabel() string {
+	if m.focus == "" {
+		return ""
+	}
+	return " focus=" + m.focus
+}
+func (m *model) navigate(key string) bool {
+	if key == "esc" {
+		if m.focus == "tool" {
+			m.focus = "history"
+			m.tool = ""
+		} else {
+			m.focus = "composer"
+		}
+		m.notices = append(m.notices, "back to "+m.focus)
+	} else if key == "tab" {
+		switch m.focus {
+		case "composer":
+			m.focus = "agents"
+		case "agents":
+			m.focus = "history"
+		default:
+			m.focus = "composer"
+		}
+		m.tool = ""
+	} else if m.focus == "composer" || m.focus == "" {
+		return false
+	} else if key == "ctrl+a" {
+		m.focus = "agents"
+	} else if m.focus == "agents" && len(key) == 1 && key[0] >= '1' && key[0] <= '7' {
+		n := int(key[0] - '1')
+		if n < m.count {
+			m.selected = n
+			m.cursor = len(clusters(m.drafts[m.key()]))
+			m.anchor = -1
+			m.unseen = 0
+		}
+	} else if m.focus == "history" {
+		ev := []Event{}
+		for _, e := range m.f.Events {
+			if e.Run == m.run().ID {
+				ev = append(ev, e)
+			}
+		}
+		sort.SliceStable(ev, func(i, j int) bool { return ev[i].Seq < ev[j].Seq })
+		noticeRows := 0
+		if len(m.notices) > 0 {
+			noticeRows = 1
+		}
+		page := max(1, m.h-m.count-11-noticeRows)
+		last := max(0, len(ev)-page)
+		at := m.anchor
+		if at < 0 {
+			at = last
+		}
+		switch key {
+		case "up":
+			m.anchor = max(0, at-1)
+		case "down":
+			m.anchor = min(max(0, len(ev)-1), at+1)
+		case "home":
+			m.anchor = 0
+		case "end":
+			m.anchor = -1
+			m.unseen = 0
+		case "pgup":
+			m.anchor = max(0, at-page)
+		case "pgdown":
+			m.anchor = min(last, at+page)
+		case "enter":
+			if len(ev) > 0 {
+				m.tool = ev[min(at, len(ev)-1)].ID
+				m.focus = "tool"
+			}
+		}
+	}
+	if len(m.navigation) < 64 {
+		m.navigation = append(m.navigation, map[string]any{"key": key, "focus": m.focus, "selected": m.run().ID, "anchor": m.anchor, "tool": m.tool, "draft": m.drafts[m.key()]})
+	}
+	return true
+}
 func clusters(s string) []string {
 	a := []string{}
 	g := uniseg.NewGraphemes(s)
@@ -290,7 +394,7 @@ func (m *model) insert(s string) {
 }
 func (m model) route(d string) (string, bool) {
 	r := m.run()
-	routes := map[string]string{"/todo": "s1 required working owner=" + r.Owner + "; s2 required queued; done=0/2", "/scope": m.f.Service + "/" + m.f.Group + "/" + r.Task, "/context": r.ID + " context=unknown quota=unknown cost=unknown", "/handoff": r.ID + "->r2 preview synthetic only", "/help": "/todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back"}
+	routes := map[string]string{"/todo": "s1 required working owner=" + r.Owner + "; s2 required queued; done=0/2", "/scope": m.f.Service + "/" + m.f.Group + "/" + r.Task, "/context": r.ID + " context=unknown quota=unknown cost=unknown", "/handoff": r.ID + "->r2 preview synthetic only", "/help": "/todo /agents /scope /context /handoff /quit; Tab focus; agents:1-7; history:PgUp/PgDn Home/End Enter; Ctrl+A/E edit; Esc back"}
 	agents := []string{}
 	for _, r := range m.f.Runs[:m.count] {
 		agents = append(agents, r.ID+":"+r.State)
@@ -331,6 +435,7 @@ func main() {
 	count, _ := strconv.Atoi(os.Args[4])
 	m := model{f: f, anchor: -1, w: w, h: h, count: count, plain: os.Args[5] == "plain", drafts: map[string]string{}}
 	if len(os.Args) > 6 && os.Args[6] == "--tty" {
+		m.focus = "composer"
 		m.load = len(os.Args) > 7 && os.Args[7] == "--load"
 		m.loadStarted = time.Now()
 		measured := &measuredOutput{start: m.loadStarted, width: w}
@@ -349,7 +454,7 @@ func main() {
 			panic(err)
 		}
 		last := final.(model)
-		diagnostic := map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State}
+		diagnostic := map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State, "focus": last.focus, "tool": last.tool, "navigation": last.navigation, "anchor": last.anchor}
 		if m.load {
 			diagnostic["loaded"] = last.loaded
 			diagnostic["loadBytes"] = last.loaded * 16384

@@ -20,7 +20,11 @@ for name,cmd in [('ts',[str(runtime/'bun-1.3.0/bun'),str(here/'ts.ts')]),('go',[
     if b:chunks.append((round(time.monotonic()-start,4),b))
  def send(b):os.write(master,b);sent.append(dict(t=round(time.monotonic()-start,4),hex=b.hex()))
  try:
-  if '--semantics' in sys.argv:
+  if '--navigation' in sys.argv:
+   drain(.25)
+   for data in (b'raft1\x01d\x05',b'\t2',b'\x1b',b'draft2',b'\t1',b'\x1b',b'!',b'\t2',b'\x1b',b'\t\t',b'\x1b[H',b'\r',b'\x1b',b'\x1b[6~',b'\x1b[5~',b'\x1b[F',b'\x1b[H',b'\x1b[B',b'\x1b[A',b'\x1b[B',b'\r'):
+    send(data);drain(.08)
+  elif '--semantics' in sys.argv:
    drain(.25)
    for route in ('/todo','/agents','/scope','/context','/handoff','/help'):
     send((route+'\r').encode());drain(.09)
@@ -48,6 +52,9 @@ for name,cmd in [('ts',[str(runtime/'bun-1.3.0/bun'),str(here/'ts.ts')]),('go',[
   if '--semantics' in sys.argv:
    notices=state.get('notices') or []
    checks=dict(exit_clean=rc==0,selected=state['selected']=='r4',cursor_edit=state['drafts'].get('t4/r4')=='abcd',routes=all(any(n.startswith(route+' ') for n in notices) for route in ('/todo','/agents','/scope','/context','/handoff','/help')),interrupt=any('interrupt requested r1' in n for n in notices),escalation_guard=any('escalation disabled' in n for n in notices),idle=any('idle: /quit' in n for n in notices),escape='back to composer' in notices,resize=state['width']==80 and state['height']==24)
+  if '--navigation' in sys.argv:
+   nav=state.get('navigation') or []
+   checks=dict(exit_clean=rc==0,selected=state['selected']=='r2',draft_roundtrip=state['drafts'].get('t1/r1')=='draft1!' and state['drafts'].get('t2/r2')=='draft2',restored_on_selection=any(x['key']=='1' and x['draft']=='draft1' for x in nav),home=any(x['key']=='home' and x['anchor']==0 for x in nav),page_down=any(x['key']=='pgdown' and x['anchor']>0 for x in nav),page_up=any(x['key']=='pgup' and x['anchor']==0 for x in nav),jump_live=any(x['key']=='end' and x['anchor']==-1 for x in nav),arrow_down=any(x['key']=='down' and x['anchor']==1 for x in nav),arrow_up=any(x['key']=='up' and x['anchor']==0 for x in nav),tool_open=state.get('focus')=='tool' and state.get('tool')=='e9' and state.get('anchor')==1,tool_back=any(x['key']=='esc' and x['focus']=='history' and x['tool']=='' for x in nav),tool_visible=b'TOOL e9 tool1 line-9 synthetic' in raw,resize=state['width']==80 and state['height']==24)
   checks['no_stderr_errors']=len(stderr.strip().splitlines())==1
   summary.append(dict(candidate=name,checks=checks,final=state,bytes=len(raw),duration=time.monotonic()-start))
  finally:

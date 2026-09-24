@@ -11,7 +11,7 @@ function crop(s:string, width:number, offset=0) {
  let pos=0,out=""; for(const {segment} of segments.segment(s)) {const n=Bun.stringWidth(segment); if(pos>=offset && pos+n<=offset+width) out+=segment; else if(pos<offset && pos+n>offset) out+=" ".repeat(Math.min(pos+n-offset,width)); pos+=n; if(pos>=offset+width) break;} return out;
 }
 class Model {
-  horizontal=0; notices:string[]=[];
+  horizontal=0; notices:string[]=[]; focus=''; tool=''; navigation:any[]=[];
   selected = 0; anchor = -1; unseen = 0; w = width; h = height;
   drafts = new Map<string,string>(); events = [...input.events];
   get run() { return input.runs[this.selected]; }
@@ -32,7 +32,8 @@ class Model {
     for(const run of input.runs.slice(0,count)) lines.push(` ${run.id} ${run.owner} ${run.engine} ${run.state}`);
     lines.push(`A ${input.service}/${input.group}/${r.task} owner=${r.owner} result=res1`,
       `B executor/${r.engine}/${r.id}/${r.task} ${r.state} waiting=${input.runs.slice(0,count).filter((x:any)=>x.id!==r.id&&x.state==='waiting').length}`,
-      `C history new=${this.unseen} anchor=${this.anchor<0?'live':this.anchor}`);
+      `C history new=${this.unseen} anchor=${this.anchor<0?'live':this.anchor}${this.focus?' focus='+this.focus:''}`);
+    if(this.tool){const e=this.events.find(e=>e.id===this.tool && e.run===r.id);if(e)lines.push(`TOOL ${e.id} ${e.tool} ${e.text}`);}
     const tail=[`D step=s1 owner=${r.owner} required working next=s2 done=0/2 /todo`,
       'Result res1 rev=1 digest=synthetic evidence=fixture',
       `Handoff ${r.id}->r2 phase=preview`,
@@ -49,11 +50,31 @@ class Model {
 }
 const m=new Model();
 if(process.argv[7]==='--tty') {
+ m.focus='composer';
  let dirty=true, quit=false, pending='', paste=false, pasted='', frames=0;
  const decoder=new TextDecoder(); let cursor=0; let escapeTimer:any;
  const graphemes=(s:string)=>[...segments.segment(s)].map(x=>x.segment);
  function notice(s:string){m.notices.push(s);dirty=true;}
  function edit(text:string) {const a=graphemes(m.drafts.get(m.key)??'');a.splice(cursor,0,...graphemes(text));cursor+=graphemes(text).length;m.update({kind:'draft',text:a.join('')});dirty=true;}
+ function navigate(key:string):boolean {
+  if(key==='esc'){if(m.focus==='tool'){m.focus='history';m.tool='';}else m.focus='composer';notice('back to '+m.focus);}
+  else if(key==='tab'){m.focus=m.focus==='composer'?'agents':m.focus==='agents'?'history':'composer';m.tool='';}
+  else if(m.focus==='composer')return false;
+  else if(key==='ctrl+a')m.focus='agents';
+  else if(m.focus==='agents' && /^[1-7]$/.test(key)){const n=Number(key)-1;if(n<count){m.selected=n;cursor=graphemes(m.drafts.get(m.key)??'').length;m.anchor=-1;m.unseen=0;}}
+  else if(m.focus==='history'){
+   const ev=m.events.filter(e=>e.run===m.run.id).sort((a,b)=>a.seq-b.seq);
+   const page=Math.max(1,m.h-count-11-(m.notices.length?1:0)),last=Math.max(0,ev.length-page);
+   if(key==='up')m.anchor=Math.max(0,(m.anchor<0?last:m.anchor)-1);
+   else if(key==='down')m.anchor=Math.min(Math.max(0,ev.length-1),(m.anchor<0?last:m.anchor)+1);
+   else if(key==='home')m.anchor=0;
+   else if(key==='end'){m.anchor=-1;m.unseen=0;}
+   else if(key==='pgup')m.anchor=Math.max(0,(m.anchor<0?last:m.anchor)-page);
+   else if(key==='pgdown')m.anchor=Math.min(last,(m.anchor<0?last:m.anchor)+page);
+   else if(key==='enter' && ev.length){m.tool=ev[m.anchor<0?last:Math.min(m.anchor,ev.length-1)].id;m.focus='tool';}
+  }
+  if(m.navigation.length<64)m.navigation.push({key,focus:m.focus,selected:m.run.id,anchor:m.anchor,tool:m.tool,draft:m.drafts.get(m.key)??''});dirty=true;return true;
+ }
  function enter() {
   const d=m.drafts.get(m.key)??'';
   if(d==='/quit') {quit=true;return;}
@@ -61,7 +82,7 @@ if(process.argv[7]==='--tty') {
   else if(d==='/left'||d==='/right') {m.horizontal=Math.max(0,m.horizontal+(d==='/left'?-20:20));m.drafts.set(m.key,'');}
   else if(d==='/live') {m.anchor=-1;m.unseen=0;m.drafts.set(m.key,'');}
   else if(['/todo','/agents','/scope','/context','/handoff','/help'].includes(d)) {
-   const routes:any={'/todo':'s1 required working owner='+m.run.owner+'; s2 required queued; done=0/2','/agents':input.runs.slice(0,count).map((r:any)=>r.id+':'+r.state).join(' '),'/scope':input.service+'/'+input.group+'/'+m.run.task,'/context':m.run.id+' context=unknown quota=unknown cost=unknown','/handoff':m.run.id+'->r2 preview synthetic only','/help':'/todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back'};
+   const routes:any={'/todo':'s1 required working owner='+m.run.owner+'; s2 required queued; done=0/2','/agents':input.runs.slice(0,count).map((r:any)=>r.id+':'+r.state).join(' '),'/scope':input.service+'/'+input.group+'/'+m.run.task,'/context':m.run.id+' context=unknown quota=unknown cost=unknown','/handoff':m.run.id+'->r2 preview synthetic only','/help':'/todo /agents /scope /context /handoff /quit; Tab focus; agents:1-7; history:PgUp/PgDn Home/End Enter; Ctrl+A/E edit; Esc back'};
    notice(d+' '+routes[d]);m.drafts.set(m.key,'');
   }
   else if(d.startsWith('/')) {m.drafts.set(m.key,'Unsupported in spike');}
@@ -72,13 +93,14 @@ if(process.argv[7]==='--tty') {
   if(load && inputProgress.length<32)inputProgress.push({ms:performance.now()-started,loaded});
   clearTimeout(escapeTimer);pending+=decoder.decode(chunk,{stream:true});
   while(pending.length) {
-   if(paste) {const end=pending.indexOf('\x1b[201~');if(end<0){return;} pasted+=pending.slice(0,end);pending=pending.slice(end+6);edit(pasted.replace(/\r\n?/g,'\n'));pasted='';paste=false;continue;}
+   if(paste) {const end=pending.indexOf('\x1b[201~');if(end<0){return;} pasted+=pending.slice(0,end);pending=pending.slice(end+6);if(m.focus==='composer')edit(pasted.replace(/\r\n?/g,'\n'));pasted='';paste=false;continue;}
    if(pending.startsWith('\x1b[200~')) {paste=true;pending=pending.slice(6);continue;}
-   if(pending==='\x1b') {escapeTimer=setTimeout(()=>{pending='';notice('back to composer');},40);return;}
+   if(pending==='\x1b') {escapeTimer=setTimeout(()=>{pending='';navigate('esc');},40);return;}
    if(pending.startsWith('\x1b[')) {const seq=pending.match(/^\x1b\[[0-?]*[ -/]*[@-~]/);if(!seq)return;
-    pending=pending.slice(seq[0].length);if(seq[0]==='\x1b[D')cursor=Math.max(0,cursor-1);else if(seq[0]==='\x1b[C')cursor=Math.min(graphemes(m.drafts.get(m.key)??'').length,cursor+1);continue;}
+    pending=pending.slice(seq[0].length);const nav:any={'\x1b[A':'up','\x1b[B':'down','\x1b[5~':'pgup','\x1b[6~':'pgdown','\x1b[H':'home','\x1b[F':'end'};if(nav[seq[0]]){navigate(nav[seq[0]]);continue;}if(m.focus!=='composer'){navigate(seq[0]);continue;}if(seq[0]==='\x1b[D')cursor=Math.max(0,cursor-1);else if(seq[0]==='\x1b[C')cursor=Math.min(graphemes(m.drafts.get(m.key)??'').length,cursor+1);continue;}
    if('\x1b[200~'.startsWith(pending)) return;
    const c=Array.from(pending)[0];pending=pending.slice(c.length);
+   if(navigate(c==='\t'?'tab':c==='\r'?'enter':c==='\x01'?'ctrl+a':c))continue;
    if(c==='\r') enter();
    else if(c==='\x04' && !(m.drafts.get(m.key)??'')) quit=true;
    else if(c==='\x01') cursor=0;
@@ -103,7 +125,7 @@ if(process.argv[7]==='--tty') {
  const timeout=setTimeout(()=>{quit=true;},5000);
  await new Promise<void>(resolve=>{const timer=setInterval(()=>{if(dirty){process.stdout.write('\x1b[H\x1b[2J'+m.view());frames++;if(load)frameTimes.push(performance.now()-started);dirty=false;}if(quit){clearInterval(timer);resolve();}},34);});
  clearInterval(loadTimer);clearTimeout(timeout);clearTimeout(escapeTimer);process.stdin.off('data',onInput);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
- console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,...(load?{loaded,loadBytes:loaded*16384,frameTimes,completedMs,inputProgress}: {})}));
+ console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state,focus:m.focus,tool:m.tool,anchor:m.anchor,navigation:m.navigation,...(load?{loaded,loadBytes:loaded*16384,frameTimes,completedMs,inputProgress}: {})}));
  process.exit(0);
 }
 const started=performance.now();

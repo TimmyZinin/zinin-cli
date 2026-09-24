@@ -1,0 +1,105 @@
+[
+  {
+    "candidate": "ts",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "cursor_edit": true,
+      "routes": true,
+      "interrupt": true,
+      "escalation_guard": true,
+      "idle": true,
+      "escape": true,
+      "resize": true,
+      "no_stderr_errors": true
+    },
+    "final": {
+      "selected": "r4",
+      "drafts": {
+        "t1/r1": "",
+        "t4/r4": "abcd"
+      },
+      "frames": 18,
+      "width": 80,
+      "height": 24,
+      "notices": [
+        "/todo s1 required working owner=a1; s2 required queued; done=0/2",
+        "/agents r1:working r2:working r3:working r4:waiting r5:waiting r6:waiting r7:waiting",
+        "/scope svc/grp/t1",
+        "/context r1 context=unknown quota=unknown cost=unknown",
+        "/handoff r1->r2 preview synthetic only",
+        "/help /todo /agents /scope /context /handoff /quit; Tab focus; agents:1-7; history:PgUp/PgDn Home/End Enter; Ctrl+A/E edit; Esc back",
+        "interrupt requested r1 synthetic; repeat has no owned provider",
+        "no owned provider; escalation disabled",
+        "idle: /quit or Ctrl+D exits client",
+        "back to composer"
+      ],
+      "state": "waiting",
+      "focus": "composer",
+      "tool": "",
+      "navigation": [
+        {
+          "key": "esc",
+          "focus": "composer",
+          "selected": "r4",
+          "anchor": -1,
+          "tool": "",
+          "draft": ""
+        }
+      ]
+    },
+    "bytes": 18601,
+    "duration": 5.089680279837921
+  },
+  {
+    "candidate": "go",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "cursor_edit": true,
+      "routes": true,
+      "interrupt": true,
+      "escalation_guard": true,
+      "idle": true,
+      "escape": true,
+      "resize": true,
+      "no_stderr_errors": true
+    },
+    "final": {
+      "drafts": {
+        "t1/r1": "",
+        "t4/r4": "abcd"
+      },
+      "focus": "composer",
+      "height": 24,
+      "navigation": [
+        {
+          "anchor": -1,
+          "draft": "",
+          "focus": "composer",
+          "key": "esc",
+          "selected": "r4",
+          "tool": ""
+        }
+      ],
+      "notices": [
+        "/todo s1 required working owner=a1; s2 required queued; done=0/2",
+        "/agents r1:working r2:working r3:working r4:waiting r5:waiting r6:waiting r7:waiting",
+        "/scope svc/grp/t1",
+        "/context r1 context=unknown quota=unknown cost=unknown",
+        "/handoff r1->r2 preview synthetic only",
+        "/help /todo /agents /scope /context /handoff /quit; Tab focus; agents:1-7; history:PgUp/PgDn Home/End Enter; Ctrl+A/E edit; Esc back",
+        "interrupt requested r1 synthetic; repeat has no owned provider",
+        "no owned provider; escalation disabled",
+        "idle: /quit or Ctrl+D exits client",
+        "back to composer"
+      ],
+      "selected": "r4",
+      "state": "waiting",
+      "tool": "",
+      "width": 80
+    },
+    "bytes": 9588,
+    "duration": 5.021564420079812
+  }
+]
