@@ -96,3 +96,10 @@ historical open-loop run; see [results 08](../../docs/e1/renderer-results-08.md)
 `budget-check.py NEW-NAME` generates a 2101-event fixture under runtime and
 checks screen/plain output; payload counts are not RSS or archive acceptance.
 The [renderer ADR](../../docs/e1/renderer-adr-proposed.md) is PROPOSED pending S0/Jev.
+
+`repeat-latency.py NEW-SERIES` performs ten sequential rounds (TS/Go × 3/7),
+alternating candidate order and retaining every raw log/failed predicate.
+It takes about 205 seconds; run it as its own bounded measurement slice.
+The stand manifest pins binary/source/fixture/driver hashes. See the
+[ADR v2](../../docs/e1/renderer-adr-v2-proposed.md) for full parity, per-trial p95,
+spread, known TS gaps, fallback rules and rollback. It remains PROPOSED.

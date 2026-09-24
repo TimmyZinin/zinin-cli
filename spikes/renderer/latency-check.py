@@ -7,8 +7,10 @@ out = here / 'evidence' / sys.argv[1]
 out.mkdir(exist_ok=False)
 summary = []
 fps29 = '--fps=29' in sys.argv
+candidates=[('ts', [str(runtime/'bun-1.3.0/bun'), str(here/'ts.ts')]), ('go', [str(runtime/'renderer-go')])]
+if '--reverse' in sys.argv:candidates.reverse()
 for count in (3, 7):
- for name, cmd in [('ts', [str(runtime/'bun-1.3.0/bun'), str(here/'ts.ts')]), ('go', [str(runtime/'renderer-go')])]:
+ for name, cmd in candidates:
   master, slave = pty.openpty()
   fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH',24,80,0,0))
   p = subprocess.Popen([*cmd,str(here/'fixture.json'),'80','24',str(count),'screen','--tty','--load',*(['--fps=29'] if name=='go' and fps29 else [])],stdin=slave,stdout=slave,stderr=(out/f'{name}-{count}-diagnostic.json').open('w'),env={**os.environ,'TERM':'xterm-256color','NO_COLOR':'1'})
@@ -50,5 +52,5 @@ for count in (3, 7):
   finally:
    if p.poll() is None:p.kill();p.wait()
    os.close(master);os.close(slave)
-(out/'summary.json').write_text(json.dumps({'workload':{'chunks':512,'bytes_per_chunk':16384,'target_interval_ms':5,'go_fps':29 if fps29 else 30,'fixture_sha256':hashlib.sha256((here/'fixture.json').read_bytes()).hexdigest()},'results':summary},indent=2)+'\n')
+(out/'summary.json').write_text(json.dumps({'workload':{'chunks':512,'bytes_per_chunk':16384,'target_interval_ms':5,'go_fps':29 if fps29 else 30,'candidate_order':[name for name,_ in candidates],'fixture_sha256':hashlib.sha256((here/'fixture.json').read_bytes()).hexdigest()},'results':summary},indent=2)+'\n')
 assert all(all(r['checks'].values()) for r in summary)
