@@ -1,9 +1,26 @@
-# E1 renderer ADR v2 — proposed, pending S0/Jev
+# E1 renderer ADR v2 — ACCEPTED-CONDITIONAL
 
-Supersedes the v1 proposal for review; v1 received REWORK_SIGNAL (facts 0.83,
-decision 0.71, risk 0.76; threshold 0.8). No production renderer has been chosen
-or changed. Recommendation is conditional TypeScript/Bun direction; the repeat
-measurements below determine whether performance supports or blocks that direction.
+Status: **ACCEPTED-CONDITIONAL**, by explicit S0 decision on 2026-09-24.
+TypeScript/Bun is the working E1 direction. Production is unchanged; the Go
+spike and all evidence remain an archived fallback, not an automatic replacement.
+The existing filename is retained to preserve review and evidence links.
+
+Receipt history: v1 Jev REWORK_SIGNAL (facts 0.83, decision 0.71, risk 0.76);
+v2 Jev REWORK_SIGNAL (facts 0.78, decision 0.74, risk 0.74), threshold 0.8.
+S0 explicitly accepted the direction conditionally above the v2 signal. This
+records S0's decision and does not relabel either Jev result as PASS.
+The original proposal packets remain unchanged historical submissions.
+
+Mandatory E2 condition: investigate and resolve the seven-window degradation
+(TS maximum per-trial p95 102.91ms) before production acceptance. Preserve the
+outlier, identify the cause and submit before/after repeated evidence for S0
+review; do not invent a seven-run SLA or waive existing three-run targets.
+The [E2 handoff](renderer-e2-handoff.md) defines the work and closure evidence.
+
+Fact reconciliation: [audit result](renderer-fact-audit.json) verifies all
+1200 latencies from raw ANSI/chunk timestamps, the 40 per-trial p95 values,
+spread/rounded ADR tables and 60 parity rows against their logs. The audit
+script is `spikes/renderer/audit-renderer-facts.py`.
 
 ## Ten-repeat same-stand results
 
@@ -168,12 +185,12 @@ either stack, so switching languages alone does not resolve those gaps.
 
 ## Explicit Go fallback conditions
 
-The following are proposed decision rules, not new claimed specification targets:
+The following review rules remain conditional safeguards, not additional specification targets:
 
 1. Reopen TS selection if a repeated identical 3-run benchmark gives TS p95
    >=50ms in at least 2 of 10 complete trials after one bounded correction
    iteration, while Go meets <50ms in all 10 and retains behavioral parity.
-   The <50ms target is from ACCEPTANCE; 2/10 is this proposed reopen rule.
+   The <50ms target is from ACCEPTANCE; 2/10 is this ADR’s reopen rule.
 2. Reopen immediately for reproducible TS draft/input loss, wrong recipient,
    unsafe terminal control emission or a required native/IME blocker when Go
    demonstrably passes the same failing case. Do not wait for timing statistics.
@@ -185,11 +202,11 @@ The following are proposed decision rules, not new claimed specification targets
 
 ## Rollback plan
 
-- Before accepting this ADR, retain baseline de75ac1 (candidate implementation
-  cad907f), both source trees, pinned runtimes and hashes in the new stand manifest.
-  Nothing in this review modifies production, so rollback now is simply leaving
-  the ADR unaccepted; no running service or data migration is involved.
-- After a receipt, put TS-only implementation changes in separate commits on a
+- Retain baseline de75ac1 (candidate implementation cad907f), both source trees,
+  pinned runtimes and hashes in the stand manifest. This acceptance changes only
+  decision documentation; there is no production deployment or data migration
+  to roll back. A changed direction requires a new recorded S0 decision.
+- Put future TS-only implementation changes in separate commits on a
   review branch. Keep the Go fixture frontend buildable; do not delete evidence
   or change the shared projection/command semantics to hide a mismatch.
 - On a fallback trigger, stop further TS rollout and record the reproducer. Stop
@@ -209,4 +226,4 @@ The following are proposed decision rules, not new claimed specification targets
 Neither current spike has archive/cache enforcement, event-lag proof, real
 approval/cancellation control, readable full help or the native/color/IME/sprite
 matrix. O01 production packaging and overall E1 provider compatibility remain
-open. The proposal cannot waive any of these gates.
+open. Conditional acceptance does not waive any of these gates.
