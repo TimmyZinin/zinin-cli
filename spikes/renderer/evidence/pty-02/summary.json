@@ -1,0 +1,45 @@
+[
+  {
+    "candidate": "ts",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "paste_preserved": true,
+      "resize": true,
+      "output_present": true
+    },
+    "final": {
+      "selected": "r2",
+      "drafts": {
+        "t1/r1": "",
+        "t2/r2": "Привет 👩‍💻\nsecond"
+      },
+      "frames": 7,
+      "width": 80,
+      "height": 24
+    },
+    "bytes": 7962,
+    "duration": 5.114711890928447
+  },
+  {
+    "candidate": "go",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "paste_preserved": true,
+      "resize": true,
+      "output_present": true
+    },
+    "final": {
+      "drafts": {
+        "t1/r1": "",
+        "t2/r2": "Привет 👩‍💻\nsecond"
+      },
+      "height": 24,
+      "selected": "r2",
+      "width": 80
+    },
+    "bytes": 7088,
+    "duration": 5.056787753943354
+  }
+]

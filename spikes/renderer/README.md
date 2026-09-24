@@ -1,10 +1,11 @@
-# Isolated renderer candidates — batch experiment 01
+# Isolated renderer candidates — synthetic experiments
 
 These are independent TypeScript/Bun and Go/Bubble Tea projection models. The
 Go model implements Bubble Tea's Model interface and handles WindowSizeMsg;
-this experiment calls Update/View directly. Neither starts a terminal loop or
-connects to a provider/core. This does **not** benchmark Bubble Tea's terminal
-renderer against a TypeScript terminal renderer.
+batch experiments call Update/View directly. The optional `--tty` mode starts
+a finite five-second loop: Bubble Tea Program or a TS raw-input/coalesced-output
+loop. Neither connects to a provider/core. PTY smoke checks are not a complete
+terminal-renderer benchmark.
 
 Run from the harness root, with the pinned local runtimes:
 
@@ -18,7 +19,7 @@ Choose a fresh evidence directory name for each run; scripts refuse to overwrite
 previous results. `make-fixture.py` reproduces the committed synthetic fixture.
 `measure.py` verifies specified observations, including equality between both
 implementations, but equality alone is not the correctness oracle. `edge.py`
-records a known FAIL without treating an observed failure as a harness crash.
+records the width probe result without treating an observed failure as a harness crash.
 The batch driver accepts only trusted generated input, not arbitrary UI clients.
 
 Pinning: Bun 1.3.0; Go 1.24.2 linux/amd64 archive SHA256
@@ -30,3 +31,27 @@ Go is pinned for this local historical experiment, not recommended as a current
 production toolchain. No runtime binary is included in the patch series.
 
 See [results](../../docs/e1/renderer-results-01.md) for the TUI matrix and limits.
+
+## Finite PTY and Unicode probes
+
+From the harness root, after rebuilding Go:
+
+```sh
+python3 zinin-cli/spikes/renderer/unicode-check.py unicode-02
+python3 zinin-cli/spikes/renderer/pty-check.py pty-04 --whole
+python3 zinin-cli/spikes/renderer/pty-check.py pty-05
+```
+
+The final command currently records a Go fragmented-paste failure and exits 1.
+Use fresh directory names. Raw ANSI and timed byte counts are evidence, not
+a reconstructed terminal screenshot or a human compositing review.
+
+Minimal terminal input: `/agents N`, `/left`, `/right`, `/live`, `/quit`,
+append/backspace, bracketed paste; automatic exit after five seconds. Other
+slash commands explicitly report unsupported. This spike does not implement
+production Ctrl+C interrupt, cursor editing/Ctrl+A, all required slash routes,
+or draft persistence. Horizontal offset currently applies to scope/history;
+footer stays fixed. Plain batch output still retains complete selected text.
+
+See [second results](../../docs/e1/renderer-results-02.md); original measurements
+are retained unchanged, including failed probes.

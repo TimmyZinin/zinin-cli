@@ -1,10 +1,11 @@
-// Offline Bubble Tea Update/View candidate. No terminal event loop is started.
+// Synthetic Bubble Tea candidate with optional finite terminal loop; no provider dispatch.
 package main
 
 import (
 	"encoding/json"
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/rivo/uniseg"
 	"os"
 	"regexp"
 	"sort"
@@ -33,6 +34,7 @@ type Fixture struct {
 type model struct {
 	f                                     Fixture
 	selected, anchor, unseen, w, h, count int
+	horizontal                            int
 	plain                                 bool
 	drafts                                map[string]string
 }
@@ -48,16 +50,71 @@ func safe(s string) string {
 		return r
 	}, csi.ReplaceAllString(osc.ReplaceAllString(s, ""), ""))
 }
-func (m model) run() Run      { return m.f.Runs[m.selected] }
-func (m model) key() string   { r := m.run(); return r.Task + "/" + r.ID }
-func (m model) Init() tea.Cmd { return nil }
+func (m model) run() Run    { return m.f.Runs[m.selected] }
+func (m model) key() string { r := m.run(); return r.Task + "/" + r.ID }
+
+type timeoutMsg struct{}
+
+func (m model) Init() tea.Cmd {
+	return tea.Tick(5*time.Second, func(time.Time) tea.Msg { return timeoutMsg{} })
+}
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch a := msg.(type) {
+	case timeoutMsg:
+		return m, tea.Quit
+	case tea.KeyMsg:
+		d := m.drafts[m.key()]
+		switch a.Type {
+		case tea.KeyCtrlD:
+			if d == "" {
+				return m, tea.Quit
+			}
+		case tea.KeyCtrlC:
+			m.drafts[m.key()] = ""
+		case tea.KeyBackspace:
+			g := uniseg.NewGraphemes(d)
+			end := 0
+			for g.Next() {
+				start, _ := g.Positions()
+				end = start
+			}
+			m.drafts[m.key()] = d[:end]
+		case tea.KeyEnter:
+			if d == "/quit" {
+				return m, tea.Quit
+			}
+			if len(d) == 9 && strings.HasPrefix(d, "/agents ") && d[8] >= '1' && d[8] <= '7' {
+				m.drafts[m.key()] = ""
+				m.selected = int(d[8] - '1')
+			} else if d == "/left" || d == "/right" {
+				delta := 20
+				if d == "/left" {
+					delta = -20
+				}
+				m.horizontal = max(0, m.horizontal+delta)
+				m.drafts[m.key()] = ""
+			} else if d == "/live" {
+				m.anchor = -1
+				m.unseen = 0
+				m.drafts[m.key()] = ""
+			} else if strings.HasPrefix(d, "/") {
+				m.drafts[m.key()] = "Unsupported in spike"
+			} else {
+				m.drafts[m.key()] = "[synthetic queued] " + d
+			}
+		case tea.KeySpace:
+			m.drafts[m.key()] = d + " "
+		case tea.KeyRunes:
+			m.drafts[m.key()] = d + string(a.Runes)
+		}
+
 	case tea.WindowSizeMsg:
 		m.w = a.Width
 		m.h = a.Height
 	case Action:
 		switch a.Kind {
+		case "horizontal":
+			m.horizontal = max(0, a.Index)
 		case "select":
 			m.selected = a.Index
 		case "draft":
@@ -123,13 +180,34 @@ func (m model) View() string {
 	lines = append(lines, tail...)
 	for i, s := range lines {
 		s = safe(s)
-		rr := []rune(s)
-		if !m.plain && len(rr) > m.w {
-			s = string(rr[:m.w])
+		if !m.plain {
+			offset := 0
+			if strings.HasPrefix(s, "A ") || (len(s) > 0 && s[0] >= '0' && s[0] <= '9') {
+				offset = m.horizontal
+			}
+			s = crop(s, m.w, offset)
 		}
 		lines[i] = s
 	}
 	return strings.Join(lines, "\n") + "\n"
+}
+func crop(s string, width, offset int) string {
+	g := uniseg.NewGraphemes(s)
+	pos := 0
+	out := ""
+	for g.Next() {
+		n := g.Width()
+		if pos >= offset && pos+n <= offset+width {
+			out += g.Str()
+		} else if pos < offset && pos+n > offset {
+			out += strings.Repeat(" ", min(pos+n-offset, width))
+		}
+		pos += n
+		if pos >= offset+width {
+			break
+		}
+	}
+	return out
 }
 func main() {
 	data, err := os.ReadFile(os.Args[1])
@@ -144,6 +222,15 @@ func main() {
 	h, _ := strconv.Atoi(os.Args[3])
 	count, _ := strconv.Atoi(os.Args[4])
 	m := model{f: f, anchor: -1, w: w, h: h, count: count, plain: os.Args[5] == "plain", drafts: map[string]string{}}
+	if len(os.Args) > 6 && os.Args[6] == "--tty" {
+		final, err := tea.NewProgram(m, tea.WithFPS(30)).Run()
+		if err != nil {
+			panic(err)
+		}
+		last := final.(model)
+		json.NewEncoder(os.Stderr).Encode(map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h})
+		return
+	}
 	start := time.Now()
 	initial := m.View()
 	trace := []map[string]any{}

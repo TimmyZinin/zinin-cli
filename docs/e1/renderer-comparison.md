@@ -96,3 +96,8 @@ renderer decision and gives no acceptance verdict.
 The original NOT RUN matrix above is the initial protocol snapshot. First actual
 measurements and limitations are in [renderer-results-01.md](renderer-results-01.md).
 These are batch model results, not terminal renderer acceptance or a selection.
+
+Cell-width corrections and finite PTY smoke measurements are recorded in
+[renderer-results-02.md](renderer-results-02.md). The comparison remains open;
+fragmented paste fails in the current Go candidate and several TUI criteria
+are still unimplemented or unmeasured.
