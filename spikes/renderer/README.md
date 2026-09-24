@@ -42,16 +42,21 @@ python3 zinin-cli/spikes/renderer/pty-check.py pty-04 --whole
 python3 zinin-cli/spikes/renderer/pty-check.py pty-05
 ```
 
-The final command currently records a Go fragmented-paste failure and exits 1.
+The fragmented-paste probe now passes for both candidates; historical failures remain in evidence/pty-03 and pty-04.
 Use fresh directory names. Raw ANSI and timed byte counts are evidence, not
 a reconstructed terminal screenshot or a human compositing review.
 
 Minimal terminal input: `/agents N`, `/left`, `/right`, `/live`, `/quit`,
-append/backspace, bracketed paste; automatic exit after five seconds. Other
-slash commands explicitly report unsupported. This spike does not implement
-production Ctrl+C interrupt, cursor editing/Ctrl+A, all required slash routes,
-or draft persistence. Horizontal offset currently applies to scope/history;
+bracketed paste, cursor editing/Ctrl+A/E, and synthetic `/todo`, `/agents`,
+`/scope`, `/context`, `/handoff`, `/help` notices; automatic exit after five seconds.
+Ctrl+C models clear/stopping/idle with escalation disabled because no provider
+is owned. This is not production dispatch, complete focus navigation, or draft persistence. Horizontal offset currently applies to scope/history;
 footer stays fixed. Plain batch output still retains complete selected text.
 
 See [second results](../../docs/e1/renderer-results-02.md); original measurements
 are retained unchanged, including failed probes.
+
+See [third results](../../docs/e1/renderer-results-03.md) for transfer reproduction.
+The Go input framer is Linux-only and bounded to six seconds/1MiB input; it is
+spike code, not a portable production decoder. Run `pty-check.py` with a fresh
+evidence name and `--semantics` to check synthetic routes/edit/interrupt notices.

@@ -1,0 +1,67 @@
+[
+  {
+    "candidate": "ts",
+    "checks": {
+      "exit_clean": true,
+      "selected": false,
+      "cursor_edit": false,
+      "routes": false,
+      "interrupt": false,
+      "escalation_guard": false,
+      "idle": false,
+      "escape": false,
+      "resize": true
+    },
+    "final": {
+      "selected": "r1",
+      "drafts": {
+        "t1/r1": "/todo"
+      },
+      "frames": 6,
+      "width": 80,
+      "height": 24,
+      "notices": [],
+      "state": "working"
+    },
+    "bytes": 6870,
+    "duration": 5.11096455110237
+  },
+  {
+    "candidate": "go",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "cursor_edit": true,
+      "routes": true,
+      "interrupt": true,
+      "escalation_guard": true,
+      "idle": true,
+      "escape": true,
+      "resize": true
+    },
+    "final": {
+      "drafts": {
+        "t1/r1": "",
+        "t4/r4": "abcd"
+      },
+      "height": 24,
+      "notices": [
+        "/todo s1 required working owner=a1; s2 required queued; done=0/2",
+        "/agents r1:working r2:working r3:working r4:waiting r5:waiting r6:waiting r7:waiting",
+        "/scope svc/grp/t1",
+        "/context r1 context=unknown quota=unknown cost=unknown",
+        "/handoff r1->r2 preview synthetic only",
+        "/help /todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back",
+        "interrupt requested r1 synthetic; repeat has no owned provider",
+        "no owned provider; escalation disabled",
+        "idle: /quit or Ctrl+D exits client",
+        "back to composer"
+      ],
+      "selected": "r4",
+      "state": "waiting",
+      "width": 80
+    },
+    "bytes": 8364,
+    "duration": 5.084891606820747
+  }
+]

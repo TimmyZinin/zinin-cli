@@ -1,0 +1,124 @@
+{
+  "chunks": [
+    {
+      "t": 0.0516,
+      "bytes": 8
+    },
+    {
+      "t": 0.1031,
+      "bytes": 967
+    },
+    {
+      "t": 0.2568,
+      "bytes": 972
+    },
+    {
+      "t": 1.3731,
+      "bytes": 981
+    },
+    {
+      "t": 1.3737,
+      "bytes": 333
+    },
+    {
+      "t": 1.5106,
+      "bytes": 1656
+    },
+    {
+      "t": 1.6169,
+      "bytes": 973
+    },
+    {
+      "t": 1.7219,
+      "bytes": 972
+    },
+    {
+      "t": 5.0632,
+      "bytes": 8
+    }
+  ],
+  "sent": [
+    {
+      "t": 0.2504,
+      "hex": "2f746f646f0d"
+    },
+    {
+      "t": 0.3406,
+      "hex": "2f6167656e74730d"
+    },
+    {
+      "t": 0.431,
+      "hex": "2f73636f70650d"
+    },
+    {
+      "t": 0.5213,
+      "hex": "2f636f6e746578740d"
+    },
+    {
+      "t": 0.6115,
+      "hex": "2f68616e646f66660d"
+    },
+    {
+      "t": 0.7017,
+      "hex": "2f68656c700d"
+    },
+    {
+      "t": 0.792,
+      "hex": "626301610564"
+    },
+    {
+      "t": 0.8723,
+      "hex": "03"
+    },
+    {
+      "t": 0.9326,
+      "hex": "03"
+    },
+    {
+      "t": 0.9929,
+      "hex": "03"
+    },
+    {
+      "t": 1.0531,
+      "hex": "2f6167656e747320340d"
+    },
+    {
+      "t": 1.1334,
+      "hex": "03"
+    },
+    {
+      "t": 1.1937,
+      "hex": "1b"
+    },
+    {
+      "t": 1.2743,
+      "hex": "626301610564"
+    },
+    {
+      "resize": [
+        100,
+        30
+      ]
+    },
+    {
+      "resize": [
+        120,
+        36
+      ]
+    },
+    {
+      "resize": [
+        79,
+        24
+      ]
+    },
+    {
+      "resize": [
+        80,
+        24
+      ]
+    }
+  ],
+  "stderr": "59 |   if(d==='/quit') {quit=true;return;}\n60 |   if(/^\\/agents [1-7]$/.test(d)) {m.drafts.set(m.key,'');m.update({kind:'select',index:Number(d.at(-1))-1});}\n61 |   else if(d==='/left'||d==='/right') {m.horizontal=Math.max(0,m.horizontal+(d==='/left'?-20:20));m.drafts.set(m.key,'');}\n62 |   else if(d==='/live') {m.anchor=-1;m.unseen=0;m.drafts.set(m.key,'');}\n63 |   else if(['/todo','/agents','/scope','/context','/handoff','/help'].includes(d)) {\n64 |    const routes:any={'/todo':'s1 required working owner='+m.run.owner+'; s2 required queued; done=0/2','/agents':input.runs.slice(0,count).map((r:any)=>r.id+':'+r.state).join(' '),'/scope':input.service+'/'+input.group+'/'+m.run.task,'/context':m.run.id+' context=unknown quota=unknown cost=unknown','/handoff':m.run.id+'->r2 preview synthetic only','/help':'/todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back'};\n                                                                                                                            ^\nTypeError: undefined is not an object (evaluating 'input.runs.slice')\n      at enter (/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts:64:120)\n      at input (/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts:11:240)\n      at emit (node:events:95:22)\n      at addChunk (internal:streams/readable:265:47)\n      at readableAddChunkPushByteMode (internal:streams/readable:243:18)\n      at internalRead (native:38:40)\n      at processTicksAndRejections (native:7:39)\n{\"selected\":\"r1\",\"drafts\":{\"t1/r1\":\"/todo\"},\"frames\":6,\"width\":80,\"height\":24,\"notices\":[],\"state\":\"working\"}\n",
+  "returncode": 0
+}

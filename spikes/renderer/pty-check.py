@@ -20,13 +20,22 @@ for name,cmd in [('ts',[str(runtime/'bun-1.3.0/bun'),str(here/'ts.ts')]),('go',[
     if b:chunks.append((round(time.monotonic()-start,4),b))
  def send(b):os.write(master,b);sent.append(dict(t=round(time.monotonic()-start,4),hex=b.hex()))
  try:
-  drain(.25);send(b'/agents 2\r');drain(.15)
-  # Bracketed paste split both escape marker and UTF-8 at byte boundaries.
-  data='\x1b[200~Привет 👩‍💻\nsecond\x1b[201~'.encode()
-  if '--whole' in sys.argv:send(data)
+  if '--semantics' in sys.argv:
+   drain(.25)
+   for route in ('/todo','/agents','/scope','/context','/handoff','/help'):
+    send((route+'\r').encode());drain(.09)
+   send(b'bc\x01a\x05d');drain(.08)
+   send(b'\x03');drain(.06);send(b'\x03');drain(.06);send(b'\x03');drain(.06)
+   send(b'/agents 4\r');drain(.08);send(b'\x03');drain(.06)
+   send(b'\x1b');drain(.08);send(b'bc\x01a\x05d');drain(.08)
   else:
-   for b in data:send(bytes([b]));drain(.002)
-  drain(.2)
+   drain(.25);send(b'/agents 2\r');drain(.15)
+   # Bracketed paste split both escape marker and UTF-8 at byte boundaries.
+   data='\x1b[200~Привет 👩‍💻\nsecond\x1b[201~'.encode()
+   if '--whole' in sys.argv:send(data)
+   else:
+    for b in data:send(bytes([b]));drain(.002)
+   drain(.2)
   for w,h in [(100,30),(120,36),(79,24),(80,24)]:
    size(w,h);p.send_signal(signal.SIGWINCH);sent.append(dict(resize=[w,h]));drain(.12)
   while p.poll() is None and time.monotonic()-start<6:drain(.05)
@@ -36,6 +45,10 @@ for name,cmd in [('ts',[str(runtime/'bun-1.3.0/bun'),str(here/'ts.ts')]),('go',[
   (out/(name+'-events.json')).write_text(json.dumps(dict(chunks=[dict(t=t,bytes=len(b)) for t,b in chunks],sent=sent,stderr=stderr,returncode=rc),ensure_ascii=False,indent=2)+'\n')
   state=json.loads(stderr.strip().splitlines()[-1]);draft=state['drafts'].get('t2/r2','')
   checks=dict(exit_clean=rc==0,selected=state['selected']=='r2',paste_preserved=draft=='Привет 👩‍💻\nsecond',resize=state['width']==80 and state['height']==24,output_present=len(raw)>100)
+  if '--semantics' in sys.argv:
+   notices=state.get('notices') or []
+   checks=dict(exit_clean=rc==0,selected=state['selected']=='r4',cursor_edit=state['drafts'].get('t4/r4')=='abcd',routes=all(any(n.startswith(route+' ') for n in notices) for route in ('/todo','/agents','/scope','/context','/handoff','/help')),interrupt=any('interrupt requested r1' in n for n in notices),escalation_guard=any('escalation disabled' in n for n in notices),idle=any('idle: /quit' in n for n in notices),escape='back to composer' in notices,resize=state['width']==80 and state['height']==24)
+  checks['no_stderr_errors']=len(stderr.strip().splitlines())==1
   summary.append(dict(candidate=name,checks=checks,final=state,bytes=len(raw),duration=time.monotonic()-start))
  finally:
   if p.poll() is None:p.kill();p.wait()

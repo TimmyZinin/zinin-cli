@@ -11,7 +11,7 @@ function crop(s:string, width:number, offset=0) {
  let pos=0,out=""; for(const {segment} of segments.segment(s)) {const n=Bun.stringWidth(segment); if(pos>=offset && pos+n<=offset+width) out+=segment; else if(pos<offset && pos+n>offset) out+=" ".repeat(Math.min(pos+n-offset,width)); pos+=n; if(pos>=offset+width) break;} return out;
 }
 class Model {
-  horizontal=0;
+  horizontal=0; notices:string[]=[];
   selected = 0; anchor = -1; unseen = 0; w = width; h = height;
   drafts = new Map<string,string>(); events = [...input.events];
   get run() { return input.runs[this.selected]; }
@@ -28,6 +28,7 @@ class Model {
   view() {
     const r=this.run, draft=this.drafts.get(this.key)??'';
     const lines=[`${input.label} ZININ [o..] ${plain?'plain':this.w<80?'compact':'native'}`, 'TREE orchestrator waiting'];
+    if(this.notices.length) lines.push('NOTICE '+this.notices.at(-1));
     for(const run of input.runs.slice(0,count)) lines.push(` ${run.id} ${run.owner} ${run.engine} ${run.state}`);
     lines.push(`A ${input.service}/${input.group}/${r.task} owner=${r.owner} result=res1`,
       `B executor/${r.engine}/${r.id}/${r.task} ${r.state} waiting=${input.runs.slice(0,count).filter((x:any)=>x.id!==r.id&&x.state==='waiting').length}`,
@@ -49,40 +50,55 @@ class Model {
 const m=new Model();
 if(process.argv[7]==='--tty') {
  let dirty=true, quit=false, pending='', paste=false, pasted='', frames=0;
- const decoder=new TextDecoder();
- function edit(text:string) {m.update({kind:'draft',text:(m.drafts.get(m.key)??'')+text});dirty=true;}
+ const decoder=new TextDecoder(); let cursor=0; let escapeTimer:any;
+ const graphemes=(s:string)=>[...segments.segment(s)].map(x=>x.segment);
+ function notice(s:string){m.notices.push(s);dirty=true;}
+ function edit(text:string) {const a=graphemes(m.drafts.get(m.key)??'');a.splice(cursor,0,...graphemes(text));cursor+=graphemes(text).length;m.update({kind:'draft',text:a.join('')});dirty=true;}
  function enter() {
   const d=m.drafts.get(m.key)??'';
   if(d==='/quit') {quit=true;return;}
   if(/^\/agents [1-7]$/.test(d)) {m.drafts.set(m.key,'');m.update({kind:'select',index:Number(d.at(-1))-1});}
   else if(d==='/left'||d==='/right') {m.horizontal=Math.max(0,m.horizontal+(d==='/left'?-20:20));m.drafts.set(m.key,'');}
   else if(d==='/live') {m.anchor=-1;m.unseen=0;m.drafts.set(m.key,'');}
+  else if(['/todo','/agents','/scope','/context','/handoff','/help'].includes(d)) {
+   const routes:any={'/todo':'s1 required working owner='+m.run.owner+'; s2 required queued; done=0/2','/agents':input.runs.slice(0,count).map((r:any)=>r.id+':'+r.state).join(' '),'/scope':input.service+'/'+input.group+'/'+m.run.task,'/context':m.run.id+' context=unknown quota=unknown cost=unknown','/handoff':m.run.id+'->r2 preview synthetic only','/help':'/todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back'};
+   notice(d+' '+routes[d]);m.drafts.set(m.key,'');
+  }
   else if(d.startsWith('/')) {m.drafts.set(m.key,'Unsupported in spike');}
   else m.drafts.set(m.key,'[synthetic queued] '+d);
-  dirty=true;
+  cursor=graphemes(m.drafts.get(m.key)??'').length;dirty=true;
  }
- function input(chunk:Buffer) {
-  pending+=decoder.decode(chunk,{stream:true});
+ function onInput(chunk:Buffer) {
+  clearTimeout(escapeTimer);pending+=decoder.decode(chunk,{stream:true});
   while(pending.length) {
    if(paste) {const end=pending.indexOf('\x1b[201~');if(end<0){return;} pasted+=pending.slice(0,end);pending=pending.slice(end+6);edit(pasted.replace(/\r\n?/g,'\n'));pasted='';paste=false;continue;}
    if(pending.startsWith('\x1b[200~')) {paste=true;pending=pending.slice(6);continue;}
+   if(pending==='\x1b') {escapeTimer=setTimeout(()=>{pending='';notice('back to composer');},40);return;}
+   if(pending.startsWith('\x1b[')) {const seq=pending.match(/^\x1b\[[0-?]*[ -/]*[@-~]/);if(!seq)return;
+    pending=pending.slice(seq[0].length);if(seq[0]==='\x1b[D')cursor=Math.max(0,cursor-1);else if(seq[0]==='\x1b[C')cursor=Math.min(graphemes(m.drafts.get(m.key)??'').length,cursor+1);continue;}
    if('\x1b[200~'.startsWith(pending)) return;
    const c=Array.from(pending)[0];pending=pending.slice(c.length);
    if(c==='\r') enter();
    else if(c==='\x04' && !(m.drafts.get(m.key)??'')) quit=true;
-   else if(c==='\x03') {m.drafts.set(m.key,'');dirty=true;}
-   else if(c==='\x7f') {const a=[...segments.segment(m.drafts.get(m.key)??'')].map(x=>x.segment);a.pop();m.drafts.set(m.key,a.join(''));dirty=true;}
+   else if(c==='\x01') cursor=0;
+   else if(c==='\x05') cursor=graphemes(m.drafts.get(m.key)??'').length;
+   else if(c==='\x03') {if(m.drafts.get(m.key)){m.drafts.set(m.key,'');cursor=0;}
+    else if(m.run.state==='working'){m.run.state='stopping';notice('interrupt requested '+m.run.id+' synthetic; repeat has no owned provider');}
+    else if(m.run.state==='stopping')notice('no owned provider; escalation disabled');
+    else notice('idle: /quit or Ctrl+D exits client');dirty=true;}
+
+   else if(c==='\x7f') {const a=graphemes(m.drafts.get(m.key)??'');if(cursor>0)a.splice(--cursor,1);m.drafts.set(m.key,a.join(''));dirty=true;}
    else if(c>=' ') edit(c);
   }
  }
- process.stdin.setRawMode(true);process.stdin.resume();process.stdin.on('data',input);
+ process.stdin.setRawMode(true);process.stdin.resume();process.stdin.on('data',onInput);
  process.stdout.write('\x1b[?2004h');
  const resize=()=>{m.w=process.stdout.columns||width;m.h=process.stdout.rows||height;dirty=true;};
  process.stdout.on('resize',resize);resize();
  const timeout=setTimeout(()=>{quit=true;},5000);
  await new Promise<void>(resolve=>{const timer=setInterval(()=>{if(dirty){process.stdout.write('\x1b[H\x1b[2J'+m.view());frames++;dirty=false;}if(quit){clearInterval(timer);resolve();}},34);});
- clearTimeout(timeout);process.stdin.off('data',input);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
- console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h}));
+ clearTimeout(timeout);clearTimeout(escapeTimer);process.stdin.off('data',onInput);process.stdin.setRawMode(false);process.stdin.pause();process.stdout.off('resize',resize);process.stdout.write('\x1b[?2004l');
+ console.error(JSON.stringify({selected:m.run.id,drafts:Object.fromEntries(m.drafts),frames,width:m.w,height:m.h,notices:m.notices,state:m.run.state}));
  process.exit(0);
 }
 const started=performance.now();

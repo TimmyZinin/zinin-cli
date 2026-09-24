@@ -35,6 +35,8 @@ type model struct {
 	f                                     Fixture
 	selected, anchor, unseen, w, h, count int
 	horizontal                            int
+	cursor                                int
+	notices                               []string
 	plain                                 bool
 	drafts                                map[string]string
 }
@@ -69,16 +71,36 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if d == "" {
 				return m, tea.Quit
 			}
+		case tea.KeyCtrlA:
+			m.cursor = 0
+		case tea.KeyCtrlE:
+			m.cursor = len(clusters(d))
+		case tea.KeyLeft:
+			m.cursor = max(0, m.cursor-1)
+		case tea.KeyRight:
+			m.cursor = min(len(clusters(d)), m.cursor+1)
+		case tea.KeyEsc:
+			m.notices = append(m.notices, "back to composer")
 		case tea.KeyCtrlC:
-			m.drafts[m.key()] = ""
-		case tea.KeyBackspace:
-			g := uniseg.NewGraphemes(d)
-			end := 0
-			for g.Next() {
-				start, _ := g.Positions()
-				end = start
+			if d != "" {
+				m.drafts[m.key()] = ""
+				m.cursor = 0
+			} else if m.run().State == "working" {
+				m.f.Runs[m.selected].State = "stopping"
+				m.notices = append(m.notices, "interrupt requested "+m.run().ID+" synthetic; repeat has no owned provider")
+			} else if m.run().State == "stopping" {
+				m.notices = append(m.notices, "no owned provider; escalation disabled")
+			} else {
+				m.notices = append(m.notices, "idle: /quit or Ctrl+D exits client")
 			}
-			m.drafts[m.key()] = d[:end]
+
+		case tea.KeyBackspace:
+			a := clusters(d)
+			if m.cursor > 0 {
+				a = append(a[:m.cursor-1], a[m.cursor:]...)
+				m.cursor--
+			}
+			m.drafts[m.key()] = strings.Join(a, "")
 		case tea.KeyEnter:
 			if d == "/quit" {
 				return m, tea.Quit
@@ -97,15 +119,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.anchor = -1
 				m.unseen = 0
 				m.drafts[m.key()] = ""
+			} else if text, ok := m.route(d); ok {
+				m.notices = append(m.notices, d+" "+text)
+				m.drafts[m.key()] = ""
 			} else if strings.HasPrefix(d, "/") {
 				m.drafts[m.key()] = "Unsupported in spike"
 			} else {
 				m.drafts[m.key()] = "[synthetic queued] " + d
 			}
+			m.cursor = len(clusters(m.drafts[m.key()]))
 		case tea.KeySpace:
-			m.drafts[m.key()] = d + " "
+			m.insert(" ")
 		case tea.KeyRunes:
-			m.drafts[m.key()] = d + string(a.Runes)
+			m.insert(string(a.Runes))
 		}
 
 	case tea.WindowSizeMsg:
@@ -143,6 +169,9 @@ func (m model) View() string {
 		mode = "plain"
 	}
 	lines := []string{m.f.Label + " ZININ [o..] " + mode, "TREE orchestrator waiting"}
+	if len(m.notices) > 0 {
+		lines = append(lines, "NOTICE "+m.notices[len(m.notices)-1])
+	}
 	waiting := 0
 	for _, run := range m.f.Runs[:m.count] {
 		lines = append(lines, fmt.Sprintf(" %s %s %s %s", run.ID, run.Owner, run.Engine, run.State))
@@ -191,6 +220,34 @@ func (m model) View() string {
 	}
 	return strings.Join(lines, "\n") + "\n"
 }
+func clusters(s string) []string {
+	a := []string{}
+	g := uniseg.NewGraphemes(s)
+	for g.Next() {
+		a = append(a, g.Str())
+	}
+	return a
+}
+func (m *model) insert(s string) {
+	a := clusters(m.drafts[m.key()])
+	b := clusters(s)
+	out := append([]string{}, a[:m.cursor]...)
+	out = append(out, b...)
+	out = append(out, a[m.cursor:]...)
+	m.cursor += len(b)
+	m.drafts[m.key()] = strings.Join(out, "")
+}
+func (m model) route(d string) (string, bool) {
+	r := m.run()
+	routes := map[string]string{"/todo": "s1 required working owner=" + r.Owner + "; s2 required queued; done=0/2", "/scope": m.f.Service + "/" + m.f.Group + "/" + r.Task, "/context": r.ID + " context=unknown quota=unknown cost=unknown", "/handoff": r.ID + "->r2 preview synthetic only", "/help": "/todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back"}
+	agents := []string{}
+	for _, r := range m.f.Runs[:m.count] {
+		agents = append(agents, r.ID+":"+r.State)
+	}
+	routes["/agents"] = strings.Join(agents, " ")
+	s, ok := routes[d]
+	return s, ok
+}
 func crop(s string, width, offset int) string {
 	g := uniseg.NewGraphemes(s)
 	pos := 0
@@ -223,12 +280,12 @@ func main() {
 	count, _ := strconv.Atoi(os.Args[4])
 	m := model{f: f, anchor: -1, w: w, h: h, count: count, plain: os.Args[5] == "plain", drafts: map[string]string{}}
 	if len(os.Args) > 6 && os.Args[6] == "--tty" {
-		final, err := tea.NewProgram(m, tea.WithFPS(30)).Run()
+		final, err := tea.NewProgram(m, tea.WithFPS(30), tea.WithInput(newFramedInput(os.Stdin))).Run()
 		if err != nil {
 			panic(err)
 		}
 		last := final.(model)
-		json.NewEncoder(os.Stderr).Encode(map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h})
+		json.NewEncoder(os.Stderr).Encode(map[string]any{"selected": last.run().ID, "drafts": last.drafts, "width": last.w, "height": last.h, "notices": last.notices, "state": last.run().State})
 		return
 	}
 	start := time.Now()
