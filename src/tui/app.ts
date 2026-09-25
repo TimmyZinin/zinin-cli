@@ -3,6 +3,7 @@
  * tests drive the app without a PTY; runScreen() is a thin stdin/stdout loop.
  */
 import { CoreJournal } from "../core/journal";
+import { HistoryCache } from "../core/history";
 import { project } from "./projection";
 import { layout, type Row } from "./layout";
 import { planFrame, renderPlan, escapes } from "./render";
@@ -89,11 +90,19 @@ export class ScreenApp {
     } catch { /* stale or illegal command: screen shows facts, does not invent */ }
   }
   render(): void {
+    const state = this.journal.state;
+    let transcript: string[] = [];
+    const session = this.selected ? state.sessions[this.selected] : null;
+    if (session) {
+      const task = Object.values(state.tasks).filter(t => t.session_id === session.session_id).at(-1);
+      const run = task ? Object.values(state.runs).filter(r => r.task_id === task.task_id).at(-1) : undefined;
+      if (run) transcript = new HistoryCache(state, run.run_id).tail(50).map(l => l.text);
+    }
     const patch = {
       selected: this.selected, draft: this.drafts.get(this.keyOf()) ?? "",
-      queued: this.queued, width: this.width, height: this.height,
+      queued: this.queued, width: this.width, height: this.height, transcript,
     };
-    const rows = layout(project(this.journal.state, this.selected, patch));
+    const rows = layout(project(state, this.selected, patch));
     renderPlan(planFrame(this.rows, rows), this.write);
     this.rows = rows;
   }
