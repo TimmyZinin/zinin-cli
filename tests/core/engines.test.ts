@@ -28,6 +28,12 @@ test("engine: no answer is malformed on success exit, failed on non-zero exit", 
   const bad: EngineTransport = async () => ({ lines: ["not json"], code: 0, stderr: "" });
   await expect(new KimiEngine(bad).run("x", { timeoutMs: 1000 })).rejects.toMatchObject({ code: "malformed" });
 });
+test("engine: oversized output is rejected by the volume cap", async () => {
+  const huge: EngineTransport = async () => ({ lines: [JSON.stringify({ role: "assistant", content: "x".repeat(10_000) })], code: 0, stderr: "" });
+  await expect(new KimiEngine(huge, undefined, 1_000).run("x", { timeoutMs: 1000 })).rejects.toMatchObject({ code: "malformed" });
+  const ok = await new KimiEngine(huge, undefined, 20_000).run("x", { timeoutMs: 1000 });
+  expect(ok.text).toHaveLength(10_000);
+});
 const t0 = "2026-09-25T00:00:00Z";
 test("executor with an engine records provider output and session in the evidence", async () => {
   const dir = mkdtempSync(join(tmpdir(), "zinin-e2-eng-"));

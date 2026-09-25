@@ -35,7 +35,7 @@ export function kimiTransport(bin: string = defaultBin): EngineTransport {
   });
 }
 export class KimiEngine {
-  constructor(private transport: EngineTransport = kimiTransport(), private model?: string) {}
+  constructor(private transport: EngineTransport = kimiTransport(), private model?: string, private maxChars = 32_000) {}
   async run(prompt: string, opts: { timeoutMs?: number; cwd?: string } = {}): Promise<EngineResult> {
     if (!prompt.trim()) throw new EngineError("malformed", "Empty prompt");
     const args = ["-p", prompt, "--output-format", "stream-json"];
@@ -49,6 +49,7 @@ export class KimiEngine {
       catch { throw new EngineError("malformed", `Undecodable engine line: ${line.slice(0, 80)}`); }
       if (msg.role === "assistant" && typeof msg.content === "string") text += msg.content;
       if (msg.role === "meta" && msg.type === "session.resume_hint" && typeof msg.session_id === "string") provider_session = msg.session_id;
+      if (text.length > this.maxChars) throw new EngineError("malformed", `Engine output exceeds ${this.maxChars} chars`);
     }
     if (!text.trim()) throw new EngineError(code === 0 ? "malformed" : "failed", `Engine gave no answer (code ${code}): ${stderr.slice(0, 160)}`);
     return { text: text.trim(), provider_session };
