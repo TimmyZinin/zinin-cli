@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { mkdtempSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Supervisor, SupervisorError } from "../../src/core/supervisor";
@@ -47,9 +47,14 @@ test("stop intent becomes SIGTERM exactly once; repeat calls deliver nothing new
   } finally { sup.close(); }
 });
 test("a child that ignores SIGTERM is escalated to SIGKILL after grace", async () => {
-  const { leasesPath, sup } = fixture(40);
+  const { dir, leasesPath, sup } = fixture(40);
   try {
-    const pid = sup.start("r1", ["sh", "-c", 'trap "" TERM; sleep 30; true'], t0);
+    // Wait for the trap to be installed before the stop intent: a SIGTERM
+    // landing before `trap "" TERM` executes kills the child by default action.
+    const ready = join(dir, "trap-ready");
+    const pid = sup.start("r1", ["sh", "-c", `trap "" TERM; touch '${ready}'; sleep 30; true`], t0);
+    for (let i = 0; i < 200 && !existsSync(ready); i++) await sleep(10);
+    expect(existsSync(ready)).toBe(true);
     intent(leasesPath, "r1");
     expect(sup.applyStops(at(100)).terminated).toEqual(["r1"]);
     await sleep(120); // SIGTERM ignored by the trap
