@@ -10,8 +10,12 @@ import { createHash } from "node:crypto";
 import { CoreJournal } from "./journal";
 import { LeaseRegistry } from "./leases";
 
+export interface EngineLike {
+  run(prompt: string, opts?: { timeoutMs?: number; cwd?: string }): Promise<{ text: string; provider_session: string | null }>;
+}
 export interface CycleSummary {
   task_id: string; run_id: string; steps_done: string[]; result_id: string | null;
+  provider_session?: string | null; error?: string;
 }
 /** Pure stand-in for real tool work; deterministic per step id + task goal. */
 function performStep(taskGoal: string, stepId: string): string {
@@ -23,7 +27,7 @@ function digest(text: string): string {
 export class LocalExecutor {
   private journal: CoreJournal;
   private leases: LeaseRegistry;
-  constructor(journalPath: string, leasesPath: string) {
+  constructor(journalPath: string, leasesPath: string, private engine?: EngineLike) {
     this.journal = new CoreJournal(journalPath);
     this.leases = new LeaseRegistry(leasesPath);
   }
@@ -34,7 +38,7 @@ export class LocalExecutor {
   /** Advance at most one task by one full pass; null when nothing to do.
    * Safe to call repeatedly: command ids are deterministic, leases fence
    * concurrent owners, and each phase checks current state first. */
-  runOnce(now: string): CycleSummary | null {
+  async runOnce(now: string): Promise<CycleSummary | null> {
     const state = this.journal.state;
     const task = Object.values(state.tasks)
       .filter(t => t.status === "draft" || t.status === "queued" || t.status === "active")
@@ -45,13 +49,13 @@ export class LocalExecutor {
     if (!session) return null;
     if (task.status === "draft") this.cmd(`exec-${taskId}-queued`, "task_transitioned", { task_id: taskId, to: "queued" }, now);
     if (this.journal.state.tasks[taskId].status === "queued") this.cmd(`exec-${taskId}-active`, "task_transitioned", { task_id: taskId, to: "active" }, now);
-    const run_id = `run-${taskId}`;
-    const started = Object.values(this.journal.state.runs).some(r => r.run_id === run_id);
+    const attempt = Object.values(this.journal.state.runs).filter(r => r.task_id === taskId).length + 1;
+    const run_id = `run-${taskId}-${attempt}`;
     let leaseEpoch = 0;
-    if (!started) {
+    if (!Object.values(this.journal.state.runs).some(r => r.run_id === run_id)) {
       const lease = this.leases.grant(run_id, session.session_id, "local-executor", now, 300_000);
       leaseEpoch = lease.epoch;
-      this.cmd(`exec-${taskId}-run`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: "local-executor" }, now);
+      this.cmd(`exec-${taskId}-run-${attempt}`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: this.engine ? "kimi-cli" : "local-executor" }, now);
     }
     try {
       let steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId).sort((a, b) => a.step_id.localeCompare(b.step_id));
@@ -60,24 +64,39 @@ export class LocalExecutor {
         steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId);
       }
       const done: string[] = [];
+      const outputs: string[] = [];
+      let provider_session: string | null = null;
       for (const step of steps) {
         if (step.status === "pending") this.cmd(`exec-${taskId}-${step.step_id}-work`, "step_transitioned", { step_id: step.step_id, to: "working" }, now);
         if (this.journal.state.steps[step.step_id].status === "working") {
           done.push(step.step_id);
+          try {
+            if (this.engine) {
+              const produced = await this.engine.run(`Задача: ${task.goal}\nШаг: ${step.step_id}\nВерни краткий итог шага одним абзацем.`, { timeoutMs: 120_000 });
+              provider_session = provider_session ?? produced.provider_session;
+              outputs.push(produced.text);
+            } else {
+              outputs.push(performStep(task.goal, step.step_id));
+            }
+          } catch (error) {
+            this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: "failed" }, now);
+            return { task_id: taskId, run_id, steps_done: done, result_id: null, provider_session, error: (error as Error).message };
+          }
           this.cmd(`exec-${taskId}-${step.step_id}-done`, "step_transitioned", { step_id: step.step_id, to: "done" }, now);
         }
       }
-      if (this.journal.state.runs[run_id]?.status === "running") this.cmd(`exec-${taskId}-finish`, "run_finished", { run_id, outcome: "succeeded" }, now);
+      if (this.journal.state.runs[run_id]?.status === "running") this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: "succeeded" }, now);
       let result_id: string | null = null;
       const results = Object.values(this.journal.state.results).filter(r => r.task_id === taskId);
       if (!results.length) {
         result_id = `res-${taskId}`;
-        const text = done.map(s => performStep(task.goal, s)).join("\n");
+        const text = outputs.join("\n");
         const d = digest(text);
-        this.cmd(`exec-${taskId}-result`, "result_recorded", { result_id: result_id, task_id: taskId, revision: 1, digest: d, evidence_ref: `verify:local-sha256:${d}` }, now);
+        const evidence = provider_session ? `verify:local-sha256:${d};engine-session:${provider_session}` : `verify:local-sha256:${d}`;
+        this.cmd(`exec-${taskId}-result`, "result_recorded", { result_id: result_id, task_id: taskId, revision: 1, digest: d, evidence_ref: evidence }, now);
       }
       if (this.journal.state.tasks[taskId].status === "active") this.cmd(`exec-${taskId}-review`, "task_transitioned", { task_id: taskId, to: "review_ready" }, now);
-      return { task_id: taskId, run_id, steps_done: done, result_id };
+      return { task_id: taskId, run_id, steps_done: done, result_id, provider_session };
     } finally {
       if (leaseEpoch) {
         try { this.leases.release(`ls-${run_id}-${leaseEpoch}`, leaseEpoch, now); } catch { /* lease may have expired; state already durable */ }

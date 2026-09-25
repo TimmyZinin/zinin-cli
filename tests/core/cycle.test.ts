@@ -20,7 +20,7 @@ function workspace() {
   journal.close();
   return { dir, journalPath, leasesPath };
 }
-test("first working cycle: human task -> executor -> verified result -> human accept -> durable save", () => {
+test("first working cycle: human task -> executor -> verified result -> human accept -> durable save", async () => {
   const { journalPath, leasesPath } = workspace();
   // Human files a task from the screen.
   let out = "";
@@ -30,11 +30,11 @@ test("first working cycle: human task -> executor -> verified result -> human ac
   app.close();
   // Executor advances the task end to end.
   const executor = new LocalExecutor(journalPath, leasesPath);
-  const summary = executor.runOnce(later(1_000));
+  const summary = await executor.runOnce(later(1_000));
   executor.close();
   expect(summary).not.toBeNull();
   expect(summary!.task_id.startsWith("t-1-")).toBe(true);
-  expect(summary!.run_id).toBe(`run-${summary!.task_id}`);
+  expect(summary!.run_id.startsWith(`run-${summary!.task_id}-`)).toBe(true);
   expect(summary!.result_id).toBe(`res-${summary!.task_id}`);
   // Human accepts from the screen; snapshot checkpoint is taken.
   const acceptor = new ScreenApp(journalPath, () => {}, () => {});
@@ -56,18 +56,18 @@ test("first working cycle: human task -> executor -> verified result -> human ac
     expect(run.status).toBe("succeeded");
   } finally { reopened.close(); }
 });
-test("rerunning the executor is safe: nothing duplicates, nothing rewinds", () => {
+test("rerunning the executor is safe: nothing duplicates, nothing rewinds", async () => {
   const { journalPath, leasesPath } = workspace();
   const app = new ScreenApp(journalPath, () => {}, () => {});
   for (const ch of "/task rerun check") app.key({ kind: "char", value: ch });
   app.key({ kind: "enter" });
   app.close();
   const first = new LocalExecutor(journalPath, leasesPath);
-  first.runOnce(t0);
+  await first.runOnce(t0);
   first.close();
   const before = CoreJournal.fold(journalPath);
   const second = new LocalExecutor(journalPath, leasesPath);
-  expect(second.runOnce(later(500))).toBeNull();
+  expect(await second.runOnce(later(500))).toBeNull();
   second.close();
   expect(CoreJournal.fold(journalPath)).toEqual(before);
   const reopened = new CoreJournal(journalPath);
