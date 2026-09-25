@@ -141,12 +141,10 @@ if(process.argv[7]==='--tty') {
  const onDrain=()=>{writable=true;};
  process.stdout.on('drain',onDrain);
  await new Promise<void>(resolve=>{
-  const TICK=34;let expected=performance.now()+TICK;let timer:any;
+  const TICK=34;let timer:any;let prevT=performance.now();
   const tick=()=>{
    const now=performance.now();
-   let delay=now-expected;
-   if(delay>TICK*2)expected=now+TICK;else expected+=TICK;
-   if(delay<0)delay=0;
+   const delay=Math.max(0,now-prevT-TICK);prevT=now;
    lag.count++;lag.total+=delay;if(delay>lag.max)lag.max=delay;if(delay>50)lag.over50++;if(delay>100)lag.over100++;if(delay>250)lag.over250++;
    if(dirty&&writable){
     const b0=performance.now();const frame=m.view();const b1=performance.now();
@@ -155,7 +153,7 @@ if(process.argv[7]==='--tty') {
     if(load)frameTimes.push(performance.now()-started);dirty=false;
    } else if(dirty&&!writable) framesSkipped++;
    if(quit){clearTimeout(timer);resolve();return;}
-   timer=setTimeout(tick,Math.max(0,expected-performance.now()));
+   timer=setTimeout(tick,TICK);
   };
   timer=setTimeout(tick,TICK);
  });
