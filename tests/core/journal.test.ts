@@ -111,6 +111,29 @@ test("recovery: reopened journal rebuilds identical state and continues the sequ
     expect(reopened.state.steps.st1.status).toBe("working");
   } finally { reopened.close(); }
 });
+test("R08 across restart: resubmission after reopen returns the original recorded outcome", () => {
+  const { path, journal } = fixture();
+  bootstrap(journal);
+  journal.close();
+  const reopened = new CoreJournal(path);
+  try {
+    const again = reopened.submit(cmd("c6", "task_transitioned", { task_id: "t1", to: "active" }), t0);
+    expect(again).toEqual({ duplicate: true, seq: 6 });
+    expect(reopened.state.seq).toBe(6);
+    errorCode(() => reopened.submit(cmd("c6", "task_transitioned", { task_id: "t1", to: "queued" }), t0), "conflict");
+  } finally { reopened.close(); }
+});
+test("unknown transition targets and run outcomes are rejected before anything is written", () => {
+  const { journal } = fixture();
+  try {
+    bootstrap(journal);
+    errorCode(() => journal.submit(cmd("b1", "task_transitioned", { task_id: "t1", to: "sideways" }), t0), "malformed");
+    errorCode(() => journal.submit(cmd("b2", "run_finished", { run_id: "r1", outcome: "exploded" }), t0), "malformed");
+    errorCode(() => journal.submit(cmd("b3", "step_transitioned", { step_id: "st1", to: "sideways" }), t0), "malformed");
+    errorCode(() => journal.submit(cmd("b4", "step_transitioned", { step_id: "st1", to: "done" }), t0), "conflict");
+    expect(journal.state.seq).toBe(6);
+  } finally { journal.close(); }
+});
 test("snapshot plus tail replay equals a full independent fold", () => {
   const { path, journal } = fixture();
   bootstrap(journal);

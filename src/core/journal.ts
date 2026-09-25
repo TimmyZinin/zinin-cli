@@ -47,6 +47,8 @@ const taskEdges: Record<TaskStatus, TaskStatus[]> = {
 };
 const stepEdges: Record<StepStatus, StepStatus[]> = { pending: ["working"], working: ["done", "failed"], done: [], failed: ["working"] };
 const runOutcomes: Record<string, RunStatus> = { succeeded: "succeeded", failed: "failed", stopped: "stopped" };
+const taskStatuses: TaskStatus[] = ["draft", "queued", "active", "review_ready", "finalizing", "done", "blocked", "cancelled"];
+const stepStatuses: StepStatus[] = ["pending", "working", "done", "failed"];
 function canonical(value: unknown): string {
   if (value === null || typeof value === "boolean" || typeof value === "string") return JSON.stringify(value);
   if (typeof value === "number" && Number.isFinite(value)) return JSON.stringify(value);
@@ -155,11 +157,11 @@ export class CoreJournal {
       case "session_opened": str(payload, "session_id"); str(payload, "agent_id"); str(payload, "service"); str(payload, "group"); str(payload, "goal"); break;
       case "session_closed": str(payload, "session_id"); break;
       case "task_created": str(payload, "task_id"); str(payload, "session_id"); str(payload, "goal"); str(payload, "criteria"); break;
-      case "task_transitioned": str(payload, "task_id"); str(payload, "to"); break;
+      case "task_transitioned": str(payload, "task_id"); if (!taskStatuses.includes(str(payload, "to") as TaskStatus)) throw new JournalError("malformed", "Unknown task status"); break;
       case "step_defined": str(payload, "step_id"); str(payload, "task_id"); str(payload, "owner"); bool(payload, "required"); break;
-      case "step_transitioned": str(payload, "step_id"); str(payload, "to"); break;
+      case "step_transitioned": str(payload, "step_id"); if (!stepStatuses.includes(str(payload, "to") as StepStatus)) throw new JournalError("malformed", "Unknown step status"); break;
       case "run_started": str(payload, "run_id"); str(payload, "task_id"); str(payload, "session_id"); break;
-      case "run_finished": str(payload, "run_id"); str(payload, "outcome"); break;
+      case "run_finished": str(payload, "run_id"); if (!(str(payload, "outcome") in runOutcomes)) throw new JournalError("malformed", "Unknown outcome"); break;
       case "result_recorded": str(payload, "result_id"); str(payload, "task_id"); int(payload, "revision"); str(payload, "digest"); str(payload, "evidence_ref"); break;
       case "result_decided": str(payload, "result_id"); str(payload, "decision"); str(payload, "decided_by"); break;
     }
@@ -238,7 +240,7 @@ export class CoreJournal {
       case "run_finished": {
         const run = need(s.runs, str(p, "run_id"), "Run");
         if (run.status !== "running") throw new JournalError("conflict", `Run is ${run.status}`);
-        run.status = runOutcomes[str(p, "outcome")] ?? (() => { throw new JournalError("malformed", "Unknown outcome"); })();
+        run.status = runOutcomes[str(p, "outcome")];
         break;
       }
       case "result_recorded": {
