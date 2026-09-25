@@ -118,11 +118,13 @@ export class CoreJournal {
         if (old.payload !== encoded) throw new JournalError("conflict", "Command ID has different payload");
         return { duplicate: true, seq: old.seq };
       }
-      this.apply(command.type, payload);
-      this.state.seq++;
+      const next = structuredClone(this.state);
+      this.applyTo(next, command.type, payload);
+      next.seq++;
       this.db.query("INSERT INTO journal_entries(type,command_id,payload,recorded_at) VALUES(?,?,?,?)").run(command.type, command.command_id, encoded, at);
       const seq = Number(this.db.query("SELECT last_insert_rowid() AS seq").get()!.seq);
       this.db.query("INSERT INTO command_outcomes(command_id,seq,payload) VALUES(?,?,?)").run(command.command_id, seq, encoded);
+      this.state = next;
       return { duplicate: false, seq };
     }).immediate();
   }
@@ -170,9 +172,6 @@ export class CoreJournal {
       case "result_decided": str(payload, "result_id"); str(payload, "decision"); str(payload, "decided_by"); break;
     }
     canonical(payload);
-  }
-  private apply(type: JournalEntryType, payload: Record<string, Json>): void {
-    this.applyTo(this.state, type, payload);
   }
   /** Single rule set for accept-time and replay-time application. */
   private applyTo(s: CoreState, type: JournalEntryType, p: Record<string, Json>): void {
@@ -235,6 +234,7 @@ export class CoreJournal {
         const session = need(s.sessions, str(p, "session_id"), "Session");
         if (task.status !== "active") throw new JournalError("conflict", "Runs start only on active tasks");
         if (session.status !== "open") throw new JournalError("conflict", "Session is closed");
+        if (session.session_id !== task.session_id) throw new JournalError("conflict", "Run session must match the task session");
         const running = Object.values(s.runs).some(r => r.task_id === task.task_id && r.status === "running");
         if (running) throw new JournalError("conflict", "One running run per task (single writer, PRD §2)");
         const provider = p.provider_session;
