@@ -1,0 +1,2161 @@
+[?2004h[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+1947 e1947>s1>r1>tool1>res1 line-1947 synthetic ts=1053
+1954 e1954>s1>r1>tool1>res1 line-1954 synthetic ts=1046
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3004 load-4>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3004 load-4>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3007 load-7>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3010 load-10>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3004 load-4>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3007 load-7>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3010 load-10>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3013 load-13>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3016 load-16>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3004 load-4>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3007 load-7>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3010 load-10>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3013 load-13>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3016 load-16>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3019 load-19>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3004 load-4>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3007 load-7>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3010 load-10>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3013 load-13>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3016 load-16>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3019 load-19>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3001 load-1>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3004 load-4>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3007 load-7>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3010 load-10>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3013 load-13>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3016 load-16>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3019 load-19>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3007 load-7>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3010 load-10>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3013 load-13>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3016 load-16>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3019 load-19>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3031 load-31>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft= queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3013 load-13>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3016 load-16>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3019 load-19>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3031 load-31>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3037 load-37>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P00 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3019 load-19>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3022 load-22>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3031 load-31>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3037 load-37>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P00 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3031 load-31>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3037 load-37>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3049 load-49>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P01 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3025 load-25>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3028 load-28>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3031 load-31>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3037 load-37>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3049 load-49>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P01 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3031 load-31>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3037 load-37>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3049 load-49>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3055 load-55>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3058 load-58>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P02 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3034 load-34>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3037 load-37>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3049 load-49>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3055 load-55>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3058 load-58>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3061 load-61>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P02 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3040 load-40>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3043 load-43>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3049 load-49>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3055 load-55>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3058 load-58>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3061 load-61>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3064 load-64>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3067 load-67>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P03 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3046 load-46>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3049 load-49>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3055 load-55>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3058 load-58>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3061 load-61>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3064 load-64>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3067 load-67>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3070 load-70>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3073 load-73>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P03 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3052 load-52>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3055 load-55>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3058 load-58>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3061 load-61>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3064 load-64>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3067 load-67>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3070 load-70>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3073 load-73>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3076 load-76>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3079 load-79>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P04 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3058 load-58>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3061 load-61>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3064 load-64>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3067 load-67>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3070 load-70>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3073 load-73>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3076 load-76>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3079 load-79>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3082 load-82>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3085 load-85>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P04 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3064 load-64>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3067 load-67>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3070 load-70>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3073 load-73>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3076 load-76>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3079 load-79>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3082 load-82>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3085 load-85>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3088 load-88>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3091 load-91>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P05 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3070 load-70>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3073 load-73>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3076 load-76>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3079 load-79>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3082 load-82>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3085 load-85>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3088 load-88>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3091 load-91>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3094 load-94>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3097 load-97>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P05 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3076 load-76>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3079 load-79>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3082 load-82>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3085 load-85>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3088 load-88>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3091 load-91>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3094 load-94>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3097 load-97>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3100 load-100>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3103 load-103>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P06 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3082 load-82>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3085 load-85>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3088 load-88>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3091 load-91>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3094 load-94>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3097 load-97>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3100 load-100>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3103 load-103>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3106 load-106>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3109 load-109>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P06 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3088 load-88>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3091 load-91>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3094 load-94>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3097 load-97>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3100 load-100>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3103 load-103>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3106 load-106>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3109 load-109>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3112 load-112>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3115 load-115>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P07 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3094 load-94>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3097 load-97>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3100 load-100>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3103 load-103>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3106 load-106>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3109 load-109>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3112 load-112>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3115 load-115>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3118 load-118>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3121 load-121>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P07 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3097 load-97>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3100 load-100>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3103 load-103>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3106 load-106>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3109 load-109>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3112 load-112>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3115 load-115>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3118 load-118>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3121 load-121>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3124 load-124>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P08 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3103 load-103>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3106 load-106>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3109 load-109>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3112 load-112>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3115 load-115>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3118 load-118>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3121 load-121>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3124 load-124>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3127 load-127>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3130 load-130>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P08 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3109 load-109>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3112 load-112>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3115 load-115>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3118 load-118>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3121 load-121>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3124 load-124>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3127 load-127>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3130 load-130>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3133 load-133>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3136 load-136>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P09 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3115 load-115>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3118 load-118>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3121 load-121>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3124 load-124>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3127 load-127>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3130 load-130>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3133 load-133>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3136 load-136>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3139 load-139>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3142 load-142>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P10 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3121 load-121>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3124 load-124>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3127 load-127>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3130 load-130>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3133 load-133>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3136 load-136>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3139 load-139>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3142 load-142>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3145 load-145>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3148 load-148>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P10 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3127 load-127>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3130 load-130>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3133 load-133>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3136 load-136>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3139 load-139>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3142 load-142>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3145 load-145>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3148 load-148>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3151 load-151>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3154 load-154>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P11 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3133 load-133>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3136 load-136>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3139 load-139>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3142 load-142>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3145 load-145>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3148 load-148>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3151 load-151>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3154 load-154>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3157 load-157>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3160 load-160>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P11 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3139 load-139>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3142 load-142>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3145 load-145>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3148 load-148>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3151 load-151>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3154 load-154>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3157 load-157>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3160 load-160>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3163 load-163>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3166 load-166>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P12 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3145 load-145>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3148 load-148>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3151 load-151>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3154 load-154>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3157 load-157>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3160 load-160>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3163 load-163>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3166 load-166>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3169 load-169>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3172 load-172>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P12 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3151 load-151>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3154 load-154>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3157 load-157>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3160 load-160>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3163 load-163>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3166 load-166>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3169 load-169>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3172 load-172>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3175 load-175>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3178 load-178>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P13 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3154 load-154>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3157 load-157>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3160 load-160>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3163 load-163>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3166 load-166>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3169 load-169>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3172 load-172>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3175 load-175>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3178 load-178>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3181 load-181>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P13 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3160 load-160>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3163 load-163>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3166 load-166>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3169 load-169>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3172 load-172>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3175 load-175>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3178 load-178>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3181 load-181>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3184 load-184>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3187 load-187>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P14 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3166 load-166>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3169 load-169>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3172 load-172>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3175 load-175>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3178 load-178>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3181 load-181>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3184 load-184>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3187 load-187>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3190 load-190>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3193 load-193>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P14 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3175 load-175>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3178 load-178>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3181 load-181>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3184 load-184>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3187 load-187>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3190 load-190>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3193 load-193>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3196 load-196>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3199 load-199>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3202 load-202>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P15 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3181 load-181>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3184 load-184>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3187 load-187>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3190 load-190>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3193 load-193>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3196 load-196>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3199 load-199>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3202 load-202>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3205 load-205>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3208 load-208>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P15 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3187 load-187>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3190 load-190>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3193 load-193>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3196 load-196>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3199 load-199>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3202 load-202>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3205 load-205>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3208 load-208>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3211 load-211>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3214 load-214>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P16 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3193 load-193>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3196 load-196>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3199 load-199>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3202 load-202>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3205 load-205>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3208 load-208>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3211 load-211>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3214 load-214>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3217 load-217>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3220 load-220>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P16 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3199 load-199>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3202 load-202>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3205 load-205>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3208 load-208>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3211 load-211>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3214 load-214>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3217 load-217>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3220 load-220>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3223 load-223>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3226 load-226>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P17 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3205 load-205>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3208 load-208>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3211 load-211>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3214 load-214>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3217 load-217>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3220 load-220>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3223 load-223>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3226 load-226>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3229 load-229>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3232 load-232>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P17 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3211 load-211>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3214 load-214>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3217 load-217>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3220 load-220>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3223 load-223>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3226 load-226>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3229 load-229>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3232 load-232>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3235 load-235>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3238 load-238>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P18 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3217 load-217>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3220 load-220>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3223 load-223>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3226 load-226>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3229 load-229>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3232 load-232>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3235 load-235>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3238 load-238>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3241 load-241>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3244 load-244>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P18 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3223 load-223>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3226 load-226>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3229 load-229>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3232 load-232>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3235 load-235>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3238 load-238>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3241 load-241>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3244 load-244>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3247 load-247>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3250 load-250>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P19 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3229 load-229>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3232 load-232>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3235 load-235>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3238 load-238>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3241 load-241>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3244 load-244>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3247 load-247>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3250 load-250>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3253 load-253>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3256 load-256>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P19 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3235 load-235>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3238 load-238>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3241 load-241>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3244 load-244>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3247 load-247>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3250 load-250>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3253 load-253>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3256 load-256>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3259 load-259>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3262 load-262>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P20 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3241 load-241>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3244 load-244>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3247 load-247>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3250 load-250>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3253 load-253>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3256 load-256>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3259 load-259>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3262 load-262>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3265 load-265>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3268 load-268>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P20 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3247 load-247>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3250 load-250>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3253 load-253>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3256 load-256>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3259 load-259>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3262 load-262>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3265 load-265>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3268 load-268>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3271 load-271>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3274 load-274>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P21 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3253 load-253>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3256 load-256>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3259 load-259>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3262 load-262>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3265 load-265>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3268 load-268>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3271 load-271>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3274 load-274>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3277 load-277>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3280 load-280>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P21 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3259 load-259>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3262 load-262>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3265 load-265>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3268 load-268>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3271 load-271>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3274 load-274>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3277 load-277>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3280 load-280>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3283 load-283>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3286 load-286>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P22 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3265 load-265>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3268 load-268>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3271 load-271>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3274 load-274>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3277 load-277>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3280 load-280>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3283 load-283>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3286 load-286>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3289 load-289>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3292 load-292>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P22 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3271 load-271>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3274 load-274>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3277 load-277>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3280 load-280>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3283 load-283>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3286 load-286>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3289 load-289>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3292 load-292>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3295 load-295>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3298 load-298>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P23 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3277 load-277>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3280 load-280>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3283 load-283>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3286 load-286>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3289 load-289>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3292 load-292>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3295 load-295>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3298 load-298>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3301 load-301>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3304 load-304>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P23 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3283 load-283>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3286 load-286>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3289 load-289>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3292 load-292>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3295 load-295>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3298 load-298>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3301 load-301>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3304 load-304>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3307 load-307>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3310 load-310>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P24 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3289 load-289>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3292 load-292>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3295 load-295>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3298 load-298>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3301 load-301>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3304 load-304>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3307 load-307>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3310 load-310>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3313 load-313>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P24 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3295 load-295>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3298 load-298>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3301 load-301>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3304 load-304>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3307 load-307>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3310 load-310>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3313 load-313>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3319 load-319>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3322 load-322>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P25 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3301 load-301>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3304 load-304>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3307 load-307>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3310 load-310>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3313 load-313>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3319 load-319>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3322 load-322>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3325 load-325>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3328 load-328>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P25 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3307 load-307>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3310 load-310>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3313 load-313>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3319 load-319>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3322 load-322>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3325 load-325>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3328 load-328>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3331 load-331>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3334 load-334>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P26 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3313 load-313>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3316 load-316>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3319 load-319>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3322 load-322>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3325 load-325>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3328 load-328>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3331 load-331>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3334 load-334>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3340 load-340>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P26 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3319 load-319>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3322 load-322>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3325 load-325>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3328 load-328>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3331 load-331>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3334 load-334>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3340 load-340>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3343 load-343>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3346 load-346>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P27 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3325 load-325>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3328 load-328>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3331 load-331>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3334 load-334>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3340 load-340>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3343 load-343>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3346 load-346>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3349 load-349>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3352 load-352>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P27 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3331 load-331>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3334 load-334>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3340 load-340>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3343 load-343>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3346 load-346>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3349 load-349>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3352 load-352>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3355 load-355>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P28 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3334 load-334>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3337 load-337>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3340 load-340>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3343 load-343>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3346 load-346>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3349 load-349>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3352 load-352>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3355 load-355>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3361 load-361>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P28 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3340 load-340>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3343 load-343>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3346 load-346>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3349 load-349>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3352 load-352>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3355 load-355>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3361 load-361>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3364 load-364>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3367 load-367>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3346 load-346>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3349 load-349>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3352 load-352>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3355 load-355>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3361 load-361>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3364 load-364>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3367 load-367>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3370 load-370>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3373 load-373>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3352 load-352>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3355 load-355>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3361 load-361>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3364 load-364>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3367 load-367>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3370 load-370>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3373 load-373>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3376 load-376>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3358 load-358>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3361 load-361>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3364 load-364>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3367 load-367>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3370 load-370>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3373 load-373>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3376 load-376>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3382 load-382>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3385 load-385>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3364 load-364>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3367 load-367>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3370 load-370>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3373 load-373>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3376 load-376>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3382 load-382>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3385 load-385>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3388 load-388>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3391 load-391>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3370 load-370>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3373 load-373>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3376 load-376>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3382 load-382>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3385 load-385>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3388 load-388>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3391 load-391>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3394 load-394>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3397 load-397>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3376 load-376>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3379 load-379>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3382 load-382>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3385 load-385>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3388 load-388>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3391 load-391>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3394 load-394>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3397 load-397>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3403 load-403>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3382 load-382>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3385 load-385>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3388 load-388>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3391 load-391>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3394 load-394>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3397 load-397>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3403 load-403>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3406 load-406>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3409 load-409>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3385 load-385>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3388 load-388>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3391 load-391>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3394 load-394>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3397 load-397>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3403 load-403>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3406 load-406>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3409 load-409>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3412 load-412>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3391 load-391>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3394 load-394>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3397 load-397>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3403 load-403>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3406 load-406>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3409 load-409>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3412 load-412>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3415 load-415>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3418 load-418>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3394 load-394>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3397 load-397>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3403 load-403>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3406 load-406>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3409 load-409>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3412 load-412>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3415 load-415>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3418 load-418>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3400 load-400>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3403 load-403>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3406 load-406>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3409 load-409>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3412 load-412>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3415 load-415>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3418 load-418>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3424 load-424>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3427 load-427>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3406 load-406>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3409 load-409>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3412 load-412>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3415 load-415>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3418 load-418>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3424 load-424>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3427 load-427>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3430 load-430>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3433 load-433>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3412 load-412>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3415 load-415>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3418 load-418>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3424 load-424>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3427 load-427>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3430 load-430>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3433 load-433>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3436 load-436>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3439 load-439>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3418 load-418>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3421 load-421>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3424 load-424>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3427 load-427>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3430 load-430>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3433 load-433>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3436 load-436>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3439 load-439>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3445 load-445>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3424 load-424>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3427 load-427>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3430 load-430>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3433 load-433>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3436 load-436>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3439 load-439>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3445 load-445>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3448 load-448>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3451 load-451>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3430 load-430>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3433 load-433>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3436 load-436>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3439 load-439>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3445 load-445>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3448 load-448>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3451 load-451>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3454 load-454>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3457 load-457>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3436 load-436>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3439 load-439>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3445 load-445>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3448 load-448>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3451 load-451>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3454 load-454>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3457 load-457>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3460 load-460>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3442 load-442>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3445 load-445>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3448 load-448>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3451 load-451>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3454 load-454>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3457 load-457>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3460 load-460>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3466 load-466>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3469 load-469>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3448 load-448>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3451 load-451>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3454 load-454>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3457 load-457>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3460 load-460>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3466 load-466>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3469 load-469>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3472 load-472>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3475 load-475>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3454 load-454>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3457 load-457>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3460 load-460>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3466 load-466>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3469 load-469>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3472 load-472>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3475 load-475>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3478 load-478>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3481 load-481>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3460 load-460>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3463 load-463>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3466 load-466>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3469 load-469>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3472 load-472>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3475 load-475>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3478 load-478>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3481 load-481>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3487 load-487>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3466 load-466>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3469 load-469>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3472 load-472>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3475 load-475>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3478 load-478>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3481 load-481>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3487 load-487>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3490 load-490>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3493 load-493>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3472 load-472>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3475 load-475>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3478 load-478>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3481 load-481>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3487 load-487>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3490 load-490>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3493 load-493>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3496 load-496>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3499 load-499>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3481 load-481>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3487 load-487>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3490 load-490>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3493 load-493>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3496 load-496>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3499 load-499>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3502 load-502>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3505 load-505>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3508 load-508>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[H[2JSYNTHETIC ZININ [o..] native
+TREE orchestrator waiting
+ r1 a1 synthetic working
+ r2 a2 synthetic working
+ r3 a3 synthetic working
+A svc/grp/t1 owner=a1 result=res1
+B executor/synthetic/r1/t1 working waiting=0
+C history new=0 anchor=live focus=composer
+3484 load-484>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3487 load-487>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3490 load-490>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3493 load-493>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3496 load-496>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3499 load-499>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3502 load-502>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3505 load-505>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3508 load-508>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+3511 load-511>s1>r1>synthetic>res1 LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo
+Result res1 rev=1 digest=synthetic evidence=fixture
+Handoff r1->r2 phase=preview
+E t1/r1 draft=P29 queue=1 (steering unsupported)
+F r1 context=unknown status=working
+quota=unknown cost=unknown fresh=unknown
+[?2004l
