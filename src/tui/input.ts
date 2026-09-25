@@ -5,6 +5,7 @@
 export type Key =
   | { kind: "char"; value: string }
   | { kind: "up" } | { kind: "down" }
+  | { kind: "pgup" } | { kind: "pgdown" }
   | { kind: "enter" } | { kind: "escape" }
   | { kind: "ctrl+c" } | { kind: "ctrl+d" } | { kind: "backspace" };
 export class KeyParser {
@@ -16,6 +17,8 @@ export class KeyParser {
       const p = this.pending;
       if (p.startsWith("\x1b[A")) { keys.push({ kind: "up" }); this.pending = p.slice(3); continue; }
       if (p.startsWith("\x1b[B")) { keys.push({ kind: "down" }); this.pending = p.slice(3); continue; }
+      if (p.startsWith("\x1b[5~")) { keys.push({ kind: "pgup" }); this.pending = p.slice(4); continue; }
+      if (p.startsWith("\x1b[6~")) { keys.push({ kind: "pgdown" }); this.pending = p.slice(4); continue; }
       if (p === "\x1b" || p.startsWith("\x1b[")) break; // wait for more bytes
       const c = Array.from(p)[0];
       this.pending = p.slice(c.length);

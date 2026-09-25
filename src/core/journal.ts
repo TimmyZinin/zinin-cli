@@ -87,7 +87,7 @@ function emptyState(): CoreState {
 export class CoreJournal {
   private db: Database;
   state: CoreState;
-  constructor(path: string) {
+  constructor(path: string, private snapshotRetention = 3) {
     this.db = new Database(path, { create: true });
     this.db.exec(`PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS journal_entries (
@@ -128,7 +128,11 @@ export class CoreJournal {
   }
   snapshot(taken_at: string): number {
     const at = validTime(taken_at);
-    this.db.query("INSERT INTO journal_snapshots(seq,state,taken_at) VALUES(?,?,?)").run(this.state.seq, JSON.stringify(this.state), at);
+    this.db.query("INSERT OR REPLACE INTO journal_snapshots(seq,state,taken_at) VALUES(?,?,?)").run(this.state.seq, JSON.stringify(this.state), at);
+    // Evict older snapshots: they are derived recovery copies (PRD §6 limits
+    // copies, never journal entries). Keep the newest snapshotRetention.
+    this.db.query(`DELETE FROM journal_snapshots WHERE seq NOT IN (
+      SELECT seq FROM journal_snapshots ORDER BY seq DESC LIMIT ?)`).run(this.snapshotRetention);
     return this.state.seq;
   }
   private recover(): CoreState {

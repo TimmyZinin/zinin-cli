@@ -62,4 +62,11 @@ export class HistoryCache {
     const all = projectHistory(this.state, this.run_id);
     return { lines: all.slice(offset, offset + limit), total: all.length, offset, limit };
   }
+  /** Case-insensitive substring search over the same projection; reading
+   * only, never touches the journal. */
+  search(query: string, offset = 0, limit = 50): Page {
+    const needle = query.toLowerCase();
+    const matches = projectHistory(this.state, this.run_id).filter(l => l.text.toLowerCase().includes(needle));
+    return { lines: matches.slice(offset, offset + limit), total: matches.length, offset, limit };
+  }
 }

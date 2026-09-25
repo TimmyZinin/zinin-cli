@@ -16,6 +16,8 @@ export class ScreenApp {
   queued = 0;
   width = 120;
   height = 36;
+  private historyOffset = 0;
+  private findQuery: string | null = null;
   private rows: Row[] | null = null;
   private counter = 0;
   constructor(path: string, private write: (chunk: string) => void, private exitProcess: () => void) {
@@ -37,6 +39,8 @@ export class ScreenApp {
   key(k: Key): void {
     if (k.kind === "up") return void this.move(-1);
     if (k.kind === "down") return void this.move(1);
+    if (k.kind === "pgup") { this.historyOffset = Math.max(0, this.historyOffset - 10); return void this.render(); }
+    if (k.kind === "pgdown") { this.historyOffset += 10; return void this.render(); }
     if (k.kind === "ctrl+d") { this.exitProcess(); return; }
     if (k.kind === "ctrl+c") {
       if (this.drafts.get(this.keyOf())) { this.drafts.set(this.keyOf(), ""); this.render(); }
@@ -60,6 +64,16 @@ export class ScreenApp {
     } else if (draft === "/accept") {
       this.acceptLatest();
       this.drafts.set(this.keyOf(), "");
+    } else if (draft.startsWith("/find ")) {
+      this.findQuery = draft.slice(6).toLowerCase();
+      this.historyOffset = 0;
+      this.drafts.set(this.keyOf(), "");
+      return;
+    } else if (draft === "/find") {
+      this.findQuery = null;
+      this.historyOffset = 0;
+      this.drafts.set(this.keyOf(), "");
+      return;
     } else if (!draft.startsWith("/")) {
       this.queued++;
       this.drafts.set(this.keyOf(), "");
@@ -96,7 +110,12 @@ export class ScreenApp {
     if (session) {
       const task = Object.values(state.tasks).filter(t => t.session_id === session.session_id).at(-1);
       const run = task ? Object.values(state.runs).filter(r => r.task_id === task.task_id).at(-1) : undefined;
-      if (run) transcript = new HistoryCache(state, run.run_id).tail(50).map(l => l.text);
+      if (run) {
+        const cache = new HistoryCache(state, run.run_id);
+        transcript = this.findQuery
+          ? cache.search(this.findQuery, this.historyOffset, 50).lines.map(l => l.text)
+          : cache.page(this.historyOffset, 50).lines.map(l => l.text);
+      }
     }
     const patch = {
       selected: this.selected, draft: this.drafts.get(this.keyOf()) ?? "",
