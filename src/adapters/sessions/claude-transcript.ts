@@ -32,10 +32,11 @@ function apiErrorText(value: Record<string, unknown>): string | null {
   }
   return null;
 }
-/** N-3: transcript project slugs encode the full cwd ("-Users-user-proj-a-service").
- * Match on the whole slug, never on a dash-split tail ("service" collides across projects). */
+/** K3-2/N-3: transcript project slugs encode the cwd the way Claude Code does —
+ * every character except letters, digits and dash becomes a dash
+ * ("20260101T1200+0400" → "20260101T1200-0400"). Match on the whole slug. */
 export function cwdToProjectSlug(cwd: string): string {
-  return "-" + cwd.split("/").filter(Boolean).join("-");
+  return "-" + cwd.replace(/[^A-Za-z0-9-]/g, "-");
 }
 export function parseTranscriptTail(text: string): TranscriptFacts {
   let stuckOn: string | null = null;

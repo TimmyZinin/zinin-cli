@@ -52,3 +52,11 @@ test("N-3: cwd maps to the full project slug, dash-safe", () => {
     .toBe("-Users-user-proj-a-service");
   expect(cwdToProjectSlug("Users/user/proj-b")).toBe("-Users-user-proj-b");
 });
+test("K3-2: plus and dot in cwd become dashes like Claude Code does", () => {
+  expect(cwdToProjectSlug("Users/user/20260101T1200+0400"))
+    .toBe("-Users-user-20260101T1200-0400");
+  expect(cwdToProjectSlug("Users/user/example.com"))
+    .toBe("-Users-user-example-com");
+  expect(cwdToProjectSlug("Users/user/proj-a-service"))
+    .toBe("-Users-user-proj-a-service");
+});
