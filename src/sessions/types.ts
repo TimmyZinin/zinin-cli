@@ -2,7 +2,7 @@
  * One row per observed session across machines; adapters fill what their
  * source can prove, merge coalesces, deriveState assigns the final state.
  */
-export type PsState = "working" | "idle" | "waiting-tim" | "stuck" | "starting" | "closing" | "done";
+export type PsState = "working" | "idle" | "waiting-tim" | "stuck" | "limit" | "starting" | "closing" | "done";
 export interface SessionRow {
   id: string;
   machine: "mac" | "newa" | "unknown";
