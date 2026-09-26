@@ -58,3 +58,23 @@ test("window whose row already has activity is never re-enriched", () => {
   enrichRowsWithTranscripts(rows, screens, new Map([[slugOf("Users/user/proj-b"), FACT]]), slugOf);
   expect(rows[0].lastActivityMs).toBe(NOW - 60_000);
 });
+test("К4-2: launch-dir key wins over the status-line cwd (cd after launch)", async () => {
+  const { windowProjectKey } = await import("../../src/sessions/enrich");
+  const slugOf = (cwd: string) => "-" + cwd.replace(/[^A-Za-z0-9-]/g, "-");
+  const launchDirs = new Map([["ttys001", "/Users/user/proj-a"]]);
+  const key = windowProjectKey({ cwd: "Users/user/proj-b", tty: "ttys001" }, launchDirs, slugOf);
+  expect(key).toBe(slugOf("Users/user/proj-a"));
+  // fallback: no tty / no launch dir → status-line cwd
+  expect(windowProjectKey({ cwd: "Users/user/proj-b", tty: "ttys002" }, launchDirs, slugOf))
+    .toBe(slugOf("Users/user/proj-b"));
+  expect(windowProjectKey({ cwd: null, tty: null }, launchDirs, slugOf)).toBeNull();
+});
+test("К4-2: a window keyed by launch dir gets that project's facts", () => {
+  const rows = [row("mac-win-1", "working")];
+  const screens = new Map<string, WindowScreen>([
+    ["mac-win-1", { ...screen("Users/user/proj-b", { spinning: true }), key: slugOf("Users/user/proj-a"), tty: "ttys001" }],
+  ]);
+  const facts = new Map<string, SlugFacts>([[slugOf("Users/user/proj-a"), FACT]]);
+  enrichRowsWithTranscripts(rows, screens, facts, slugOf);
+  expect(rows[0].lastActivityMs).toBe(FACT.lastActivityMs);
+});

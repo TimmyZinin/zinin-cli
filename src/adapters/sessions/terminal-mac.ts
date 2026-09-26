@@ -97,11 +97,45 @@ export function modelFromTitle(title: string): string | null {
   const match = /--model[= ]\s*([\w.-]+)/.exec(segments[2] ?? "");
   return match?.[1] ?? null;
 }
-/** Live output: records separated by RECORD_SEP, fields "id\ttitle\tscreen\tbusy".
+/** К4-2: launch directories of engine processes, keyed by tty. Primary source
+ * for the window↔transcript key: Claude Code keeps transcripts under the
+ * directory the process was STARTED in, so a window that later `cd`s still
+ * maps to its real project. Pure text-in (mock lsof/ps in tests). */
+export function parseLaunchDirs(psText: string, lsofText: string): Map<string, string> {
+  const pidTty = new Map<number, string>();
+  for (const line of psText.split("\n")) {
+    const cols = line.trim().split(/\s+/, 3);
+    if (cols.length < 3) continue;
+    const pid = Number(cols[0]);
+    const tty = cols[1];
+    const args = cols[2] ?? "";
+    if (!Number.isSafeInteger(pid) || !/^ttys/.test(tty)) continue;
+    if (/(?:^|[/\\])(claude|kimi|codex)\b/.test(args) || /\b(claude|kimi|codex)\s+--/.test(args)) {
+      pidTty.set(pid, tty);
+    }
+  }
+  const pidCwd = new Map<number, string>();
+  let currentPid: number | null = null;
+  for (const line of lsofText.split("\n")) {
+    if (line.startsWith("p")) {
+      const pid = Number(line.slice(1));
+      currentPid = Number.isSafeInteger(pid) ? pid : null;
+    } else if (line.startsWith("n") && currentPid !== null && !pidCwd.has(currentPid)) {
+      pidCwd.set(currentPid, line.slice(1));
+    }
+  }
+  const dirs = new Map<string, string>();
+  for (const [pid, tty] of pidTty) {
+    const cwd = pidCwd.get(pid);
+    if (cwd) dirs.set(tty, cwd);
+  }
+  return dirs;
+}
+/** Live output: records separated by RECORD_SEP, fields "id\ttitle\tscreen[busy[tty]]".
  * onScreen reports the picked status line per row id (transcript enrichment). */
 export function parseTerminalWindows(
   text: string,
-  onScreen?: (id: string, screen: { statusline: string; cwd: string | null; spinning: boolean; busy: boolean }) => void,
+  onScreen?: (id: string, screen: { statusline: string; cwd: string | null; spinning: boolean; busy: boolean; tty: string | null }) => void,
 ): SessionRow[] {
   const rows: SessionRow[] = [];
   for (const record of text.split(RECORD_SEP)) {
@@ -109,9 +143,18 @@ export function parseTerminalWindows(
     const index = (fields[0] ?? "").trim();
     const title = (fields[1] ?? "").trim();
     if (!title) continue; // window without tabs (closed) — skip the phantom
-    const rest = fields.slice(2);
-    const busy = rest.length > 1 && (rest[rest.length - 1] ?? "").trim() === "true";
-    const screen = busy ? rest.slice(0, -1).join("\t") : rest.join("\t");
+    // Trailing metadata fields: busy ("true"/"false") and tty ("ttysNNN").
+    // Pop them when present; the screen (middle) may itself contain tabs.
+    const meta = fields.slice(2);
+    let busy = false;
+    let tty: string | null = null;
+    if (meta.length > 1 && /^ttys\d+$/.test((meta[meta.length - 1] ?? "").trim())) {
+      tty = meta.pop()!.trim();
+    }
+    if (meta.length > 1 && /^(true|false)$/.test((meta[meta.length - 1] ?? "").trim())) {
+      busy = meta.pop()!.trim() === "true";
+    }
+    const screen = meta.join("\t");
     const picked = pickStatusLine(screen);
     const { task: rawTask, glyphState, idleTitle } = parseWindowTitle(title);
     const status = parseStatusLine(picked.statusline);
@@ -127,7 +170,7 @@ export function parseTerminalWindows(
     const interrupted = picked.tail.filter(l => /Interrupted/.test(l)).join(" ");
     const cwd = /(?:^|\s)(Users\/\S+?)\s*[|▸]/.exec(picked.statusline)?.[1] ?? null;
     const id = `mac-win-${index || rows.length + 1}`;
-    onScreen?.(id, { statusline: picked.statusline, cwd, spinning: picked.spinning, busy });
+    onScreen?.(id, { statusline: picked.statusline, cwd, spinning: picked.spinning, busy, tty });
     rows.push({
       id,
       machine: "mac",

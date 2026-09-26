@@ -9,7 +9,7 @@ import { platform, homedir } from "node:os";
 import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
-import { parseTerminalWindows } from "./adapters/sessions/terminal-mac";
+import { parseTerminalWindows, parseLaunchDirs } from "./adapters/sessions/terminal-mac";
 import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
 import { parseNewaDir } from "./adapters/sessions/newa-workdir";
 import { parseTmuxSessions } from "./adapters/sessions/tmux";
@@ -17,7 +17,7 @@ import { parseMeminfo, parseDf, parseVmStat, parseMemoryPressure } from "./adapt
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderTable, renderJson } from "./sessions/render";
-import { enrichRowsWithTranscripts, type SlugFacts, type WindowScreen } from "./sessions/enrich";
+import { enrichRowsWithTranscripts, windowProjectKey, type SlugFacts, type WindowScreen } from "./sessions/enrich";
 import { parsePsConfig } from "./sessions/psconfig";
 
 export interface PsOptions {
@@ -102,6 +102,11 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
       "        set out to out & (contents of selected tab of w)",
       "      end try",
       "      set out to out & tabChar & ((busy of selected tab of w) as text)",
+      "      try", // К4-2: tty when the dictionary exposes it; empty otherwise
+      "        set out to out & tabChar & (tty of selected tab of w)",
+      "      on error",
+      "        set out to out & tabChar",
+      "      end try",
       "      set out to out & recSep",
       "    end if",
       "  end repeat",
@@ -116,6 +121,25 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
   const screens = new Map<string, WindowScreen>();
   for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen))) {
     rows.push(row);
+  }
+  // К4-2: engine-process launch directories by tty (ps + lsof, reads-only).
+  // The launch dir is the primary window↔transcript key; status-line cwd
+  // (already on the screens) is only the fallback.
+  try {
+    const psText = Bun.spawnSync(["ps", "-Ao", "pid,tty,args"], { stdout: "pipe" }).stdout.toString();
+    const enginePids = [...psText.matchAll(/^\s*(\d+)\s+(ttys\d+)\s+.*(?:claude|kimi|codex)/gm)].map(m => Number(m[1]));
+    let launchDirs = new Map<string, string>();
+    if (enginePids.length) {
+      const args = ["-a", "-d", "cwd", "-Fn"];
+      for (const pid of enginePids) args.push("-p", String(pid));
+      const lsofText = Bun.spawnSync(["lsof", ...args], { stdout: "pipe" }).stdout.toString();
+      launchDirs = parseLaunchDirs(psText, lsofText);
+    }
+    for (const [id, screen] of screens) {
+      screen.key = windowProjectKey(screen, launchDirs, cwdToProjectSlug);
+    }
+  } catch (error) {
+    warn(`launch dirs unavailable: ${(error as Error).message}`);
   }
   // P1-4/N-4: transcripts do not create rows — they enrich the one window that
   // owns the session (last movement + hard errors, full-slug key from N-3).

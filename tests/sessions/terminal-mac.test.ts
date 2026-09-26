@@ -113,3 +113,24 @@ test("N-8: --model in the process chain fills a hidden status line", () => {
   expect(row.model).toBe("opus");
   expect(row.engine).toBe("claude");
 });
+test("К4-2: parseLaunchDirs maps tty to engine launch cwd from mocked ps+lsof", async () => {
+  const { parseLaunchDirs } = await import("../../src/adapters/sessions/terminal-mac");
+  const ps = [
+    "  101 ttys001 /opt/bin/claude --dangerously-skip-permissions",
+    "  102 ttys002 -zsh",
+    "  103 ttys003 /usr/local/bin/kimi -p hello",
+    "  104 ??      /opt/bin/claude --headless",
+  ].join("\n");
+  const lsof = ["p101", "n/Users/user/proj-a", "p102", "n/Users/user", "p103", "n/Users/user/proj-b"].join("\n");
+  const dirs = parseLaunchDirs(ps, lsof);
+  expect(dirs.get("ttys001")).toBe("/Users/user/proj-a");
+  expect(dirs.get("ttys003")).toBe("/Users/user/proj-b");
+  expect(dirs.has("ttys002")).toBe(false); // shell, not an engine
+  expect(dirs.has("??")).toBe(false);
+});
+test("К4-2: tty field from the live format reaches onScreen", () => {
+  const record = ["1050", "user — ◑ Weekly digest — caffeinate ◂ claude --dangerously-skip-permissions — 80×24", "⏺ …\n✻ Working… (1m 0s)", "true", "ttys007"].join("\t");
+  const seen = new Map<string, { tty: string | null; busy: boolean }>();
+  parseTerminalWindows(record, (id, screen) => seen.set(id, { tty: screen.tty, busy: screen.busy }));
+  expect(seen.get("mac-win-1050")).toEqual({ tty: "ttys007", busy: true });
+});

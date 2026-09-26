@@ -10,6 +10,25 @@ export interface WindowScreen {
   cwd: string | null;
   spinning: boolean;
   busy: boolean;
+  tty?: string | null;
+  /** К4-2: transcript-project key resolved from the engine process launch
+   * directory (tty → pid → lsof cwd). When set, it wins over `cwd`. */
+  key?: string | null;
+}
+/** К4-2: transcript-project key for a window. The engine process launch
+ * directory (tty → pid → lsof cwd) is primary — Claude Code files transcripts
+ * under the directory the process was started in, so a window that `cd`s
+ * afterwards still maps home; the status-line cwd is the fallback. */
+export function windowProjectKey(
+  screen: { cwd: string | null; tty?: string | null },
+  launchDirs: Map<string, string>,
+  slugOf: (cwd: string) => string,
+): string | null {
+  if (screen.tty) {
+    const launch = launchDirs.get(screen.tty);
+    if (launch) return slugOf(launch.replace(/^\//, ""));
+  }
+  return screen.cwd ? slugOf(screen.cwd) : null;
 }
 function signal(row: SessionRow, screen: WindowScreen | undefined): number {
   let score = 0;
@@ -30,13 +49,15 @@ export function enrichRowsWithTranscripts(
   const candidates = new Map<string, { row: SessionRow; score: number; fact: SlugFacts }[]>();
   for (const row of rows) {
     if (row.machine !== "mac" || row.lastActivityMs !== null) continue;
-    const cwd = screens.get(row.id)?.cwd;
-    if (!cwd) continue;
-    const fact = facts.get(slugOf(cwd));
+    const screen = screens.get(row.id);
+    if (!screen) continue;
+    const key = screen.key ?? (screen.cwd ? slugOf(screen.cwd) : null);
+    if (!key) continue;
+    const fact = facts.get(key);
     if (!fact) continue;
-    const list = candidates.get(slugOf(cwd)) ?? [];
-    list.push({ row, score: signal(row, screens.get(row.id)), fact });
-    candidates.set(slugOf(cwd), list);
+    const list = candidates.get(key) ?? [];
+    list.push({ row, score: signal(row, screen), fact });
+    candidates.set(key, list);
   }
   for (const list of candidates.values()) {
     list.sort((a, b) => b.score - a.score || a.row.id.localeCompare(b.row.id));
