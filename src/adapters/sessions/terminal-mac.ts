@@ -67,12 +67,16 @@ export function parseStatusLine(statusline: string): {
   if (stuck && !sevenDay && !weekly) stuckOn = clip(line);
   return { model, contextPct, weeklyLimitPct, stuckOn, waiting };
 }
-/** Screen tail (last non-empty lines) + shape-picked status line + spinner fact. */
+/** Screen tail (last non-empty lines) + shape-picked status line + spinner fact.
+ * N-2: the status line lives outside a git repo too — the anchor is the
+ * model-percent-bar shape, not a "git:" segment. */
 export function pickStatusLine(screen: string): { statusline: string; spinning: boolean; tail: string[] } {
   const tail = screen.replace(/\r/g, "").split("\n").map(l => l.replace(/\s+$/, "")).filter(Boolean).slice(-14);
-  const claude = tail.find(l => /\bgit:\S+/.test(l) && /\d+%/.test(l)) ?? "";
+  const modelBar = /\b[a-z][a-z-]*\s+\d+(?:\.\d+)?\s+\d{1,3}%\s*[▓░]/i;
+  const claude = tail.find(l => modelBar.test(l) && (/^\//.test(l) || /\bgit:\S+/.test(l))) ?? "";
+  const fallback = tail.find(l => modelBar.test(l)) ?? "";
   const kimi = tail.find(l => /context:\s*\d+%/i.test(l)) ?? "";
-  return { statusline: claude || kimi, spinning: SPINNER.test(tail.join("\n")), tail };
+  return { statusline: claude || fallback || kimi, spinning: SPINNER.test(tail.join("\n")), tail };
 }
 export function detectEngine(text: string): string | null {
   if (/kimi/i.test(text)) return "kimi";
@@ -86,6 +90,12 @@ export function detectEngineFromTitle(title: string): string | null {
   const segments = title.replace(/\s+—\s+\d+\s*×\s*\d+\s*$/, "").split(" — ");
   const chain = (segments[2] ?? "").split(/\s--/)[0];
   return detectEngine(chain);
+}
+/** N-8: "--model opus" in the process chain answers what the hidden status line cannot. */
+export function modelFromTitle(title: string): string | null {
+  const segments = title.replace(/\s+—\s+\d+\s*×\s*\d+\s*$/, "").split(" — ");
+  const match = /--model[= ]\s*([\w.-]+)/.exec(segments[2] ?? "");
+  return match?.[1] ?? null;
 }
 /** Live output: records separated by RECORD_SEP, fields "id\ttitle\tscreen".
  * onScreen reports the picked status line per row id (transcript enrichment). */
@@ -105,6 +115,7 @@ export function parseTerminalWindows(
     const status = parseStatusLine(picked.statusline);
     const tail = picked.tail.join("\n");
     const engine = detectEngineFromTitle(title);
+    const model = status.model ?? modelFromTitle(title);
     let state: PsState = glyphState ?? (idleTitle || !engine ? "idle" : "working");
     if (picked.spinning) state = "working";
     if (status.waiting || /What should .*do instead/i.test(tail)) state = "waiting-tim";
@@ -116,7 +127,7 @@ export function parseTerminalWindows(
       id,
       machine: "mac",
       engine,
-      model: status.model,
+      model,
       task,
       state,
       lastActivityMs: null,

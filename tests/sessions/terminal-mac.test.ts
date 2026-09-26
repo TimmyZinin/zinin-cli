@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   parseTerminalWindows, parseWindowTitle, parseStatusLine, pickStatusLine,
-  detectEngine, detectEngineFromTitle, RECORD_SEP,
+  detectEngine, detectEngineFromTitle, modelFromTitle, RECORD_SEP,
 } from "../../src/adapters/sessions/terminal-mac";
 import type { SessionRow } from "../../src/sessions/types";
 
@@ -84,4 +84,24 @@ test("detectEngine order unchanged for plain process text", () => {
   expect(detectEngine("kimi-code")).toBe("kimi");
   expect(detectEngine("claude --x")).toBe("claude");
   expect(detectEngine("-zsh")).toBeNull();
+});
+test("N-2: status line outside a git repo still yields model/CTX/WEEK", () => {
+  const screen = ["⏺ Читаю файлы…", "", "/Users/timofeyzinin | fable 5.1 35% ▓▓▓░░░░░░░ 347k/1M | 5h:49% (29m) | 7d:28% (3h19m)"].join("\n");
+  const picked = pickStatusLine(screen);
+  expect(picked.statusline).toContain("fable 5.1");
+  const facts = parseStatusLine(picked.statusline);
+  expect(facts.model).toBe("fable 5.1");
+  expect(facts.contextPct).toBe(35);
+  expect(facts.weeklyLimitPct).toBe(28);
+});
+test("N-2: narrow clipped bar without cwd or git still parses", () => {
+  const picked = pickStatusLine("⏺ …\n  | sonnet 5 11% ▓░░░░░░░░░ 111k/1M |…");
+  expect(picked.statusline).toContain("sonnet 5");
+});
+test("N-8: --model in the process chain fills a hidden status line", () => {
+  const title = "timofeyzinin — ◐ Дейтинг-5 — caffeinate ◂ claude --dangerously-skip-permissions --model opus S0: доведи до готового — 80×24";
+  expect(modelFromTitle(title)).toBe("opus");
+  const [row] = parseTerminalWindows(["910", title, "⏺ …\nработают субагенты"].join("\t"));
+  expect(row.model).toBe("opus");
+  expect(row.engine).toBe("claude");
 });
