@@ -17,6 +17,7 @@ import { parseMeminfo, parseDf, parseVmStat } from "./adapters/sessions/machine"
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderTable, renderJson } from "./sessions/render";
+import { enrichRowsWithTranscripts, type SlugFacts, type WindowScreen } from "./sessions/enrich";
 
 export interface PsOptions {
   watchSeconds: number | null;
@@ -49,10 +50,9 @@ function readTail(path: string, maxBytes = TRANSCRIPT_TAIL_BYTES): string {
   } catch { return ""; }
   finally { try { closeSync(fd); } catch { /* already closed */ } }
 }
-interface SlugFacts { lastActivityMs: number; stuckOn: string | null }
 /** N-3/N-4: facts are keyed by the full project slug and come from the single
- * most recently modified transcript of that project — two windows of one
- * project still share movement time, but never merge errors across sessions. */
+ * most recently modified transcript of that project — errors never merge
+ * across sessions, and (enrich.ts) only the owning window receives them. */
 function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFacts> {
   const facts = new Map<string, SlugFacts>();
   if (!existsSync(root)) return facts;
@@ -109,24 +109,15 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
   } catch (error) {
     warn(`mac windows unavailable: ${(error as Error).message}`);
   }
-  const screens = new Map<string, { statusline: string; cwd: string | null }>();
-  for (const row of parseTerminalWindows(windowsRaw, (id, statusline, cwd) => screens.set(id, { statusline, cwd }))) {
+  const screens = new Map<string, WindowScreen>();
+  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen))) {
     rows.push(row);
   }
-  // P1-4: transcripts do not create rows — they enrich the matching window
-  // (last movement + hard errors), keyed by the full project slug (N-3).
+  // P1-4/N-4: transcripts do not create rows — they enrich the one window that
+  // owns the session (last movement + hard errors, full-slug key from N-3).
   try {
     const root = join(process.env.HOME ?? "~", ".claude", "projects");
-    const facts = collectTranscriptFacts(root, nowMs);
-    for (const row of rows) {
-      if (row.machine !== "mac" || row.lastActivityMs !== null) continue;
-      const cwd = screens.get(row.id)?.cwd;
-      if (!cwd) continue;
-      const hit = facts.get(cwdToProjectSlug(cwd));
-      if (!hit) continue;
-      row.lastActivityMs = hit.lastActivityMs;
-      row.stuckOn = row.stuckOn ?? hit.stuckOn;
-    }
+    enrichRowsWithTranscripts(rows, screens, collectTranscriptFacts(root, nowMs), cwdToProjectSlug);
   } catch (error) {
     warn(`claude transcripts unavailable: ${(error as Error).message}`);
   }

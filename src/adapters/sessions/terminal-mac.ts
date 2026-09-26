@@ -101,7 +101,7 @@ export function modelFromTitle(title: string): string | null {
  * onScreen reports the picked status line per row id (transcript enrichment). */
 export function parseTerminalWindows(
   text: string,
-  onScreen?: (id: string, statusline: string, cwd: string | null) => void,
+  onScreen?: (id: string, screen: { statusline: string; cwd: string | null; spinning: boolean; busy: boolean }) => void,
 ): SessionRow[] {
   const rows: SessionRow[] = [];
   for (const record of text.split(RECORD_SEP)) {
@@ -127,7 +127,7 @@ export function parseTerminalWindows(
     const interrupted = picked.tail.filter(l => /Interrupted/.test(l)).join(" ");
     const cwd = /(?:^|\s)(Users\/\S+?)\s*[|▸]/.exec(picked.statusline)?.[1] ?? null;
     const id = `mac-win-${index || rows.length + 1}`;
-    onScreen?.(id, picked.statusline, cwd);
+    onScreen?.(id, { statusline: picked.statusline, cwd, spinning: picked.spinning, busy });
     rows.push({
       id,
       machine: "mac",
