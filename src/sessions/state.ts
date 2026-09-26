@@ -13,7 +13,6 @@ export const STUCK_MINUTES_BY_ENGINE: Record<string, number> = {
   unknown: 30,
 };
 export const WEEKLY_LIMIT_NEAR = 95;
-const LIMIT_SIGNAL = /rate_limit|rate limit|\b403\b|limit reached/i;
 
 export function stuckThresholdMs(engine: string | null, overrideMinutes?: number): number {
   if (overrideMinutes !== undefined && Number.isFinite(overrideMinutes) && overrideMinutes > 0) {
@@ -25,9 +24,9 @@ export function stuckThresholdMs(engine: string | null, overrideMinutes?: number
 export function deriveState(row: SessionRow, nowMs: number, stuckOverrideMinutes?: number): PsState {
   // 1 done / 2 closing: terminal lifecycle facts recorded by adapters.
   if (row.state === "done" || row.state === "closing") return row.state;
-  // 3 limit: alive but pinned against a quota.
+  // 3 limit: alive but pinned against a quota — structural signal only (N-1):
+  // the weekly limit percentage, never a stray "403" inside some text.
   if (row.weeklyLimitPct !== null && row.weeklyLimitPct >= WEEKLY_LIMIT_NEAR) return "limit";
-  if (row.stuckOn && LIMIT_SIGNAL.test(row.stuckOn)) return "limit";
   // 4 waiting-tim: a human answer unblocks it.
   if (row.state === "waiting-tim" || row.needs !== null) return "waiting-tim";
   // 5 starting: transient, disappears once the first turns land.
