@@ -14,8 +14,13 @@ export function parseDf(text: string): number | null {
   }
   return null;
 }
-/** N-6: "Pages free" alone reads as ~0 on macOS; usable free is
- * free + inactive + purgeable + speculative. */
+/** N-6: "Pages free" alone reads as ~0 on macOS and scares the reader;
+ * the honest number is memory_pressure's system-wide free percentage. */
+export function parseMemoryPressure(text: string): number | null {
+  const match = /System-wide memory free percentage:\s*(\d+)%/i.exec(text);
+  return match ? Number(match[1]) : null;
+}
+/** Fallback when memory_pressure is unavailable: free+inactive+purgeable+speculative. */
 export function parseVmStat(text: string): number | null {
   const pageSize = /page size of (\d+)/.exec(text);
   if (!pageSize) return null;
