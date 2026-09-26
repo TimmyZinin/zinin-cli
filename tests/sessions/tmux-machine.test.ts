@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import { parseTmuxSessions } from "../../src/adapters/sessions/tmux";
-import { parseMeminfo, parseDf, parseVmStat } from "../../src/adapters/sessions/machine";
+import { parseMeminfo, parseDf, parseVmStat, parseMemoryPressure } from "../../src/adapters/sessions/machine";
 
 const NOW = Date.parse("2026-09-26T06:00:00Z");
 
@@ -50,4 +50,14 @@ test("N-6: usable free memory sums free+inactive+purgeable+speculative", () => {
   ].join("\n");
   expect(parseVmStat(text)).toBe(Math.round((41000 * 16384) / 1024 / 1024));
   expect(parseVmStat("nothing")).toBeNull();
+});
+test("N-6: memory_pressure percentage parses for the footer", () => {
+  const text = [
+    "The system has 2147483648 (524288 pages with a page size of 4096).",
+    "Stats:",
+    "Pages free: 1000.",
+    "System-wide memory free percentage: 52%",
+  ].join("\n");
+  expect(parseMemoryPressure(text)).toBe(52);
+  expect(parseMemoryPressure("no stats here")).toBeNull();
 });

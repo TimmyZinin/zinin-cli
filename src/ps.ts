@@ -13,7 +13,7 @@ import { parseTerminalWindows } from "./adapters/sessions/terminal-mac";
 import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
 import { parseNewaDir } from "./adapters/sessions/newa-workdir";
 import { parseTmuxSessions } from "./adapters/sessions/tmux";
-import { parseMeminfo, parseDf, parseVmStat } from "./adapters/sessions/machine";
+import { parseMeminfo, parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/machine";
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderTable, renderJson } from "./sessions/render";
@@ -121,9 +121,21 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
   } catch (error) {
     warn(`claude transcripts unavailable: ${(error as Error).message}`);
   }
+  // N-6: footer memory = memory_pressure system-wide free % × total RAM;
+  // vm_stat's "Pages free" alone reads as ~0 and misleads. vm_stat sum is
+  // only a fallback when memory_pressure is missing.
   let mem: number | null = null;
   let disk: number | null = null;
   try {
+    const mp = Bun.spawnSync(["memory_pressure"], { stdout: "pipe" });
+    const pct = parseMemoryPressure(mp.stdout.toString());
+    if (pct !== null) {
+      const total = Bun.spawnSync(["sysctl", "-n", "hw.memsize"], { stdout: "pipe" });
+      const totalMb = Number(total.stdout.toString().trim()) / 1024 / 1024;
+      if (Number.isFinite(totalMb) && totalMb > 0) mem = Math.round((totalMb * pct) / 100);
+    }
+  } catch { /* memory_pressure unavailable — fall through */ }
+  if (mem === null) try {
     const vmStat = Bun.spawnSync(["vm_stat"], { stdout: "pipe" });
     mem = parseVmStat(vmStat.stdout.toString());
   } catch { /* vm_stat unavailable — nulls are fine */ }
