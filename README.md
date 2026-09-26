@@ -72,15 +72,18 @@ export OPENROUTER_API_KEY=...
 
 ### Откуда берутся данные
 
-- **mac**: заголовки окон Terminal (osascript) + последняя строка вкладки,
-  `ps` по tty, транскрипты `~/.claude/projects/*/*.jsonl`, лог `runs/plan-*.md`.
+- **mac**: заголовки окон Terminal (osascript, поля id/title/экран/busy),
+  `ps` по tty, транскрипты `~/.claude/projects/*/*.jsonl`, `vm_stat`/`memory_pressure`, `df`.
 - **newa**: `/home/agents/work/<name>/` (meta.json, status.json, turns/, TO-S0.md,
   REPORT-S0.md, TASK*.md), `tmux ls` (сессии `af-*`), `/proc/meminfo`, `df`.
-  С Мака newa читается по ssh (`ZININ_PS_NEWA_CMD`, по умолчанию
-  `ssh -o BatchMode=yes newa`) той же командой `zinin ps --sources newa --json`;
+  С Мака newa читается по ssh (`ZININ_PS_NEWA_CMD`; по умолчанию — абсолютные
+  пути к bun и checkout на newa) той же командой `zinin ps --sources newa --json`;
   при недоступности футер честно пишет `newa: недоступна`. Транскрипты Claude
   читаются хвостом 64 КБ и только за окно 24 ч (`ZININ_PS_TRANSCRIPT_MINUTES`),
-  обогащают строку окна (движение, ошибки), а не порождают свои строки.
+  обогащают строку окна (движение, ошибки), а не порождают свои строки; ключ
+  «окно ↔ проект» — полный slug cwd, а факты получает только самое живое окно
+  проекта (спиннер/busy/глиф), припаркованное честно показывает «—». Память в
+  футере Мака — `memory_pressure` (system-wide free %), не «Pages free».
 
 Колонки: id, машина, движок и модель, задача, состояние, минуты без движения,
 во что упёрлась (последняя ошибка), что нужно (последний вопрос к Тиму),
