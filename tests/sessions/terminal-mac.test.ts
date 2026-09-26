@@ -163,3 +163,29 @@ test("К5-4: engine processes wrapped in an interpreter are found", async () => 
   expect(dirs.get("ttys013")).toBe("/Users/user/proj-a");
   expect(dirs.has("ttys014")).toBe(false);
 });
+test("К6-1: plugin helpers on the tty do not steal the launch dir; oldest engine pid wins", async () => {
+  const { parseLaunchDirs } = await import("../../src/adapters/sessions/terminal-mac");
+  const ps = [
+    "  301 ttys001 claude --dangerously-skip-permissions --model sonnet",
+    "  302 ttys001 caffeinate -i claude --dangerously-skip-permissions",
+    "  303 ttys001 bun run --cwd /Users/user/.claude/plugins/cache/telegram/0.0.7 start",
+    "  310 ttys002 node /opt/dist/codex.js --foo",
+  ].join("\n");
+  const lsof = [
+    "p301", "n/Users/user/proj-main",
+    "p302", "n/Users/user/proj-main",
+    "p303", "n/Users/user/.claude/plugins/cache/telegram/0.0.7",
+    "p310", "n/Users/user/proj-c",
+  ].join("\n");
+  const dirs = parseLaunchDirs(ps, lsof);
+  expect(dirs.get("ttys001")).toBe("/Users/user/proj-main"); // from pid 301, not the plugin
+  expect(dirs.get("ttys002")).toBe("/Users/user/proj-c");
+});
+test("К6-1: a bare path containing the engine name is not an engine process", async () => {
+  const { parseLaunchDirs } = await import("../../src/adapters/sessions/terminal-mac");
+  const ps = [
+    "  401 ttys003 bun run --cwd /Users/user/work/claude-notes --watch build",
+  ].join("\n");
+  const lsof = ["p401", "n/Users/user/work/claude-notes"].join("\n");
+  expect(parseLaunchDirs(ps, lsof).has("ttys003")).toBe(false);
+});

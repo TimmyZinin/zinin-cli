@@ -97,24 +97,40 @@ export function modelFromTitle(title: string): string | null {
   const match = /--model[= ]\s*([\w.-]+)/.exec(segments[2] ?? "");
   return match?.[1] ?? null;
 }
-/** К4-2: launch directories of engine processes, keyed by tty. Primary source
- * for the window↔transcript key: Claude Code keeps transcripts under the
- * directory the process was STARTED in, so a window that later `cd`s still
- * maps to its real project. Pure text-in (mock lsof/ps in tests). */
+/** К4-2/К6-1: launch directories of engine processes, keyed by tty. Primary
+ * source for the window↔transcript key: Claude Code keeps transcripts under
+ * the directory the process was STARTED in, so a window that later `cd`s
+ * still maps to its real project.
+ * К6-1: the engine is recognized by the basename of a command/script token
+ * (claude, kimi, codex.js, kimi_cli.py) — never by a bare substring inside an
+ * arbitrary path (plugin helpers run "bun run --cwd …/.claude/plugins/…").
+ * Per tty the OLDEST matching process wins (lowest pid — helpers spawn later),
+ * not the last one. Pure text-in (mock lsof/ps in tests). */
+const ENGINE_NAME = /^(?:claude|kimi|codex)$/i;
+const ENGINE_SCRIPT = /(?:claude|kimi|codex)[\w-]*\.(?:js|py|mjs|cjs)$/i;
+function tokenBasename(token: string): string {
+  const t = token.replace(/^["'`]+/, "").replace(/["'`,;.]+$/, "");
+  const i = t.lastIndexOf("/");
+  return i >= 0 ? t.slice(i + 1) : t;
+}
 export function parseLaunchDirs(psText: string, lsofText: string): Map<string, string> {
-  const pidTty = new Map<number, string>();
+  const winner = new Map<string, number>(); // tty → oldest matching pid
   for (const line of psText.split("\n")) {
     const cols = line.trim().split(/\s+/);
     if (cols.length < 3) continue;
     const pid = Number(cols[0]);
     const tty = cols[1];
-    // К5-4: the whole command line — wrappers ("node …/codex.js --foo",
-    // "python3 …/kimi_cli.py chat") keep the engine name past argv[0].
-    const args = cols.slice(2).join(" ");
     if (!Number.isSafeInteger(pid) || !/^ttys/.test(tty)) continue;
-    if (/(?:^|\s)\S*(?:claude|kimi|codex)\S*/i.test(args)) {
-      pidTty.set(pid, tty);
-    }
+    // The engine is argv[0] itself, or a script token it runs
+    // ("node …/codex.js", "python3 …/kimi_cli.py") — never a bare path arg
+    // ("bun run --cwd …/.claude/plugins/…" points at a directory).
+    const tokens = cols.slice(2);
+    const argv0 = tokenBasename(tokens[0] ?? "");
+    const isEngine = ENGINE_NAME.test(argv0) || ENGINE_SCRIPT.test(argv0)
+      || tokens.slice(1).some(token => ENGINE_SCRIPT.test(tokenBasename(token)));
+    if (!isEngine) continue;
+    const prev = winner.get(tty);
+    if (prev === undefined || pid < prev) winner.set(tty, pid);
   }
   const pidCwd = new Map<number, string>();
   let currentPid: number | null = null;
@@ -127,7 +143,7 @@ export function parseLaunchDirs(psText: string, lsofText: string): Map<string, s
     }
   }
   const dirs = new Map<string, string>();
-  for (const [pid, tty] of pidTty) {
+  for (const [tty, pid] of winner) {
     const cwd = pidCwd.get(pid);
     if (cwd) dirs.set(tty, cwd);
   }
