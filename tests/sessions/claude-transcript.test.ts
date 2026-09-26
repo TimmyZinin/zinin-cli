@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { parseTranscriptTail } from "../../src/adapters/sessions/claude-transcript";
+import { parseTranscriptTail, cwdToProjectSlug } from "../../src/adapters/sessions/claude-transcript";
 
 const FIX = join(import.meta.dir, "fixtures");
 
@@ -46,4 +46,9 @@ test("N-1: rate_limit_error structure carries the weekly percent", () => {
   const facts = parseTranscriptTail(line);
   expect(facts.weeklyLimitPct).toBe(97);
   expect(facts.stuckOn).toContain("weekly limit");
+});
+test("N-3: cwd maps to the full project slug, dash-safe", () => {
+  expect(cwdToProjectSlug("Users/user/proj-a-service"))
+    .toBe("-Users-user-proj-a-service");
+  expect(cwdToProjectSlug("Users/user/proj-b")).toBe("-Users-user-proj-b");
 });

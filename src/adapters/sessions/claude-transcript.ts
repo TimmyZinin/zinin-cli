@@ -32,6 +32,11 @@ function apiErrorText(value: Record<string, unknown>): string | null {
   }
   return null;
 }
+/** N-3: transcript project slugs encode the full cwd ("-Users-user-proj-a-service").
+ * Match on the whole slug, never on a dash-split tail ("service" collides across projects). */
+export function cwdToProjectSlug(cwd: string): string {
+  return "-" + cwd.split("/").filter(Boolean).join("-");
+}
 export function parseTranscriptTail(text: string): TranscriptFacts {
   let stuckOn: string | null = null;
   let contextPct: number | null = null;

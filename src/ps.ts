@@ -10,7 +10,7 @@ import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, cl
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
 import { parseTerminalWindows } from "./adapters/sessions/terminal-mac";
-import { parseTranscriptTail } from "./adapters/sessions/claude-transcript";
+import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
 import { parseNewaDir } from "./adapters/sessions/newa-workdir";
 import { parseTmuxSessions } from "./adapters/sessions/tmux";
 import { parseMeminfo, parseDf } from "./adapters/sessions/machine";
@@ -50,11 +50,9 @@ function readTail(path: string, maxBytes = TRANSCRIPT_TAIL_BYTES): string {
   finally { try { closeSync(fd); } catch { /* already closed */ } }
 }
 interface SlugFacts { lastActivityMs: number; stuckOn: string | null }
-function slugTail(slug: string): string {
-  const parts = slug.split("-");
-  return parts[parts.length - 1] || slug;
-}
-/** Claude transcripts → per-project facts; mtime-windowed and tail-read (P0-3). */
+/** N-3/N-4: facts are keyed by the full project slug and come from the single
+ * most recently modified transcript of that project — two windows of one
+ * project still share movement time, but never merge errors across sessions. */
 function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFacts> {
   const facts = new Map<string, SlugFacts>();
   if (!existsSync(root)) return facts;
@@ -66,20 +64,18 @@ function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFa
     if (!stat.isDirectory()) continue;
     let files: string[];
     try { files = readdirSync(dir).filter(f => f.endsWith(".jsonl")); } catch { continue; }
+    let latest: { mtimeMs: number; stuckOn: string | null } | null = null;
     for (const file of files) {
       const path = join(dir, file);
       let mtimeMs: number;
       try { mtimeMs = statSync(path).mtimeMs; } catch { continue; }
       if (nowMs - mtimeMs > windowMs) continue; // P0-3: only recently moved files
+      if (latest && mtimeMs <= latest.mtimeMs) continue;
       const parsed = parseTranscriptTail(readTail(path));
       if (!parsed.stuckOn && parsed.contextPct === null && parsed.weeklyLimitPct === null) continue;
-      const key = slugTail(slug);
-      const prev = facts.get(key);
-      facts.set(key, {
-        lastActivityMs: Math.max(prev?.lastActivityMs ?? 0, mtimeMs),
-        stuckOn: parsed.stuckOn ?? prev?.stuckOn ?? null,
-      });
+      latest = { mtimeMs, stuckOn: parsed.stuckOn };
     }
+    if (latest) facts.set(slug, { lastActivityMs: latest.mtimeMs, stuckOn: latest.stuckOn });
   }
   return facts;
 }
@@ -117,7 +113,7 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
     rows.push(row);
   }
   // P1-4: transcripts do not create rows — they enrich the matching window
-  // (last movement + hard errors), keyed by the project dir tail.
+  // (last movement + hard errors), keyed by the full project slug (N-3).
   try {
     const root = join(process.env.HOME ?? "~", ".claude", "projects");
     const facts = collectTranscriptFacts(root, nowMs);
@@ -125,7 +121,7 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
       if (row.machine !== "mac" || row.lastActivityMs !== null) continue;
       const cwd = screens.get(row.id)?.cwd;
       if (!cwd) continue;
-      const hit = facts.get(cwd.split("/").pop() ?? "");
+      const hit = facts.get(cwdToProjectSlug(cwd));
       if (!hit) continue;
       row.lastActivityMs = hit.lastActivityMs;
       row.stuckOn = row.stuckOn ?? hit.stuckOn;
@@ -202,14 +198,29 @@ async function collectNewa(rows: SessionRow[], nowMs: number): Promise<MachineIn
   } catch { /* df unavailable */ }
   return { machine: "newa", memFreeMb: mem, diskFreeMb: disk };
 }
-/** P1-9: from the Mac, newa rows come over the same ssh lock as remote.py get. */
+/** N-5: from the Mac, newa rows come over the same ssh lock as remote.py get.
+ * Default reaches the pinned bun and the deployed checkout on newa by absolute
+ * path (neither `zinin` nor `bun` is in a non-interactive ssh PATH there). */
+const DEFAULT_NEWA_CMD = [
+  "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=6", "newa",
+  "/home/agents/work/zinin-harness-e2/runtime/bun-1.3.0/bun",
+  "/home/agents/work/zinin-harness-e3/zinin-cli/src/repl.ts", "ps", "--sources", "newa", "--json",
+];
 async function collectRemoteNewa(rows: SessionRow[], machines: MachineInfo[]): Promise<void> {
-  const cmd = (process.env.ZININ_PS_NEWA_CMD ?? "ssh -o BatchMode=yes -o ConnectTimeout=6 newa").split(" ").filter(Boolean);
+  const override = process.env.ZININ_PS_NEWA_CMD;
   try {
-    const proc = Bun.spawn([...cmd, "zinin", "ps", "--sources", "newa", "--json"], { stdout: "pipe", stderr: "pipe" });
-    const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
-    if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
-    const parsed = JSON.parse(stdout) as { sessions?: SessionRow[]; machines?: MachineInfo[] };
+    let parsed: { sessions?: SessionRow[]; machines?: MachineInfo[] };
+    if (override) {
+      const proc = Bun.spawn([...override.split(" ").filter(Boolean), "zinin", "ps", "--sources", "newa", "--json"], { stdout: "pipe", stderr: "pipe" });
+      const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
+      if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
+      parsed = JSON.parse(stdout);
+    } else {
+      const proc = Bun.spawn(DEFAULT_NEWA_CMD, { stdout: "pipe", stderr: "pipe" });
+      const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
+      if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
+      parsed = JSON.parse(stdout);
+    }
     for (const row of parsed.sessions ?? []) rows.push(row);
     for (const machine of parsed.machines ?? []) machines.push(machine);
   } catch (error) {
@@ -222,9 +233,11 @@ async function collect(opts: PsOptions): Promise<{ rows: SessionRow[]; machines:
   const machines: MachineInfo[] = [];
   const host = platform() === "darwin" ? "mac" : existsSync("/home/agents/work") ? "newa" : "unknown";
   const nowMs = Date.now();
-  const wantMac = opts.sources === "mac" || opts.sources === "all";
+  // N-5: on the Mac "all" means both tables in one run; on newa the Mac half
+  // is unreachable, so "all" stays local there.
+  const wantMac = (opts.sources === "mac" || opts.sources === "all") && host !== "newa";
   const wantNewa = opts.sources === "newa" || opts.sources === "all";
-  if (wantMac && host !== "newa") machines.push(await collectMac(rows, nowMs));
+  if (wantMac) machines.push(await collectMac(rows, nowMs));
   if (wantNewa) {
     if (host === "newa") {
       const machine = await collectNewa(rows, nowMs);
@@ -271,8 +284,6 @@ export async function psMain(argv: string[]): Promise<void> {
     }
     else { warn(`unknown argument: ${arg}`); process.exit(2); }
   }
-  const host = platform() === "darwin" ? "mac" : existsSync("/home/agents/work") ? "newa" : "unknown";
-  if (opts.sources === "all") opts.sources = host === "unknown" ? "all" : host;
   const renderOnce = async () => {
     const { rows, machines, nowMs } = await collect(opts);
     if (opts.json) print(renderJson(rows, machines, nowMs));
