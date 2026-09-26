@@ -73,32 +73,48 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   let needs: string | null = null;
   if (toLast && /вопрос|жд[ёе]м\s+Тима|блокер|нужен\s+Тим/i.test(toLast)) needs = clip(toLast);
   const DONE_WORDS = new Set(["готово", "готов", "готова", "готовы", "итог", "сдано", "сдача", "done", "finished"]);
-  const NEGATION = (tokens: string[], i: number): boolean =>
-    tokens[i - 1] === "не" ||
-    (i > 1 && (tokens[i - 2] === "ещё" || tokens[i - 2] === "пока") && tokens[i - 1] === "не");
-  /** К5-2/К5-3: strip the submission-line decorations (backticks, dashes,
-   * "[HH:MM]", short tags of any alphabet) and find the first marker word.
-   * A marker right after «не»/«ещё не»/«пока не» is not a marker, and a
-   * «что …?» opener is a status question, not a result. */
-  function markerInSegment(segment: string): boolean {
+  interface Token { word: string; punct: string }
+  function tokenize(segment: string): Token[] {
     const stripped = segment
       .trim()
       .replace(/^[`'*]+/, "")
       .replace(/^\[?\d{1,2}:\d{2}\]?\s*/, "");
-    const tokens = stripped.split(/\s+/)
-      .map(token => token.replace(/^[`'"(*]+/, "").replace(/[.,:;!?()\[\]'"`*]+$/, "").toLowerCase())
-      .filter(Boolean);
-    if (tokens[0] === "что") return false;
-    for (let i = 0; i < Math.min(tokens.length, 5); i++) {
-      if (DONE_WORDS.has(tokens[i])) return !NEGATION(tokens, i);
-    }
-    return false;
+    return stripped.split(/\s+/)
+      .map(raw => {
+        const word = raw.replace(/^[`'"(*]+/, "").replace(/[.,:;!?()\[\]'"`*]+$/, "").toLowerCase();
+        const punct = (raw.match(/[.,:;!?]+$/)?.[0] ?? "");
+        return { word, punct };
+      })
+      .filter(token => token.word);
   }
-  /** К5-2: the last heading counts wholly, however many lines sit below it —
-   * the announcement idiom lives in the dash tail («## Ход N — … ГОТОВО»). */
+  const NEGATION = (tokens: Token[], i: number): boolean =>
+    tokens[i - 1]?.word === "не" ||
+    (i > 1 && (tokens[i - 2]?.word === "ещё" || tokens[i - 2]?.word === "пока") && tokens[i - 1]?.word === "не");
+  /** К5-2/К5-3/К6-2: find the first marker word after stripping submission-line
+   * decorations («`…`», "[HH:MM]", tags of any alphabet). Null when absent,
+   * negated («не»/«ещё не»/«пока не» before or right after), or questioned
+   * («ГОТОВО?»). Callers get the word and its punctuation for noun rules. */
+  function markerInSegment(segment: string): { word: string; punct: string } | null {
+    const tokens = tokenize(segment);
+    if (tokens[0]?.word === "что") return null;
+    for (let i = 0; i < Math.min(tokens.length, 5); i++) {
+      if (!DONE_WORDS.has(tokens[i].word)) continue;
+      if (tokens[i].punct.includes("?")) continue;
+      if (NEGATION(tokens, i)) return null;
+      const after = tokens.slice(i + 1, i + 4).map(t => t.word);
+      if (after[0] === "не" || ((after[0] === "пока" || after[0] === "ещё") && after[1] === "не")) return null;
+      return tokens[i];
+    }
+    return null;
+  }
+  /** К5-2: the last heading counts wholly, however many lines sit below it.
+   * К6-2: «итог» is a noun there unless announced («ИТОГ: …»). */
   function headingMarker(heading: string): boolean {
     const dash = /[—–]/.exec(heading);
-    return markerInSegment(dash ? heading.slice(dash.index + 1) : heading);
+    const marker = markerInSegment(dash ? heading.slice(dash.index + 1) : heading);
+    if (!marker) return false;
+    if (marker.word === "итог" && !marker.punct.includes(":")) return false;
+    return true;
   }
   function lastHeading(text: string | null): string | null {
     if (!text) return null;
@@ -109,7 +125,7 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     }
     return null;
   }
-  let done = false;
+    let done = false;
   for (const text of [input.toS0Text, input.reportText]) {
     const heading = lastHeading(text);
     if (heading && headingMarker(heading)) done = true;

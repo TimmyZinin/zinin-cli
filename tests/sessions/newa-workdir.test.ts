@@ -154,3 +154,11 @@ test("К5-5: ГОТОГО is not a marker, ИТОГО is not (summary), ИТОГ
   expect(parseNewaDir(base({ toS0Text: "ИТОГО: 5 патчей, 166 тестов\n" })).state).toBe("working");
   expect(parseNewaDir(base({ toS0Text: "ИТОГ: 5 патчей\n" })).state).toBe("done");
 });
+test("К6-2: negation after the marker, noun итог in headings, question mark", () => {
+  expect(parseNewaDir(base({ toS0Text: "## Ход 4 — итог: пока не готово\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "## Итог обсуждения: выбираем вариант Б\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "## Ход 9 — ГОТОВО?\n" })).state).toBe("working");
+  // анонс с двоеточием и отрицаний нет — по-прежнему done
+  expect(parseNewaDir(base({ toS0Text: "## ИТОГ: 5 патчей\n" })).state).toBe("done");
+  expect(parseNewaDir(base({ reportText: "ИТОГ: 5 патчей, тесты не запускались\n" })).state).toBe("done");
+});

@@ -166,6 +166,11 @@ export function parseTerminalWindows(
     const meta = fields.slice(2);
     let busy = false;
     let tty: string | null = null;
+    // К6-3: osascript emits an empty trailing field when the tty property is
+    // missing ("…\ttrue\t") — drop it first so busy still parses.
+    if (meta.length > 1 && (meta[meta.length - 1] ?? "").trim() === "") {
+      meta.pop();
+    }
     if (meta.length > 1 && /^(?:\/dev\/)?ttys\d+$/.test((meta[meta.length - 1] ?? "").trim())) {
       tty = meta.pop()!.trim().replace(/^\/dev\//, "");
     }

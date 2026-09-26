@@ -189,3 +189,10 @@ test("К6-1: a bare path containing the engine name is not an engine process", a
   const lsof = ["p401", "n/Users/user/work/claude-notes"].join("\n");
   expect(parseLaunchDirs(ps, lsof).has("ttys003")).toBe(false);
 });
+test("К6-3: empty trailing tty field — busy still parses, tty is null", () => {
+  const record = ["1062", "user — ○ scratchpad | idle — sleep 300 — 80×24", "$ sleep 300\n", "true", ""].join("\t");
+  const seen = new Map<string, { tty: string | null; busy: boolean }>();
+  const rows = parseTerminalWindows(record, (id, screen) => seen.set(id, { tty: screen.tty, busy: screen.busy }));
+  expect(seen.get("mac-win-1062")).toEqual({ tty: null, busy: true });
+  expect(rows[0].state).toBe("working");
+});
