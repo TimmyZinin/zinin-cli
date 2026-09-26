@@ -104,13 +104,15 @@ export function modelFromTitle(title: string): string | null {
 export function parseLaunchDirs(psText: string, lsofText: string): Map<string, string> {
   const pidTty = new Map<number, string>();
   for (const line of psText.split("\n")) {
-    const cols = line.trim().split(/\s+/, 3);
+    const cols = line.trim().split(/\s+/);
     if (cols.length < 3) continue;
     const pid = Number(cols[0]);
     const tty = cols[1];
-    const args = cols[2] ?? "";
+    // К5-4: the whole command line — wrappers ("node …/codex.js --foo",
+    // "python3 …/kimi_cli.py chat") keep the engine name past argv[0].
+    const args = cols.slice(2).join(" ");
     if (!Number.isSafeInteger(pid) || !/^ttys/.test(tty)) continue;
-    if (/(?:^|[/\\])(claude|kimi|codex)\b/.test(args) || /\b(claude|kimi|codex)\s+--/.test(args)) {
+    if (/(?:^|\s)\S*(?:claude|kimi|codex)\S*/i.test(args)) {
       pidTty.set(pid, tty);
     }
   }

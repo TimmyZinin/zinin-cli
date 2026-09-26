@@ -149,3 +149,8 @@ test("К5-2/К5-3 regressions: previous accept/reject cases unchanged", () => {
   expect(parseNewaDir(base({ toS0Text: "[07:20] E3-fix ГОТОВ | тестов 125/125\n" })).state).toBe("done");
   expect(parseNewaDir(base({ reportText: "ИТОГ: патчи готовы\n" })).state).toBe("done");
 });
+test("К5-5: ГОТОГО is not a marker, ИТОГО is not (summary), ИТОГ stays one", () => {
+  expect(parseNewaDir(base({ toS0Text: "ГОТОГО: 5\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "ИТОГО: 5 патчей, 166 тестов\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "ИТОГ: 5 патчей\n" })).state).toBe("done");
+});

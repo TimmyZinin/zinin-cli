@@ -148,3 +148,18 @@ test("К5-1: launch-dir keying works with the /dev/ tty form", async () => {
   expect(windowProjectKey({ cwd: "Users/user/proj-b", tty: "ttys009" }, launchDirs, slugOf))
     .toBe(slugOf("Users/user/proj-a"));
 });
+test("К5-4: engine processes wrapped in an interpreter are found", async () => {
+  const { parseLaunchDirs } = await import("../../src/adapters/sessions/terminal-mac");
+  const ps = [
+    "  201 ttys011 node /opt/dist/codex.js --foo",
+    "  202 ttys012 python3 /opt/bin/kimi_cli.py chat",
+    "  203 ttys013 /usr/local/bin/claude --dangerously-skip-permissions",
+    "  204 ttys014 -zsh",
+  ].join("\n");
+  const lsof = ["p201", "n/Users/user/proj-c", "p202", "n/Users/user/proj-d", "p203", "n/Users/user/proj-a"].join("\n");
+  const dirs = parseLaunchDirs(ps, lsof);
+  expect(dirs.get("ttys011")).toBe("/Users/user/proj-c");
+  expect(dirs.get("ttys012")).toBe("/Users/user/proj-d");
+  expect(dirs.get("ttys013")).toBe("/Users/user/proj-a");
+  expect(dirs.has("ttys014")).toBe(false);
+});
