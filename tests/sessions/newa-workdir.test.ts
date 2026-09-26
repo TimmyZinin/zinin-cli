@@ -112,3 +112,40 @@ test("К4-4: «ещё не готово» and «пока не готов» stay 
   expect(parseNewaDir(base({ toS0Text: "1. Пока не готов, жду Тима.\n" })).state).toBe("working");
   expect(parseNewaDir(base({ reportText: "ещё не готово к выбору\n" })).state).toBe("working");
 });
+test("К5-2: last-turn heading counts however deep it sits; backtick submission line counts", () => {
+  const turn26 = [
+    "## Ход 26 (26.09, ~12:40 UTC) — E3 круг 5 ГОТОВ",
+    "",
+    "`E3 круг 5 ГОТОВ | коммиты a, b | тестов 166/166 | sha256 x`",
+    "",
+    "Закрыто: К4-1, К4-2, К4-3, К4-4. Патчи: patches-e3-fix4/ (0021–0025,",
+    "от eb10a3c = HEAD после круга 4). Проверка: 25 патчей на чистый клон",
+    "от e2-core-session-tree → 166/166. Приёмка на Маке: IDLE у окна с cd,",
+    "версия newa в --json, повтор владения фактами.",
+    "",
+    "— newa (E3)",
+  ].join("\n");
+  expect(parseNewaDir(base({ toS0Text: turn26 })).state).toBe("done");
+});
+test("К5-2: deep heading without marker stays idle; heading below the window edge counts", () => {
+  const deepNoMarker = ["## Ход 8 — разбираю замечания", "", "строка 1", "строка 2", "строка 3", "строка 4", "", "— newa (E3)"].join("\n");
+  expect(parseNewaDir(base({ toS0Text: deepNoMarker })).state).toBe("working");
+});
+test("К5-2: cyrillic tag and ГОТОВА recognized; СДАЧА recognized", () => {
+  expect(parseNewaDir(base({ reportText: "[05:59] ИНФОГРАФИКА ГОТОВА | out/…\n" })).state).toBe("done");
+  expect(parseNewaDir(base({ toS0Text: "[09:55] СДАЧА | поручение выполнено\n" })).state).toBe("done");
+});
+test("К5-3: negated markers stay idle in headings and plain lines", () => {
+  expect(parseNewaDir(base({ toS0Text: "## Ход 6 — пока не готов\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "## Ход 6 — не ГОТОВО, жду Тима\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "## Ход 6 — ещё не готово к выбору\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "## [10:00] Что готово, а что нет\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "не ГОТОВО, жду\n" })).state).toBe("working");
+});
+test("К5-2/К5-3 regressions: previous accept/reject cases unchanged", () => {
+  expect(parseNewaDir(base({ toS0Text: "1. Пока не готов, жду Тима.\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ reportText: "…состава готовых порций и ккал по дням…\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ reportText: "ещё не готово к выбору\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ toS0Text: "[07:20] E3-fix ГОТОВ | тестов 125/125\n" })).state).toBe("done");
+  expect(parseNewaDir(base({ reportText: "ИТОГ: патчи готовы\n" })).state).toBe("done");
+});

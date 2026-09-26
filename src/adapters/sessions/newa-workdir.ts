@@ -72,16 +72,49 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   const reportLast = lastLine(input.reportText);
   let needs: string | null = null;
   if (toLast && /вопрос|жд[ёе]м\s+Тима|блокер|нужен\s+Тим/i.test(toLast)) needs = clip(toLast);
-  const DONE_WORDS = "(ГОТОВО|ГОТОВ|ГОТОГО|ИТОГ|СДАНО|DONE|FINISHED)";
-  // Head-anchored for plain lines (after "[HH:MM] "/tag/dash): «пока не готов»
-  // and «ещё не готово» must stay working. Headings ("## Ход 21 — … ГОТОВО")
-  // get the word anywhere inside — that is the announced-result idiom.
-  const DONE_HEAD = new RegExp(`^(?:\\[?\\d{1,2}:\\d{2}\\]?\\s+)?(?:[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\\s+)?[—–-]?\\s*${DONE_WORDS}(?![\\p{L}\\p{N}])`, "iu");
-  const DONE_ANYWHERE = new RegExp(`(^|[^\\p{L}\\p{N}])${DONE_WORDS}(?![\\p{L}\\p{N}])`, "iu");
+  const DONE_WORDS = new Set(["готово", "готов", "готова", "готовы", "итог", "сдано", "сдача", "done", "finished"]);
+  const NEGATION = (tokens: string[], i: number): boolean =>
+    tokens[i - 1] === "не" ||
+    (i > 1 && (tokens[i - 2] === "ещё" || tokens[i - 2] === "пока") && tokens[i - 1] === "не");
+  /** К5-2/К5-3: strip the submission-line decorations (backticks, dashes,
+   * "[HH:MM]", short tags of any alphabet) and find the first marker word.
+   * A marker right after «не»/«ещё не»/«пока не» is not a marker, and a
+   * «что …?» opener is a status question, not a result. */
+  function markerInSegment(segment: string): boolean {
+    const stripped = segment
+      .trim()
+      .replace(/^[`'*]+/, "")
+      .replace(/^\[?\d{1,2}:\d{2}\]?\s*/, "");
+    const tokens = stripped.split(/\s+/)
+      .map(token => token.replace(/^[`'"(*]+/, "").replace(/[.,:;!?()\[\]'"`*]+$/, "").toLowerCase())
+      .filter(Boolean);
+    if (tokens[0] === "что") return false;
+    for (let i = 0; i < Math.min(tokens.length, 5); i++) {
+      if (DONE_WORDS.has(tokens[i])) return !NEGATION(tokens, i);
+    }
+    return false;
+  }
+  /** К5-2: the last heading counts wholly, however many lines sit below it —
+   * the announcement idiom lives in the dash tail («## Ход N — … ГОТОВО»). */
+  function headingMarker(heading: string): boolean {
+    const dash = /[—–]/.exec(heading);
+    return markerInSegment(dash ? heading.slice(dash.index + 1) : heading);
+  }
+  function lastHeading(text: string | null): string | null {
+    if (!text) return null;
+    for (const raw of text.trimEnd().split("\n").reverse()) {
+      const v = raw.trim();
+      if (!v || SIGNATURE.test(v.replace(/^#+\s*/, ""))) continue;
+      if (/^#+\s/.test(v)) return v.replace(/^#+\s*/, "").trim();
+    }
+    return null;
+  }
   let done = false;
   for (const text of [input.toS0Text, input.reportText]) {
-    for (const { line, heading } of lastLines(text, 3)) {
-      if (heading ? DONE_ANYWHERE.test(line) : DONE_HEAD.test(line)) done = true;
+    const heading = lastHeading(text);
+    if (heading && headingMarker(heading)) done = true;
+    for (const { line, heading: isHeading } of lastLines(text, 3)) {
+      if (!isHeading && markerInSegment(line)) done = true;
     }
   }
   let task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
