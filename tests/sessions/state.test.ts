@@ -17,8 +17,9 @@ test("weekly limit >= 95% is limit even while working", () => {
   expect(deriveState(row({ weeklyLimitPct: 95 }), NOW)).toBe("limit");
   expect(deriveState(row({ weeklyLimitPct: 94 }), NOW)).toBe("working");
 });
-test("rate_limit stuckOn is limit regardless of activity", () => {
-  expect(deriveState(row({ stuckOn: "API Error: 403 rate_limit" }), NOW)).toBe("limit");
+test("N-1: stuckOn text alone never becomes limit; weekly percent drives it", () => {
+  expect(deriveState(row({ stuckOn: "API Error: 403 rate_limit" }), NOW)).toBe("working");
+  expect(deriveState(row({ stuckOn: "API Error: 403 rate_limit", weeklyLimitPct: 95 }), NOW)).toBe("limit");
   expect(deriveState(row({ stuckOn: "generic ERROR: build failed" }), NOW)).toBe("working");
 });
 test("needs implies waiting-tim", () => {
