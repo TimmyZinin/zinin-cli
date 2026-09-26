@@ -35,7 +35,7 @@ export function parseTranscriptTail(text: string): TranscriptFacts {
     if (weekly) weeklyLimitPct = Number(weekly[1]);
     const ctx = /(?:context|compaction)[^0-9%]{0,24}(\d{1,3})%/i.exec(line);
     if (ctx) contextPct = Number(ctx[1]);
-    if (/Interrupted|\bERROR\b|\berror\b|"error"|403|rate_limit|rate limit|limit reached|timed out/i.test(line)) {
+    if (/"is_error":\s*true|API Error|rate_limit|rate limit|limit reached|Interrupted|\b403\b|timed out/i.test(line)) {
       stuckOn = readable(line);
     }
   }

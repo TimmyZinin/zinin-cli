@@ -44,11 +44,15 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   const engine = clean(typeof meta?.engine === "string" ? meta.engine : null);
   const model = clean(typeof meta?.model === "string" ? meta.model : null);
   const stateRaw = clean(typeof status?.state === "string" ? status.state : null);
+  // P1-10: "closing" only while a stop was requested and the worker is still
+  // around. Long-stopped workers (live=false / stopped / failed) are done when
+  // a ГОТОВО/ИТОГ marker says so, otherwise plainly idle — age shows in IDLE.
+  const alive = status?.live !== false;
   let state: SessionRow["state"];
-  if (status?.live === false || status?.stop_requested === true) state = "closing";
+  if (status?.stop_requested === true && alive) state = "closing";
+  else if (!alive) state = "idle"; // stale status file of a gone worker
   else if (stateRaw === "running") state = "working";
   else if (stateRaw === "idle" || stateRaw === "waiting") state = "idle";
-  else if (stateRaw === "stopped" || stateRaw === "failed") state = "closing";
   else state = "idle";
   const lastActivityMs = input.turnMtimesMs.length ? Math.max(...input.turnMtimesMs) : null;
   const toLast = lastLine(input.toS0Text);
@@ -60,10 +64,6 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     if (line && /ГОТОВ|ИТОГ/i.test(line)) done = true;
   }
   let task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
-  if (!task && input.toS0Text) {
-    const heading = /^#+\s+(.+)$/m.exec(input.toS0Text);
-    task = clip(heading?.[1] ?? null);
-  }
   let contextPct: number | null = null;
   const haystack = `${toLast ?? ""}\n${reportLast ?? ""}`;
   const ctx = /context:\s*(\d+)%/i.exec(haystack);

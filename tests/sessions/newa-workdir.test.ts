@@ -35,13 +35,21 @@ test("ИТОГ in REPORT also marks done", () => {
   const row = parseNewaDir(base({ reportText: "ИТОГ: патчи готовы\n" }));
   expect(row.state).toBe("done");
 });
-test("live=false closes the session", () => {
-  const row = parseNewaDir(base({ statusText: '{"state":"failed","completed":22,"live":false}' }));
-  expect(row.state).toBe("closing");
+test("P1-10: live=false means the worker is gone — idle unless a done marker says otherwise", () => {
+  const row = parseNewaDir(base({ statusText: '{"state":"failed","completed":22,"live":false,"exit_code":1}' }));
+  expect(row.state).toBe("idle");
+  const done = parseNewaDir(base({ statusText: '{"state":"stopped","live":false}', toS0Text: "ИТОГ: готово\n" }));
+  expect(done.state).toBe("done");
 });
-test("stop_requested closes the session", () => {
+test("P1-10: long-stopped worker is not closing", () => {
+  const row = parseNewaDir(base({ statusText: '{"state":"stopped","exit_code":0}' }));
+  expect(row.state).toBe("idle");
+});
+test("closing is reserved for a requested stop on a live worker", () => {
   const row = parseNewaDir(base({ statusText: '{"state":"running","stop_requested":true}' }));
   expect(row.state).toBe("closing");
+  const gone = parseNewaDir(base({ statusText: '{"state":"running","stop_requested":true,"live":false}' }));
+  expect(gone.state).toBe("idle");
 });
 test("idle status without turns keeps idle and null activity", () => {
   const row = parseNewaDir(base({ statusText: '{"state":"idle"}', turnMtimesMs: [] }));
@@ -53,9 +61,9 @@ test("broken json files degrade to idle unknown, never throw", () => {
   expect(row.engine).toBeNull();
   expect(row.state).toBe("idle");
 });
-test("missing task file falls back to TO-S0 heading", () => {
+test("without TASK file the task column stays empty instead of borrowing a TO-S0 heading", () => {
   const row = parseNewaDir(base({ taskText: null, toS0Text: "# S0 → newa\n\nвсё в порядке\n" }));
-  expect(row.task).toBe("S0 → newa");
+  expect(row.task).toBeNull();
   expect(row.needs).toBeNull();
 });
 test("long lines are clipped to 120 chars", () => {
