@@ -76,8 +76,11 @@ export OPENROUTER_API_KEY=...
   `ps` по tty, транскрипты `~/.claude/projects/*/*.jsonl`, `vm_stat`/`memory_pressure`, `df`.
 - **newa**: `/home/agents/work/<name>/` (meta.json, status.json, turns/, TO-S0.md,
   REPORT-S0.md, TASK*.md), `tmux ls` (сессии `af-*`), `/proc/meminfo`, `df`.
-  С Мака newa читается по ssh (`ZININ_PS_NEWA_CMD`; по умолчанию — абсолютные
-  пути к bun и checkout на newa) той же командой `zinin ps --sources newa --json`;
+  С Мака newa читается по ssh той же командой `zinin ps --sources newa --json`.
+  Команда: `ZININ_PS_NEWA_CMD` → `~/.zinin/ps.json` `{"newaCmd": ["ssh", …]}` →
+  встроенный дефолт с абсолютными путями (временный, указывает на checkout
+  воркера — закрепите установку через ps.json). В `--json` есть `version`
+  (git-шортшa пакета) — по нему видно, какой код считал newa-половину;
   при недоступности футер честно пишет `newa: недоступна`. Транскрипты Claude
   читаются хвостом 64 КБ и только за окно 24 ч (`ZININ_PS_TRANSCRIPT_MINUTES`),
   обогащают строку окна (движение, ошибки), а не порождают свои строки; ключ

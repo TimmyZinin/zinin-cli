@@ -48,6 +48,6 @@ export function renderTable(rows: SessionRow[], machines: MachineInfo[], nowMs: 
   }
   return out.join("\n");
 }
-export function renderJson(rows: SessionRow[], machines: MachineInfo[], nowMs: number): string {
-  return JSON.stringify({ generatedAt: new Date(nowMs).toISOString(), sessions: rows, machines }, null, 2);
+export function renderJson(rows: SessionRow[], machines: MachineInfo[], nowMs: number, version?: string): string {
+  return JSON.stringify({ generatedAt: new Date(nowMs).toISOString(), ...(version ? { version } : {}), sessions: rows, machines }, null, 2);
 }

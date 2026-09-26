@@ -5,7 +5,7 @@
  * transcripts, only files touched within the window, transcripts enrich
  * windows instead of spawning rows.
  */
-import { platform } from "node:os";
+import { platform, homedir } from "node:os";
 import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
@@ -18,6 +18,7 @@ import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderTable, renderJson } from "./sessions/render";
 import { enrichRowsWithTranscripts, type SlugFacts, type WindowScreen } from "./sessions/enrich";
+import { parsePsConfig } from "./sessions/psconfig";
 
 export interface PsOptions {
   watchSeconds: number | null;
@@ -205,27 +206,29 @@ async function collectNewa(rows: SessionRow[], nowMs: number): Promise<MachineIn
 }
 /** N-5: from the Mac, newa rows come over the same ssh lock as remote.py get.
  * Default reaches the pinned bun and the deployed checkout on newa by absolute
- * path (neither `zinin` nor `bun` is in a non-interactive ssh PATH there). */
+ * path (neither `zinin` nor `bun` is in a non-interactive ssh PATH there).
+ * K3-3: this default is TEMPORARY — it lives in the worker's own checkout; pin
+ * a stable install via ~/.zinin/ps.json {"newaCmd": [...]} or ZININ_PS_NEWA_CMD. */
 const DEFAULT_NEWA_CMD = [
   "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=6", "newa",
   "/home/agents/work/zinin-harness-e2/runtime/bun-1.3.0/bun",
   "/home/agents/work/zinin-harness-e3/zinin-cli/src/repl.ts", "ps", "--sources", "newa", "--json",
 ];
-async function collectRemoteNewa(rows: SessionRow[], machines: MachineInfo[]): Promise<void> {
-  const override = process.env.ZININ_PS_NEWA_CMD;
+function resolveNewaCmd(): string[] {
+  const env = process.env.ZININ_PS_NEWA_CMD;
+  if (env) return [...env.split(" ").filter(Boolean), "zinin", "ps", "--sources", "newa", "--json"];
   try {
-    let parsed: { sessions?: SessionRow[]; machines?: MachineInfo[] };
-    if (override) {
-      const proc = Bun.spawn([...override.split(" ").filter(Boolean), "zinin", "ps", "--sources", "newa", "--json"], { stdout: "pipe", stderr: "pipe" });
-      const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
-      if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
-      parsed = JSON.parse(stdout);
-    } else {
-      const proc = Bun.spawn(DEFAULT_NEWA_CMD, { stdout: "pipe", stderr: "pipe" });
-      const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
-      if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
-      parsed = JSON.parse(stdout);
-    }
+    const config = parsePsConfig(readFileSync(join(homedir(), ".zinin", "ps.json"), "utf8"));
+    if (config.newaCmd) return config.newaCmd;
+  } catch { /* no config file — default below */ }
+  return DEFAULT_NEWA_CMD;
+}
+async function collectRemoteNewa(rows: SessionRow[], machines: MachineInfo[]): Promise<void> {
+  try {
+    const proc = Bun.spawn(resolveNewaCmd(), { stdout: "pipe", stderr: "pipe" });
+    const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
+    if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
+    const parsed = JSON.parse(stdout) as { sessions?: SessionRow[]; machines?: MachineInfo[] };
     for (const row of parsed.sessions ?? []) rows.push(row);
     for (const machine of parsed.machines ?? []) machines.push(machine);
   } catch (error) {
@@ -257,6 +260,20 @@ async function collect(opts: PsOptions): Promise<{ rows: SessionRow[]; machines:
 }
 function print(out: string): void {
   process.stdout.write(out + "\n");
+}
+/** K3-3: the newa half of `--json` must say which code produced it
+ * (git sha when available, package version otherwise). */
+export function codeVersion(dir = import.meta.dir): string {
+  try {
+    const proc = Bun.spawnSync(["git", "-C", dir, "rev-parse", "--short", "HEAD"], { stdout: "pipe", stderr: "pipe" });
+    const sha = proc.stdout.toString().trim();
+    if (proc.exitCode === 0 && sha) return `git-${sha}`;
+  } catch { /* not a git checkout */ }
+  try {
+    const pkg = JSON.parse(readFileSync(join(dir, "..", "package.json"), "utf8")) as { version?: string };
+    if (pkg.version) return `v${pkg.version}`;
+  } catch { /* no package.json */ }
+  return "unknown";
 }
 export async function psMain(argv: string[]): Promise<void> {
   const opts: PsOptions = { watchSeconds: null, json: false, stuckMinutes: undefined, sources: "all" };
@@ -291,7 +308,7 @@ export async function psMain(argv: string[]): Promise<void> {
   }
   const renderOnce = async () => {
     const { rows, machines, nowMs } = await collect(opts);
-    if (opts.json) print(renderJson(rows, machines, nowMs));
+    if (opts.json) print(renderJson(rows, machines, nowMs, codeVersion()));
     else print(renderTable(rows, machines, nowMs));
   };
   if (opts.watchSeconds === null) { await renderOnce(); return; }
