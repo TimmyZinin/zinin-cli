@@ -78,3 +78,16 @@ test("К4-2: a window keyed by launch dir gets that project's facts", () => {
   enrichRowsWithTranscripts(rows, screens, facts, slugOf);
   expect(rows[0].lastActivityMs).toBe(FACT.lastActivityMs);
 });
+test("К4-3: equal signals resolve by numeric window id, not string order", async () => {
+  const { windowIdCompare } = await import("../../src/sessions/enrich");
+  expect(windowIdCompare("mac-win-9", "mac-win-10")).toBeLessThan(0);
+  expect(windowIdCompare("mac-win-63", "mac-win-1054")).toBeLessThan(0);
+  const rows = [row("mac-win-10", "working"), row("mac-win-9", "working")];
+  const screens = new Map<string, WindowScreen>([
+    ["mac-win-10", screen("Users/user/proj-a")],
+    ["mac-win-9", screen("Users/user/proj-a")],
+  ]);
+  enrichRowsWithTranscripts(rows, screens, new Map([[slugOf("Users/user/proj-a"), FACT]]), slugOf);
+  expect(rows[1].lastActivityMs).toBe(FACT.lastActivityMs); // mac-win-9 owns
+  expect(rows[0].lastActivityMs).toBeNull();
+});

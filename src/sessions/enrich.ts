@@ -30,6 +30,17 @@ export function windowProjectKey(
   }
   return screen.cwd ? slugOf(screen.cwd) : null;
 }
+/** К4-3: numeric window-id order for ties — the smaller id is the older
+ * window and takes the facts. localeCompare would rank "mac-win-1054"
+ * below "mac-win-63" and "10" below "9". */
+export function windowIdCompare(a: string, b: string): number {
+  const na = /(\d+)$/.exec(a)?.[1];
+  const nb = /(\d+)$/.exec(b)?.[1];
+  if (na !== undefined && nb !== undefined && na !== nb) return Number(na) - Number(nb);
+  if (na !== undefined) return -1;
+  if (nb !== undefined) return 1;
+  return a < b ? -1 : a > b ? 1 : 0;
+}
 function signal(row: SessionRow, screen: WindowScreen | undefined): number {
   let score = 0;
   if (screen?.spinning) score += 10;         // live spinner on screen
@@ -60,7 +71,7 @@ export function enrichRowsWithTranscripts(
     candidates.set(key, list);
   }
   for (const list of candidates.values()) {
-    list.sort((a, b) => b.score - a.score || a.row.id.localeCompare(b.row.id));
+    list.sort((a, b) => b.score - a.score || windowIdCompare(a.row.id, b.row.id));
     const owner = list[0];
     owner.row.lastActivityMs = owner.fact.lastActivityMs;
     owner.row.stuckOn = owner.row.stuckOn ?? owner.fact.stuckOn;
