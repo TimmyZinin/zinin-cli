@@ -76,3 +76,7 @@ test("json output carries sessions, machines and timestamp", () => {
   expect(parsed.sessions).toHaveLength(1);
   expect(parsed.machines[0].diskFreeMb).toBe(2);
 });
+test("unavailable machine renders an honest line, not a borrowed disk", () => {
+  const out = renderTable([], [{ machine: "newa", memFreeMb: null, diskFreeMb: null }], NOW);
+  expect(out.split("\n").at(-1)).toBe("newa: недоступна");
+});

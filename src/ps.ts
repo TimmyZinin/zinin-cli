@@ -1,9 +1,12 @@
 /** E3 live collector — the thin wrapper around the pure adapters.
- * Reads-only: osascript/tmux/ps/file mtimes. One failing source warns on
- * stderr and never aborts the overview. Verified live by S0 on the Mac.
+ * Reads-only: osascript/tmux/ssh/ps/file mtimes. One failing source warns on
+ * stderr and never aborts the overview. Mac specifics per S0 live test
+ * (docs e3-live-findings 26.09): ASCII-9/30 separators, last 64 KiB of
+ * transcripts, only files touched within the window, transcripts enrich
+ * windows instead of spawning rows.
  */
 import { platform } from "node:os";
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
 import { parseTerminalWindows } from "./adapters/sessions/terminal-mac";
@@ -21,52 +24,111 @@ export interface PsOptions {
   stuckMinutes: number | undefined;
   sources: "mac" | "newa" | "all";
 }
+const TRANSCRIPT_TAIL_BYTES = 64 * 1024;
+const transcriptWindowMs = () => {
+  const minutes = Number(process.env.ZININ_PS_TRANSCRIPT_MINUTES ?? 1440);
+  return (Number.isFinite(minutes) && minutes > 0 ? minutes : 1440) * 60_000;
+};
 function warn(message: string): void {
   console.error(`zinin ps: ${message}`);
 }
-async function collectMac(rows: SessionRow[]): Promise<MachineInfo> {
-  let windowsTsv = "";
+/** Last maxBytes of a file without throwing on missing/truncated files. */
+function readTail(path: string, maxBytes = TRANSCRIPT_TAIL_BYTES): string {
+  let size: number;
+  try { size = statSync(path).size; } catch { return ""; }
+  const length = Math.min(maxBytes, size);
+  if (length <= 0) return "";
+  let fd: number;
+  try { fd = openSync(path, "r"); } catch { return ""; }
   try {
-    // S0: verify on Mac — titles of all Terminal windows + last line of each tab.
+    const buffer = Buffer.alloc(length);
+    readSync(fd, buffer, 0, length, size - length);
+    let text = buffer.toString("utf8");
+    if (size > maxBytes) text = text.slice(text.indexOf("\n") + 1); // drop a partial first line
+    return text;
+  } catch { return ""; }
+  finally { try { closeSync(fd); } catch { /* already closed */ } }
+}
+interface SlugFacts { lastActivityMs: number; stuckOn: string | null }
+function slugTail(slug: string): string {
+  const parts = slug.split("-");
+  return parts[parts.length - 1] || slug;
+}
+/** Claude transcripts → per-project facts; mtime-windowed and tail-read (P0-3). */
+function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFacts> {
+  const facts = new Map<string, SlugFacts>();
+  if (!existsSync(root)) return facts;
+  const windowMs = transcriptWindowMs();
+  for (const slug of readdirSync(root)) {
+    const dir = join(root, slug);
+    let stat;
+    try { stat = statSync(dir); } catch { continue; }
+    if (!stat.isDirectory()) continue;
+    let files: string[];
+    try { files = readdirSync(dir).filter(f => f.endsWith(".jsonl")); } catch { continue; }
+    for (const file of files) {
+      const path = join(dir, file);
+      let mtimeMs: number;
+      try { mtimeMs = statSync(path).mtimeMs; } catch { continue; }
+      if (nowMs - mtimeMs > windowMs) continue; // P0-3: only recently moved files
+      const parsed = parseTranscriptTail(readTail(path));
+      if (!parsed.stuckOn && parsed.contextPct === null && parsed.weeklyLimitPct === null) continue;
+      const key = slugTail(slug);
+      const prev = facts.get(key);
+      facts.set(key, {
+        lastActivityMs: Math.max(prev?.lastActivityMs ?? 0, mtimeMs),
+        stuckOn: parsed.stuckOn ?? prev?.stuckOn ?? null,
+      });
+    }
+  }
+  return facts;
+}
+async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInfo> {
+  let windowsRaw = "";
+  try {
+    // Verified on Mac (S0, 26.09): `tab` inside tell is the Terminal class, so
+    // separators are built from ASCII codes before the tell block.
     const script = [
+      "set tabChar to (ASCII character 9)",
+      "set recSep to (ASCII character 30)",
       'tell application "Terminal"',
-      "  set out to \"\"",
+      '  set out to ""',
       "  repeat with w in windows",
-      "    set out to out & (id of w as text) & tab & (name of w) & tab",
-      "    try",
-      "      set out to out & (contents of front tab of w)",
-      "    end try",
-      "    set out to out & linefeed",
+      "    if (count of tabs of w) is 0 then", // phantom window after close
+      "      set out to out & recSep",
+      "    else",
+      '      set out to out & (id of w as text) & tabChar & (name of w) & tabChar',
+      "      try",
+      "        set out to out & (contents of selected tab of w)",
+      "      end try",
+      "      set out to out & recSep",
+      "    end if",
       "  end repeat",
       "  return out",
       "end tell",
     ].join("\n");
     const proc = Bun.spawn(["osascript", "-e", script], { stdout: "pipe", stderr: "pipe" });
-    windowsTsv = await new Response(proc.stdout).text();
+    windowsRaw = await new Response(proc.stdout).text();
   } catch (error) {
     warn(`mac windows unavailable: ${(error as Error).message}`);
   }
-  for (const row of parseTerminalWindows(windowsTsv)) rows.push(row);
-  // Claude transcripts: mtime = last movement, tail = errors/limits.
+  const screens = new Map<string, { statusline: string; cwd: string | null }>();
+  for (const row of parseTerminalWindows(windowsRaw, (id, statusline, cwd) => screens.set(id, { statusline, cwd }))) {
+    rows.push(row);
+  }
+  // P1-4: transcripts do not create rows — they enrich the matching window
+  // (last movement + hard errors), keyed by the project dir tail.
   try {
     const root = join(process.env.HOME ?? "~", ".claude", "projects");
-    if (existsSync(root)) {
-      for (const proj of readdirSync(root)) {
-        const dir = join(root, proj);
-        for (const file of readdirSync(dir).filter(f => f.endsWith(".jsonl"))) {
-          const path = join(dir, file);
-          const tail = readFileSync(path, "utf8").split("\n").slice(-50).join("\n");
-          const facts = parseTranscriptTail(tail);
-          if (facts.stuckOn || facts.contextPct !== null || facts.weeklyLimitPct !== null) {
-            rows.push({
-              id: file.replace(/\.jsonl$/, ""), machine: "mac", engine: "claude",
-              model: null, task: null, state: "working", lastActivityMs: statSync(path).mtimeMs,
-              stuckOn: facts.stuckOn, needs: null, contextPct: facts.contextPct,
-              weeklyLimitPct: facts.weeklyLimitPct, source: "claude-transcript",
-            });
-          }
-        }
-      }
+    const facts = collectTranscriptFacts(root, nowMs);
+    for (const row of rows) {
+      if (row.machine !== "mac" || row.lastActivityMs !== null) continue;
+      const cwd = screens.get(row.id)?.cwd;
+      if (!cwd) continue;
+      const hit = facts.get(cwd.split("/").pop() ?? "");
+      if (!hit) continue;
+      row.lastActivityMs = hit.lastActivityMs;
+      row.stuckOn = row.stuckOn ?? hit.stuckOn;
     }
   } catch (error) {
     warn(`claude transcripts unavailable: ${(error as Error).message}`);
@@ -88,9 +150,9 @@ async function collectMac(rows: SessionRow[]): Promise<MachineInfo> {
 function readIfExists(path: string): string | null {
   try { return readFileSync(path, "utf8"); } catch { return null; }
 }
-async function collectNewa(rows: SessionRow[]): Promise<MachineInfo> {
+async function collectNewa(rows: SessionRow[], nowMs: number): Promise<MachineInfo | null> {
   const root = "/home/agents/work";
-  const nowMs = Date.now();
+  if (!existsSync(root)) return null; // honest absence — no mislabeled footer
   try {
     for (const name of readdirSync(root)) {
       const dir = join(root, name);
@@ -140,17 +202,38 @@ async function collectNewa(rows: SessionRow[]): Promise<MachineInfo> {
   } catch { /* df unavailable */ }
   return { machine: "newa", memFreeMb: mem, diskFreeMb: disk };
 }
+/** P1-9: from the Mac, newa rows come over the same ssh lock as remote.py get. */
+async function collectRemoteNewa(rows: SessionRow[], machines: MachineInfo[]): Promise<void> {
+  const cmd = (process.env.ZININ_PS_NEWA_CMD ?? "ssh -o BatchMode=yes -o ConnectTimeout=6 newa").split(" ").filter(Boolean);
+  try {
+    const proc = Bun.spawn([...cmd, "zinin", "ps", "--sources", "newa", "--json"], { stdout: "pipe", stderr: "pipe" });
+    const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
+    if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
+    const parsed = JSON.parse(stdout) as { sessions?: SessionRow[]; machines?: MachineInfo[] };
+    for (const row of parsed.sessions ?? []) rows.push(row);
+    for (const machine of parsed.machines ?? []) machines.push(machine);
+  } catch (error) {
+    warn(`newa через ssh недоступна: ${(error as Error).message}`);
+    machines.push({ machine: "newa", memFreeMb: null, diskFreeMb: null });
+  }
+}
 async function collect(opts: PsOptions): Promise<{ rows: SessionRow[]; machines: MachineInfo[]; nowMs: number }> {
   const rows: SessionRow[] = [];
   const machines: MachineInfo[] = [];
   const host = platform() === "darwin" ? "mac" : existsSync("/home/agents/work") ? "newa" : "unknown";
-  if ((opts.sources === "mac" || opts.sources === "all") && (host === "mac" || opts.sources !== "all")) {
-    machines.push(await collectMac(rows));
-  }
-  if ((opts.sources === "newa" || opts.sources === "all") && (host === "newa" || opts.sources !== "all")) {
-    machines.push(await collectNewa(rows));
-  }
   const nowMs = Date.now();
+  const wantMac = opts.sources === "mac" || opts.sources === "all";
+  const wantNewa = opts.sources === "newa" || opts.sources === "all";
+  if (wantMac && host !== "newa") machines.push(await collectMac(rows, nowMs));
+  if (wantNewa) {
+    if (host === "newa") {
+      const machine = await collectNewa(rows, nowMs);
+      if (machine) machines.push(machine);
+      else machines.push({ machine: "newa", memFreeMb: null, diskFreeMb: null });
+    } else {
+      await collectRemoteNewa(rows, machines);
+    }
+  }
   const merged = applyDerivedStates(mergeRows(rows), nowMs, opts.stuckMinutes);
   return { rows: merged, machines, nowMs };
 }
@@ -183,7 +266,7 @@ export async function psMain(argv: string[]): Promise<void> {
         "  --watch [N]        обновлять раз в N секунд (по умолчанию 5)\n" +
         "  --json             машинный вывод\n" +
         "  --stuck-minutes N  порог stuck для всех движков (claude 20, kimi/codex 30)\n" +
-        "  --sources mac|newa|all  источники (по умолчанию: машина, на которой запущен)");
+        "  --sources mac|newa|all  источники (с Мака newa читается по ssh: ZININ_PS_NEWA_CMD)");
       return;
     }
     else { warn(`unknown argument: ${arg}`); process.exit(2); }

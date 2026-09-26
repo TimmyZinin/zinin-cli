@@ -24,7 +24,10 @@ export function renderTable(rows: SessionRow[], machines: MachineInfo[], nowMs: 
   const out = [line(HEADERS), line(widths.map(w => "-".repeat(w)))];
   for (const cols of table) out.push(line(cols));
   for (const machine of machines) {
-    if (machine.memFreeMb === null && machine.diskFreeMb === null) continue;
+    if (machine.memFreeMb === null && machine.diskFreeMb === null) {
+      out.push(`${machine.machine}: недоступна`);
+      continue;
+    }
     const parts = [
       machine.memFreeMb === null ? null : `mem ${machine.memFreeMb}M free`,
       machine.diskFreeMb === null ? null : `disk ${machine.diskFreeMb}M free`,
