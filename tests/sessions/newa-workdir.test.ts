@@ -95,3 +95,20 @@ test("K3-4: a signature line alone carries no marker", () => {
   expect(row.state).toBe("working");
   expect(row.needs).toBeNull();
 });
+test("К4-4: marker within the last 3 substantive lines counts (bundle case)", () => {
+  const row = parseNewaDir(base({ reportText: "ГОТОВО — bundle готов\nBundle: patches-e3-fix2.tar.gz\nСостав: 5 патчей\n" }));
+  expect(row.state).toBe("done");
+});
+test("К4-4: heading «## Ход … ГОТОВО» counts via word-anywhere", () => {
+  const row = parseNewaDir(base({ toS0Text: "## Ход 21 — E3 круг 4 ГОТОВО\n\nподробности ниже\nещё строка\n" }));
+  expect(row.state).toBe("done");
+});
+test("К4-4: extended words СДАНО/DONE/FINISHED at line head count", () => {
+  expect(parseNewaDir(base({ toS0Text: "СДАНО: отчёт\n" })).state).toBe("done");
+  expect(parseNewaDir(base({ toS0Text: "DONE: all green\n" })).state).toBe("done");
+  expect(parseNewaDir(base({ toS0Text: "FINISHED | tests 150/150\n" })).state).toBe("done");
+});
+test("К4-4: «ещё не готово» and «пока не готов» stay working", () => {
+  expect(parseNewaDir(base({ toS0Text: "1. Пока не готов, жду Тима.\n" })).state).toBe("working");
+  expect(parseNewaDir(base({ reportText: "ещё не готово к выбору\n" })).state).toBe("working");
+});
