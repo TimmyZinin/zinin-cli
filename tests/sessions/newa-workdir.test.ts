@@ -80,3 +80,18 @@ test("N-7: «готовых порций» deep in a line is not done; whole-wor
   const heading = parseNewaDir(base({ reportText: "ИТОГ: патчи готовы\n" }));
   expect(heading.state).toBe("done");
 });
+test("K3-4: «пока не готов, жду Тима» is not done", () => {
+  const row = parseNewaDir(base({ toS0Text: "1. Пока не готов, жду Тима.\n" }));
+  expect(row.state).toBe("working");
+});
+test("K3-4: ГОТОВО above a signature line still marks done", () => {
+  const row = parseNewaDir(base({ toS0Text: "[08:30] E3-fix2 ГОТОВ | патчей 15\n\n— newa (E3)\n" }));
+  expect(row.state).toBe("done");
+  const report = parseNewaDir(base({ reportText: "ГОТОВО | серия собрана\n— newa (E3)\n" }));
+  expect(report.state).toBe("done");
+});
+test("K3-4: a signature line alone carries no marker", () => {
+  const row = parseNewaDir(base({ toS0Text: "всё в порядке\n— newa (E3)\n" }));
+  expect(row.state).toBe("working");
+  expect(row.needs).toBeNull();
+});
