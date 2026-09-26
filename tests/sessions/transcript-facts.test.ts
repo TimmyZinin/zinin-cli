@@ -64,3 +64,12 @@ test("K3-1: an error tail still surfaces stuckOn from the freshest file", () => 
   expect(fact.lastActivityMs).toBe(NOW - 60_000);
   expect(fact.stuckOn).toBeNull(); // freshest file is quiet — the fact follows it
 });
+test("К4-1: codeVersion falls back to package version, then unknown", async () => {
+  const { codeVersion } = await import("../../src/ps");
+  const parent = mkdtempSync(join(tmpdir(), "e3-version-parent-"));
+  const dir = join(parent, "src");
+  mkdirSync(dir);
+  expect(codeVersion(dir)).toBe("unknown");
+  writeFileSync(join(parent, "package.json"), JSON.stringify({ version: "9.9.9" }));
+  expect(codeVersion(dir)).toBe("v9.9.9");
+});

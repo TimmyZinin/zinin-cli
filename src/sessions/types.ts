@@ -17,4 +17,4 @@ export interface SessionRow {
   weeklyLimitPct: number | null;
   source: string;
 }
-export interface MachineInfo { machine: string; memFreeMb: number | null; diskFreeMb: number | null }
+export interface MachineInfo { machine: string; memFreeMb: number | null; diskFreeMb: number | null; version?: string | null }

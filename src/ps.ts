@@ -147,7 +147,7 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
     const df = Bun.spawnSync(["df", "-k", "/"], { stdout: "pipe" });
     disk = parseDf(df.stdout.toString());
   } catch { /* df unavailable */ }
-  return { machine: "mac", memFreeMb: mem, diskFreeMb: disk };
+  return { machine: "mac", memFreeMb: mem, diskFreeMb: disk, version: codeVersion() };
 }
 function readIfExists(path: string): string | null {
   try { return readFileSync(path, "utf8"); } catch { return null; }
@@ -202,7 +202,7 @@ async function collectNewa(rows: SessionRow[], nowMs: number): Promise<MachineIn
     const df = Bun.spawnSync(["df", "-k", "/"], { stdout: "pipe" });
     disk = parseDf(df.stdout.toString());
   } catch { /* df unavailable */ }
-  return { machine: "newa", memFreeMb: mem, diskFreeMb: disk };
+  return { machine: "newa", memFreeMb: mem, diskFreeMb: disk, version: codeVersion() };
 }
 /** N-5: from the Mac, newa rows come over the same ssh lock as remote.py get.
  * Default reaches the pinned bun and the deployed checkout on newa by absolute
@@ -228,9 +228,14 @@ async function collectRemoteNewa(rows: SessionRow[], machines: MachineInfo[]): P
     const proc = Bun.spawn(resolveNewaCmd(), { stdout: "pipe", stderr: "pipe" });
     const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
     if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
-    const parsed = JSON.parse(stdout) as { sessions?: SessionRow[]; machines?: MachineInfo[] };
+    const parsed = JSON.parse(stdout) as { sessions?: SessionRow[]; machines?: MachineInfo[]; version?: string };
     for (const row of parsed.sessions ?? []) rows.push(row);
-    for (const machine of parsed.machines ?? []) machines.push(machine);
+    // К4-1: keep the remote side's code version even when the remote half
+    // predates the machines[].version field (older newa → top-level version).
+    for (const machine of parsed.machines ?? []) {
+      if (machine.machine === "newa" && !machine.version && parsed.version) machine.version = parsed.version;
+      machines.push(machine);
+    }
   } catch (error) {
     warn(`newa через ssh недоступна: ${(error as Error).message}`);
     machines.push({ machine: "newa", memFreeMb: null, diskFreeMb: null });
@@ -261,11 +266,13 @@ async function collect(opts: PsOptions): Promise<{ rows: SessionRow[]; machines:
 function print(out: string): void {
   process.stdout.write(out + "\n");
 }
-/** K3-3: the newa half of `--json` must say which code produced it
- * (git sha when available, package version otherwise). */
+/** K3-3/К4-1: the `--json` payload says which code produced each half
+ * (git sha when readable, package version otherwise). `safe.directory=*`
+ * because deployed checkouts are often owned by another user — plain
+ * `git rev-parse` dies with "detected dubious ownership" there. */
 export function codeVersion(dir = import.meta.dir): string {
   try {
-    const proc = Bun.spawnSync(["git", "-C", dir, "rev-parse", "--short", "HEAD"], { stdout: "pipe", stderr: "pipe" });
+    const proc = Bun.spawnSync(["git", "-c", "safe.directory=*", "-C", dir, "rev-parse", "--short", "HEAD"], { stdout: "pipe", stderr: "pipe" });
     const sha = proc.stdout.toString().trim();
     if (proc.exitCode === 0 && sha) return `git-${sha}`;
   } catch { /* not a git checkout */ }

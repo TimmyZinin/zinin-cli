@@ -105,3 +105,7 @@ test("K3-3: renderJson carries the code version when given", () => {
   const without = JSON.parse(renderJson([row({ id: "a" })], [], NOW));
   expect("version" in without).toBe(false);
 });
+test("К4-1: machine version reaches the json payload", () => {
+  const parsed = JSON.parse(renderJson([], [{ machine: "remote-a", memFreeMb: 100, diskFreeMb: 200, version: "git-c0ffee1" }], NOW));
+  expect(parsed.machines[0].version).toBe("git-c0ffee1");
+});
