@@ -54,7 +54,7 @@ export OPENROUTER_API_KEY=...
 | Приоритет | Состояние | Сигнал-доказательство |
 |---|---|---|
 | 1 (высший) | `done` | последняя непустая строка TO-S0.md или REPORT-S0.md содержит «ГОТОВ»/«ИТОГ» |
-| 2 | `closing` | status.json: `live=false` или `stop_requested=true`; или tmux-сессия исчезла, а рабочая папка существует |
+| 2 | `closing` | status.json: `stop_requested=true` при живом воркере (live≠false) |
 | 3 | `limit` | недельный лимит ≥ 95%, либо в хвосте транскрипта/окна есть rate_limit/403/limit reached |
 | 4 | `waiting-tim` | последняя строка TO-S0.md: «вопрос»/«ждём Тима»/«блокер»/«нужен Тим»; или окно Claude: «What should Claude do instead» |
 | 5 | `starting` | tmux-сессия/окно моложе 120 секунд и ходов ещё нет |
@@ -76,6 +76,11 @@ export OPENROUTER_API_KEY=...
   `ps` по tty, транскрипты `~/.claude/projects/*/*.jsonl`, лог `~/apparat/runs/s0-plan-*.md`.
 - **newa**: `/home/agents/work/<name>/` (meta.json, status.json, turns/, TO-S0.md,
   REPORT-S0.md, TASK*.md), `tmux ls` (сессии `af-*`), `/proc/meminfo`, `df`.
+  С Мака newa читается по ssh (`ZININ_PS_NEWA_CMD`, по умолчанию
+  `ssh -o BatchMode=yes newa`) той же командой `zinin ps --sources newa --json`;
+  при недоступности футер честно пишет `newa: недоступна`. Транскрипты Claude
+  читаются хвостом 64 КБ и только за окно 24 ч (`ZININ_PS_TRANSCRIPT_MINUTES`),
+  обогащают строку окна (движение, ошибки), а не порождают свои строки.
 
 Колонки: id, машина, движок и модель, задача, состояние, минуты без движения,
 во что упёрлась (последняя ошибка), что нужно (последний вопрос к Тиму),
