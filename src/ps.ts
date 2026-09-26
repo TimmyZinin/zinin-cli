@@ -50,10 +50,11 @@ function readTail(path: string, maxBytes = TRANSCRIPT_TAIL_BYTES): string {
   } catch { return ""; }
   finally { try { closeSync(fd); } catch { /* already closed */ } }
 }
-/** N-3/N-4: facts are keyed by the full project slug and come from the single
- * most recently modified transcript of that project — errors never merge
- * across sessions, and (enrich.ts) only the owning window receives them. */
-function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFacts> {
+/** K3-1: the freshest .jsonl of a project inside the window is an activity
+ * fact by itself — no content precondition. Only that one file gets its tail
+ * parsed (≤1 read per project), and a quiet tail still yields lastActivityMs,
+ * otherwise `stuck` stays unreachable on the Mac. */
+export function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFacts> {
   const facts = new Map<string, SlugFacts>();
   if (!existsSync(root)) return facts;
   const windowMs = transcriptWindowMs();
@@ -64,18 +65,20 @@ function collectTranscriptFacts(root: string, nowMs: number): Map<string, SlugFa
     if (!stat.isDirectory()) continue;
     let files: string[];
     try { files = readdirSync(dir).filter(f => f.endsWith(".jsonl")); } catch { continue; }
-    let latest: { mtimeMs: number; stuckOn: string | null } | null = null;
+    let latestPath: string | null = null;
+    let latestMtime = 0;
     for (const file of files) {
       const path = join(dir, file);
       let mtimeMs: number;
       try { mtimeMs = statSync(path).mtimeMs; } catch { continue; }
       if (nowMs - mtimeMs > windowMs) continue; // P0-3: only recently moved files
-      if (latest && mtimeMs <= latest.mtimeMs) continue;
-      const parsed = parseTranscriptTail(readTail(path));
-      if (!parsed.stuckOn && parsed.contextPct === null && parsed.weeklyLimitPct === null) continue;
-      latest = { mtimeMs, stuckOn: parsed.stuckOn };
+      if (mtimeMs <= latestMtime) continue;
+      latestMtime = mtimeMs;
+      latestPath = path;
     }
-    if (latest) facts.set(slug, { lastActivityMs: latest.mtimeMs, stuckOn: latest.stuckOn });
+    if (!latestPath) continue;
+    const parsed = parseTranscriptTail(readTail(latestPath));
+    facts.set(slug, { lastActivityMs: latestMtime, stuckOn: parsed.stuckOn });
   }
   return facts;
 }
