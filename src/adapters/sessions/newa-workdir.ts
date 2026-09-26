@@ -23,11 +23,14 @@ function clip(value: string, max = 120): string | null {
   if (!v) return null;
   return v.length > max ? v.slice(0, max - 1) + "…" : v;
 }
+/** Signature lines ("— newa (E3)") are not content — skip them when looking
+ * for the last substantive line (K3-4). */
+const SIGNATURE = /^\s*[—–-]\s+\S.{0,40}\([^)]*\)\s*$/;
 function lastLine(text: string | null): string | null {
   if (!text) return null;
   for (const line of text.trimEnd().split("\n").reverse()) {
     const v = line.replace(/^#+\s*/, "").trim();
-    if (v) return v;
+    if (v && !SIGNATURE.test(v)) return v;
   }
   return null;
 }
@@ -61,9 +64,10 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   if (toLast && /вопрос|жд[ёе]м\s+Тима|блокер|нужен\s+Тим/i.test(toLast)) needs = clip(toLast);
   let done = false;
   for (const line of [toLast, reportLast]) {
-    // N-7: whole-word marker only — "готовых порций" deep in a diet line is not
-    // done. \b is ASCII-only in JS, so use Unicode letter boundaries.
-    if (line && /(^|[^\p{L}\p{N}])(ГОТОВО|ГОТОВ|ИТОГ)(?![\p{L}\p{N}])/iu.test(line)) done = true;
+    // K3-4/N-7: the marker only counts at the head of the line — after an
+    // optional "[HH:MM] " time, a short latin tag ("E3-fix"), a dash or heading
+    // hashes. «пока не готов, жду Тима» and «…готовых порций…» are not done.
+    if (line && /^(?:\[?\d{1,2}:\d{2}\]?\s+)?(?:[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\s+)?[—–-]?\s*(ГОТОВО|ГОТОВ|ИТОГ)(?![\p{L}\p{N}])/iu.test(line)) done = true;
   }
   let task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
   let contextPct: number | null = null;
