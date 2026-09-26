@@ -148,8 +148,8 @@ export function parseTerminalWindows(
     const meta = fields.slice(2);
     let busy = false;
     let tty: string | null = null;
-    if (meta.length > 1 && /^ttys\d+$/.test((meta[meta.length - 1] ?? "").trim())) {
-      tty = meta.pop()!.trim();
+    if (meta.length > 1 && /^(?:\/dev\/)?ttys\d+$/.test((meta[meta.length - 1] ?? "").trim())) {
+      tty = meta.pop()!.trim().replace(/^\/dev\//, "");
     }
     if (meta.length > 1 && /^(true|false)$/.test((meta[meta.length - 1] ?? "").trim())) {
       busy = meta.pop()!.trim() === "true";

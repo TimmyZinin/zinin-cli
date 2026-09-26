@@ -129,8 +129,22 @@ test("К4-2: parseLaunchDirs maps tty to engine launch cwd from mocked ps+lsof",
   expect(dirs.has("??")).toBe(false);
 });
 test("К4-2: tty field from the live format reaches onScreen", () => {
-  const record = ["1050", "user — ◑ Weekly digest — caffeinate ◂ claude --dangerously-skip-permissions — 80×24", "⏺ …\n✻ Working… (1m 0s)", "true", "ttys007"].join("\t");
+  const record = ["1050", "user — ◑ Weekly digest — caffeinate ◂ claude --dangerously-skip-permissions — 80×24", "⏺ …\n✻ Working… (1m 0s)", "true", "/dev/ttys007"].join("\t");
   const seen = new Map<string, { tty: string | null; busy: boolean }>();
   parseTerminalWindows(record, (id, screen) => seen.set(id, { tty: screen.tty, busy: screen.busy }));
   expect(seen.get("mac-win-1050")).toEqual({ tty: "ttys007", busy: true });
+});
+test("К5-1: osascript returns tty as /dev/ttysNNN — tty and busy both survive", () => {
+  const record = ["1051", "user — ○ scratchpad | idle — sleep 600 — 80×24", "$ sleep 600\n", "true", "/dev/ttys009"].join("\t");
+  const seen = new Map<string, { tty: string | null; busy: boolean }>();
+  const rows = parseTerminalWindows(record, (id, screen) => seen.set(id, { tty: screen.tty, busy: screen.busy }));
+  expect(seen.get("mac-win-1051")).toEqual({ tty: "ttys009", busy: true });
+  expect(rows[0].state).toBe("working"); // busy shell stays working (P2-13)
+});
+test("К5-1: launch-dir keying works with the /dev/ tty form", async () => {
+  const { windowProjectKey } = await import("../../src/sessions/enrich");
+  const slugOf = (cwd: string) => "-" + cwd.replace(/[^A-Za-z0-9-]/g, "-");
+  const launchDirs = new Map([["ttys009", "/Users/user/proj-a"]]);
+  expect(windowProjectKey({ cwd: "Users/user/proj-b", tty: "ttys009" }, launchDirs, slugOf))
+    .toBe(slugOf("Users/user/proj-a"));
 });
