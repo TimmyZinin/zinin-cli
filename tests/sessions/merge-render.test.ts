@@ -99,3 +99,9 @@ test("N-9: emoji in TASK do not shift columns", () => {
   expect(colStart(header, "STATE")).toBe(colStart(r1, "working"));
   expect(displayWidth(r1)).toBe(displayWidth(r2));
 });
+test("K3-3: renderJson carries the code version when given", () => {
+  const withVersion = JSON.parse(renderJson([row({ id: "a" })], [], NOW, "git-abc1234"));
+  expect(withVersion.version).toBe("git-abc1234");
+  const without = JSON.parse(renderJson([row({ id: "a" })], [], NOW));
+  expect("version" in without).toBe(false);
+});
