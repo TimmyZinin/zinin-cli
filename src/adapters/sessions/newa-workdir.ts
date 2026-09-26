@@ -61,7 +61,9 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   if (toLast && /вопрос|жд[ёе]м\s+Тима|блокер|нужен\s+Тим/i.test(toLast)) needs = clip(toLast);
   let done = false;
   for (const line of [toLast, reportLast]) {
-    if (line && /ГОТОВ|ИТОГ/i.test(line)) done = true;
+    // N-7: whole-word marker only — "готовых порций" deep in a diet line is not
+    // done. \b is ASCII-only in JS, so use Unicode letter boundaries.
+    if (line && /(^|[^\p{L}\p{N}])(ГОТОВО|ГОТОВ|ИТОГ)(?![\p{L}\p{N}])/iu.test(line)) done = true;
   }
   let task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
   let contextPct: number | null = null;

@@ -80,3 +80,22 @@ test("unavailable machine renders an honest line, not a borrowed disk", () => {
   const out = renderTable([], [{ machine: "newa", memFreeMb: null, diskFreeMb: null }], NOW);
   expect(out.split("\n").at(-1)).toBe("newa: недоступна");
 });
+test("N-9: emoji in TASK do not shift columns", () => {
+  const out = renderTable(
+    [row({ id: "w1", task: "⚡ zinin-cli | export ZININ_PS_N…", state: "working" }), row({ id: "w2", task: "plain", state: "working" })],
+    [], NOW,
+  );
+  const [header, , r1, r2] = out.split("\n");
+  const displayWidth = (value: string) => {
+    let width = 0;
+    for (const ch of value) {
+      const cp = ch.codePointAt(0) ?? 0;
+      width += cp >= 0x1F000 || (cp >= 0x2600 && cp <= 0x27BF) || cp === 0x2B50 ? 2 : 1;
+    }
+    return width;
+  };
+  const colStart = (line: string, needle: string) => displayWidth(line.slice(0, line.indexOf(needle)));
+  expect(colStart(r1, "working")).toBe(colStart(r2, "working"));
+  expect(colStart(header, "STATE")).toBe(colStart(r1, "working"));
+  expect(displayWidth(r1)).toBe(displayWidth(r2));
+});

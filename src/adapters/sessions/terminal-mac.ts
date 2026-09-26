@@ -5,8 +5,8 @@
  */
 import type { SessionRow, PsState } from "../../sessions/types";
 
-const GLYPH_BUSY = /^[◑◐◒◓●▶▷▸▹►]/;
-/** ✳ in the title marks an idle Claude window (observed on Mac 26.09). */
+const GLYPH_BUSY = /^[◑◐◒◓●▶▷▸▹►⚡]/;
+/** ✳ in the title marks an idle Claude window; ⚡ marks a busy shell window. */
 const GLYPH_IDLE = /^[○◌◎⊙✳]/;
 /** Live spinner line, e.g. "✻ Whisking… (11m 26s · ↓ 67.1k tokens …)". */
 const SPINNER = /^\s*[✻✽✳✶✢·*]\s+\S+…\s+\(\d+[ms]/m;
@@ -28,7 +28,7 @@ export function parseWindowTitle(raw: string): { task: string | null; glyphState
   let glyphState: PsState | null = null;
   if (GLYPH_BUSY.test(line)) glyphState = "working";
   else if (GLYPH_IDLE.test(line)) glyphState = "idle";
-  line = line.replace(/^[◑◐◒◓●▶▷▸▹►○◌◎⊙✳✦✧⏳⌛]\s*/, "");
+  line = line.replace(/^[◑◐◒◓●▶▷▸▹►○◌◎⊙✳⚡✦✧⏳⌛]\s*/, "");
   const segments = line.split(" — ");
   const task = clean(segments[0]);
   const idleTitle = !!task && /\|\s*idle\s*$/.test(task);
@@ -97,7 +97,7 @@ export function modelFromTitle(title: string): string | null {
   const match = /--model[= ]\s*([\w.-]+)/.exec(segments[2] ?? "");
   return match?.[1] ?? null;
 }
-/** Live output: records separated by RECORD_SEP, fields "id\ttitle\tscreen".
+/** Live output: records separated by RECORD_SEP, fields "id\ttitle\tscreen\tbusy".
  * onScreen reports the picked status line per row id (transcript enrichment). */
 export function parseTerminalWindows(
   text: string,
@@ -109,15 +109,20 @@ export function parseTerminalWindows(
     const index = (fields[0] ?? "").trim();
     const title = (fields[1] ?? "").trim();
     if (!title) continue; // window without tabs (closed) — skip the phantom
-    const screen = fields.slice(2).join("\t");
+    const rest = fields.slice(2);
+    const busy = rest.length > 1 && (rest[rest.length - 1] ?? "").trim() === "true";
+    const screen = busy ? rest.slice(0, -1).join("\t") : rest.join("\t");
     const picked = pickStatusLine(screen);
-    const { task, glyphState, idleTitle } = parseWindowTitle(title);
+    const { task: rawTask, glyphState, idleTitle } = parseWindowTitle(title);
     const status = parseStatusLine(picked.statusline);
     const tail = picked.tail.join("\n");
     const engine = detectEngineFromTitle(title);
     const model = status.model ?? modelFromTitle(title);
+    // P2-13: shell windows label themselves "<user> | <command>" — command only.
+    const task = engine ? rawTask : (rawTask?.replace(/^[^\s|]+\s*\|\s*/, "") ?? rawTask);
     let state: PsState = glyphState ?? (idleTitle || !engine ? "idle" : "working");
     if (picked.spinning) state = "working";
+    if (busy && !engine) state = "working"; // P2-13: Terminal itself says the tab is busy
     if (status.waiting || /What should .*do instead/i.test(tail)) state = "waiting-tim";
     const interrupted = picked.tail.filter(l => /Interrupted/.test(l)).join(" ");
     const cwd = /(?:^|\s)(Users\/\S+?)\s*[|▸]/.exec(picked.statusline)?.[1] ?? null;

@@ -72,3 +72,11 @@ test("long lines are clipped to 120 chars", () => {
   expect(row.needs!.length).toBeLessThanOrEqual(121);
   expect(row.needs!.endsWith("…")).toBe(true);
 });
+test("N-7: «готовых порций» deep in a line is not done; whole-word markers are", () => {
+  const diet = parseNewaDir(base({ reportText: "…состава готовых порций и ккал по дням…\n" }));
+  expect(diet.state).toBe("working");
+  const timed = parseNewaDir(base({ toS0Text: "[07:20] E3-fix ГОТОВ | тестов 125/125\n" }));
+  expect(timed.state).toBe("done");
+  const heading = parseNewaDir(base({ reportText: "ИТОГ: патчи готовы\n" }));
+  expect(heading.state).toBe("done");
+});

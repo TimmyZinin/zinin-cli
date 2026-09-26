@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import { parseTmuxSessions } from "../../src/adapters/sessions/tmux";
-import { parseMeminfo, parseDf } from "../../src/adapters/sessions/machine";
+import { parseMeminfo, parseDf, parseVmStat } from "../../src/adapters/sessions/machine";
 
 const NOW = Date.parse("2026-09-26T06:00:00Z");
 
@@ -37,4 +37,17 @@ test("df avail column becomes free MiB", () => {
 test("unparseable inputs yield null, not exceptions", () => {
   expect(parseMeminfo("nothing")).toBeNull();
   expect(parseDf("")).toBeNull();
+});
+test("N-6: usable free memory sums free+inactive+purgeable+speculative", () => {
+  const text = [
+    "Mach Virtual Memory Statistics: (page size of 16384 bytes)",
+    "Pages free:                                4000.",
+    "Pages active:                            100000.",
+    "Pages inactive:                           30000.",
+    "Pages speculative:                         5000.",
+    "Pages purgeable:                           2000.",
+    "Pages wired down:                        200000.",
+  ].join("\n");
+  expect(parseVmStat(text)).toBe(Math.round((41000 * 16384) / 1024 / 1024));
+  expect(parseVmStat("nothing")).toBeNull();
 });

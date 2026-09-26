@@ -56,11 +56,19 @@ test("Interrupted tail makes the row waiting-tim with the line as stuckOn", () =
 test("subagent activity keeps a busy-glyph window working", () => {
   expect(byId(rows(), "mac-win-831").state).toBe("working");
 });
-test("idle zsh window: no engine, idle state, task keeps the window label", () => {
+test("idle zsh window: no engine, idle state, user prefix stripped from task", () => {
   const shell = byId(rows(), "mac-win-99");
   expect(shell.engine).toBeNull();
   expect(shell.state).toBe("idle");
+  expect(shell.task).toBe("idle");
   expect(shell.model).toBeNull();
+});
+test("P2-13: a busy shell window is working and shows the command, not the user", () => {
+  const record = ["940", "user — ⚡ user | cd ~/zinin-cli && clear && bun src/repl.ts ps --watch 20 — bun src/repl.ts ps --watch 20 — 215×30", "фрейм вывода…", "true"].join("\t");
+  const [row] = parseTerminalWindows(record);
+  expect(row.state).toBe("working");
+  expect(row.engine).toBeNull();
+  expect(row.task).toBe("cd ~/zinin-cli && clear && bun src/repl.ts ps --watch 20");
 });
 test("onScreen callback reports picked status line and cwd for enrichment", () => {
   const seen = new Map<string, { statusline: string; cwd: string | null }>();
