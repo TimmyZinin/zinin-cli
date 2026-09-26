@@ -13,7 +13,7 @@ import { parseTerminalWindows } from "./adapters/sessions/terminal-mac";
 import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
 import { parseNewaDir } from "./adapters/sessions/newa-workdir";
 import { parseTmuxSessions } from "./adapters/sessions/tmux";
-import { parseMeminfo, parseDf } from "./adapters/sessions/machine";
+import { parseMeminfo, parseDf, parseVmStat } from "./adapters/sessions/machine";
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderTable, renderJson } from "./sessions/render";
@@ -97,6 +97,7 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
       "      try",
       "        set out to out & (contents of selected tab of w)",
       "      end try",
+      "      set out to out & tabChar & ((busy of selected tab of w) as text)",
       "      set out to out & recSep",
       "    end if",
       "  end repeat",
@@ -133,9 +134,7 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
   let disk: number | null = null;
   try {
     const vmStat = Bun.spawnSync(["vm_stat"], { stdout: "pipe" });
-    const pagesFree = /Pages free:\s+(\d+)/.exec(vmStat.stdout.toString());
-    const pageSize = /page size of (\d+)/.exec(vmStat.stdout.toString());
-    if (pagesFree && pageSize) mem = Math.round((Number(pagesFree[1]) * Number(pageSize[1])) / 1024 / 1024);
+    mem = parseVmStat(vmStat.stdout.toString());
   } catch { /* vm_stat unavailable — nulls are fine */ }
   try {
     const df = Bun.spawnSync(["df", "-k", "/"], { stdout: "pipe" });

@@ -1,6 +1,18 @@
 /** E3 rendering: plain aligned table (no required colors) and --json output. */
 import type { SessionRow, MachineInfo } from "./types";
 
+/** N-9: emoji (⚡ etc.) occupy two terminal cells; pad by display width. */
+function displayWidth(s: string): number {
+  let width = 0;
+  for (const ch of s) {
+    const cp = ch.codePointAt(0) ?? 0;
+    width += cp >= 0x1F000 || (cp >= 0x2600 && cp <= 0x27BF) || cp === 0x2B50 ? 2 : 1;
+  }
+  return width;
+}
+function pad(value: string, width: number): string {
+  return value + " ".repeat(Math.max(0, width - displayWidth(value)));
+}
 const HEADERS = ["ID", "MACHINE", "ENGINE", "MODEL", "TASK", "STATE", "IDLE", "STUCK-ON", "NEEDS", "CTX%", "WEEK%"] as const;
 function clip(value: string, max: number): string {
   return value.length > max ? value.slice(0, max - 1) + "…" : value;
@@ -19,8 +31,8 @@ function cell(row: SessionRow, nowMs: number): string[] {
 export function renderTable(rows: SessionRow[], machines: MachineInfo[], nowMs: number): string {
   const table = rows.map(row => cell(row, nowMs));
   const widths = HEADERS.map((header, i) =>
-    Math.max(header.length, ...table.map(cols => cols[i].length)));
-  const line = (cols: readonly string[]) => cols.map((c, i) => c.padEnd(widths[i])).join("  ").trimEnd();
+    Math.max(displayWidth(header), ...table.map(cols => displayWidth(cols[i]))));
+  const line = (cols: readonly string[]) => cols.map((c, i) => pad(c, widths[i])).join("  ").trimEnd();
   const out = [line(HEADERS), line(widths.map(w => "-".repeat(w)))];
   for (const cols of table) out.push(line(cols));
   for (const machine of machines) {
