@@ -71,8 +71,8 @@ test("P2-13: a busy shell window is working and shows the command, not the user"
   expect(row.task).toBe("cd ~/zinin-cli && clear && bun src/repl.ts ps --watch 20");
 });
 test("onScreen callback reports picked status line and cwd for enrichment", () => {
-  const seen = new Map<string, { statusline: string; cwd: string | null }>();
-  parseTerminalWindows(screens(), (id, statusline, cwd) => seen.set(id, { statusline, cwd }));
+  const seen = new Map<string, { statusline: string; cwd: string | null; spinning: boolean; busy: boolean }>();
+  parseTerminalWindows(screens(), (id, screen) => seen.set(id, screen));
   expect(seen.get("mac-win-63")!.cwd).toBe("Users/timofeyzinin/zinin-cli");
   expect(seen.get("mac-win-63")!.statusline).toContain("fable 5.1");
   expect(seen.get("mac-win-99")!.statusline).toBe("");
