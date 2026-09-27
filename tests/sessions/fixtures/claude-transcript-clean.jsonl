@@ -1,0 +1,3 @@
+{"role":"assistant","content":"Шаг 3 выполнен."}
+{"role":"tool","tool_call_id":"tool_y","content":"ok"}
+{"role":"assistant","content":"Продолжаю со шага 4."}

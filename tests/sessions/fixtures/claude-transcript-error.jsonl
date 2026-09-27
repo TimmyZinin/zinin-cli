@@ -1,0 +1,4 @@
+{"role":"assistant","content":"Проверяю аренды перед сверкой."}
+{"role":"tool","tool_call_id":"tool_x","content":"bun test 69 pass"}
+{"role":"assistant","content":"Готово, запускаю сверку."}
+{"type":"result","error":"API Error: 403 {\"error\":{\"type\":\"rate_limit\",\"message\":\"You've used 94% of your weekly limit\"}}"}
