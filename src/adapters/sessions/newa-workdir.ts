@@ -1,8 +1,8 @@
-/** E3 adapter: one worker directory on newa (/home/agents/work/<name>).
- * Pure inputs assembled by the live wrapper (file texts + turn mtimes);
+/** E4 adapter: one worker directory on newa (/home/agents/work/<name>).
+ * Pure inputs assembled by the live wrapper (texts + explicit observations);
  * never touches the filesystem itself.
  */
-import type { SessionRow } from "../../sessions/types";
+import type { SessionRow, SessionActivity, SessionEvidence, DecisionEvidence } from "../../sessions/types";
 
 export interface NewaDirInput {
   name: string;
@@ -11,44 +11,61 @@ export interface NewaDirInput {
   toS0Text: string | null;
   reportText: string | null;
   taskText: string | null;     // first lines of TASK*.md
-  turnMtimesMs: number[];      // mtimes of turns/* (jsonl + .started)
+  turnMtimesMs?: number[];     // legacy caller input; E4 collectors must not read turns/
+  activityMs?: number | null; // observed activity, never collection time
+  lastSayMs?: number | null;  // explicit incoming-message boundary; absent means unknown
   nowMs: number;
 }
 function clean(value: string | null | undefined): string | null {
   const v = (value ?? "").trim();
   return v ? v : null;
 }
-function clip(value: string, max = 120): string | null {
+function clip(value: string | null | undefined, max = 120): string | null {
   const v = clean(value);
   if (!v) return null;
-  return v.length > max ? v.slice(0, max - 1) + "…" : v;
+  const chars = Array.from(v);
+  return chars.length > max ? chars.slice(0, max - 1).join("") + "…" : v;
 }
 /** Signature lines ("— newa (E3)") are not content — skip them when looking
  * for substantive lines (K3-4). */
 const SIGNATURE = /^\s*[—–-]\s+\S.{0,40}\([^)]*\)\s*$/;
-interface SubstantiveLine { line: string; heading: boolean }
-/** Last n substantive lines (К4-4: search window for the done marker), most
- * recent first; heading flag preserved. */
-function lastLines(text: string | null, n = 3): SubstantiveLine[] {
-  if (!text) return [];
-  const out: SubstantiveLine[] = [];
-  for (const raw of text.trimEnd().split("\n").reverse()) {
-    const heading = /^#+\s/.test(raw);
-    const v = raw.replace(/^#+\s*/, "").trim();
-    if (!v || SIGNATURE.test(v)) continue;
-    out.push({ line: v, heading });
-    if (out.length >= n) break;
+interface SignalLine { line: string; heading: boolean; atMs: number | null }
+const ISO_PREFIX = /^\[?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))\]?/;
+function validTime(value: number | null | undefined, nowMs: number): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= nowMs ? value : null;
+}
+/** Timestamps belong to entries, not file mtimes. Code examples are not signals. */
+function signalLines(text: string | null, nowMs: number): SignalLine[] {
+  const lines: SignalLine[] = [];
+  let headingTime: number | null = null;
+  let fence: string | null = null;
+  for (const raw of (text ?? "").split("\n")) {
+    const trimmed = raw.trim();
+    const delimiter = /^(?:`{3,}|~{3,})/.exec(trimmed)?.[0];
+    if (delimiter) {
+      if (fence === null) fence = delimiter;
+      else if (delimiter[0] === fence[0] && delimiter.length >= fence.length) fence = null;
+      continue;
+    }
+    if (fence || !trimmed || trimmed.startsWith(">")) continue;
+    const heading = /^#+\s/.test(trimmed);
+    let line = trimmed.replace(/^#+\s*/, "");
+    if (SIGNATURE.test(line)) continue;
+    const iso = ISO_PREFIX.exec(line);
+    const explicitTime = iso ? validTime(Date.parse(iso[1]), nowMs) : null;
+    if (heading) headingTime = explicitTime;
+    if (iso) line = line.slice(iso[0].length).replace(/^\s*[—–:]?\s*/, "");
+    if (line) lines.push({ line, heading, atMs: iso ? explicitTime : headingTime });
   }
-  return out;
+  return lines;
 }
-function lastLine(text: string | null): string | null {
-  return lastLines(text, 1)[0]?.line ?? null;
-}
+const QUESTION = /(?:^|[\s:,.—–-])(?:вопрос|блокер)(?=[\s:,.!?]|$)|WAITING_S0_RECEIPT|(?:жд(?:у|[ёе]м|[ёе]т|ут)|ожида(?:ю|ем|ет|ется|ют)|требуется|нужна).*?(?:квитанци|решени|ответ|Тима|S0|владельц)|нужен\s+(?:Тим|S0|владелец)/i;
+const RESOLVED = /(?:блокер\s+снят|вопрос\s+(?:реш[ёе]н|закрыт)|(?:решение|ответ|квитанция)\s+(?:S0\s+)?получен[ао]?)(?=[\s.,;:]|$)/i;
 function readJson(text: string | null): Record<string, unknown> | null {
   if (!text) return null;
   try {
     const value = JSON.parse(text) as unknown;
-    return typeof value === "object" && value !== null ? value as Record<string, unknown> : null;
+    return typeof value === "object" && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : null;
   } catch { return null; }
 }
 export function parseNewaDir(input: NewaDirInput): SessionRow {
@@ -57,21 +74,30 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   const engine = clean(typeof meta?.engine === "string" ? meta.engine : null);
   const model = clean(typeof meta?.model === "string" ? meta.model : null);
   const stateRaw = clean(typeof status?.state === "string" ? status.state : null);
-  // P1-10: "closing" only while a stop was requested and the worker is still
-  // around. Long-stopped workers (live=false / stopped / failed) are done when
-  // a ГОТОВО/ИТОГ marker says so, otherwise plainly idle — age shows in IDLE.
-  const alive = status?.live !== false;
-  let state: SessionRow["state"];
-  if (status?.stop_requested === true && alive) state = "closing";
-  else if (!alive) state = "idle"; // stale status file of a gone worker
-  else if (stateRaw === "running") state = "working";
-  else if (stateRaw === "idle" || stateRaw === "waiting") state = "idle";
-  else state = "idle";
-  const lastActivityMs = input.turnMtimesMs.length ? Math.max(...input.turnMtimesMs) : null;
-  const toLast = lastLine(input.toS0Text);
-  const reportLast = lastLine(input.reportText);
-  let needs: string | null = null;
-  if (toLast && /вопрос|жд[ёе]м\s+Тима|блокер|нужен\s+Тим/i.test(toLast)) needs = clip(toLast);
+  const liveness: SessionRow["liveness"] = status?.live === true ? "alive"
+    : status?.live === false ? "stopped" : "unknown";
+  let activity: SessionActivity = "unknown";
+  if (liveness === "stopped") activity = "idle";
+  else if (status?.stop_requested === true) activity = "closing";
+  else if (stateRaw === "running") activity = "working";
+  else if (stateRaw === "starting") activity = "starting";
+  else if (["idle", "waiting", "stopped", "failed"].includes(stateRaw ?? "")) activity = "idle";
+  const observed = (input.turnMtimesMs ?? []).map(t => validTime(t, input.nowMs)).filter((t): t is number => t !== null);
+  const lastActivityMs = validTime(input.activityMs, input.nowMs) ?? (observed.length ? Math.max(...observed) : null);
+  const toLines = signalLines(input.toS0Text, input.nowMs);
+  const reportLines = signalLines(input.reportText, input.nowMs);
+  const lastSayMs = validTime(input.lastSayMs, input.nowMs);
+  let decision: DecisionEvidence | null = null;
+  for (const item of toLines) {
+    if (RESOLVED.test(item.line)) { decision = null; continue; }
+    if (!QUESTION.test(item.line)) continue;
+    decision = {
+      text: clip(item.line)!, source: "TO-S0.md", atMs: item.atMs,
+      freshness: item.atMs === null || lastSayMs === null ? "unknown"
+        : item.atMs > lastSayMs ? "current" : "stale",
+    };
+  }
+  const needs = decision?.freshness === "current" ? decision.text : null;
   const DONE_WORDS = new Set(["готово", "готов", "готова", "готовы", "итог", "сдано", "сдача", "done", "finished"]);
   interface Token { word: string; punct: string }
   function tokenize(segment: string): Token[] {
@@ -107,7 +133,7 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     }
     return null;
   }
-  /** К5-2: the last heading counts wholly, however many lines sit below it.
+  /** A submission heading counts wholly, however many lines sit below it.
    * К6-2: «итог» is a noun there unless announced («ИТОГ: …»). */
   function headingMarker(heading: string): boolean {
     const dash = /[—–]/.exec(heading);
@@ -116,26 +142,22 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     if (marker.word === "итог" && !marker.punct.includes(":")) return false;
     return true;
   }
-  function lastHeading(text: string | null): string | null {
-    if (!text) return null;
-    for (const raw of text.trimEnd().split("\n").reverse()) {
-      const v = raw.trim();
-      if (!v || SIGNATURE.test(v.replace(/^#+\s*/, ""))) continue;
-      if (/^#+\s/.test(v)) return v.replace(/^#+\s*/, "").trim();
+  let lastSubmission: SessionEvidence | null = null;
+  for (const [source, lines] of [["TO-S0.md", toLines], ["REPORT-S0.md", reportLines]] as const) {
+    let candidate: SessionEvidence | null = null;
+    for (const item of lines) {
+      if (item.heading ? headingMarker(item.line) : markerInSegment(item.line)) {
+        candidate = { text: clip(item.line)!, source, atMs: item.atMs };
+      }
     }
-    return null;
-  }
-    let done = false;
-  for (const text of [input.toS0Text, input.reportText]) {
-    const heading = lastHeading(text);
-    if (heading && headingMarker(heading)) done = true;
-    for (const { line, heading: isHeading } of lastLines(text, 3)) {
-      if (!isHeading && markerInSegment(line)) done = true;
+    // Prefer REPORT for undated cross-file evidence; never invent chronology.
+    if (candidate && (!lastSubmission || candidate.atMs === null || lastSubmission.atMs === null || candidate.atMs >= lastSubmission.atMs)) {
+      lastSubmission = candidate;
     }
   }
-  let task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
+  const task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
   let contextPct: number | null = null;
-  const haystack = `${toLast ?? ""}\n${reportLast ?? ""}`;
+  const haystack = `${toLines.at(-1)?.line ?? ""}\n${reportLines.at(-1)?.line ?? ""}`;
   const ctx = /context:\s*(\d+)%/i.exec(haystack);
   if (ctx) contextPct = Number(ctx[1]);
   return {
@@ -144,7 +166,11 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     engine,
     model,
     task,
-    state: done ? "done" : state,
+    state: activity === "unknown" ? "idle" : activity,
+    liveness,
+    activity,
+    decision,
+    lastSubmission,
     lastActivityMs,
     stuckOn: null,
     needs,
