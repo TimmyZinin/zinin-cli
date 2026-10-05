@@ -263,3 +263,42 @@ newa: CLI/TUI, fault injection между durable фазами, два journal h
 старые snapshots, fake SSH проверены. Живая macOS/SSH/движок — у S0.
 Broker, scheduler, production transport, автоматическая оркестрация и реальные
 budgets ОТЛОЖЕНЫ по решению S0; готовность данного этапа не означает их реализации.
+
+## Итоговая матрица эксплуатации — этап 4, часть newa (05.10)
+
+Эта таблица обновляет статус, сохраняя исторические записи выше. Она относится
+к порученным срезам, а не заявляет полноту закрытого канонического PRD.
+Mac-проверки ниже — сообщения S0; newa-проверки — локальные тесты и smoke.
+
+| Этап | Сделано и проверено тестами на newa | Проверено S0 на Маке | Не сделано / предел проверки |
+|---|---|---|---|
+| Основа E1–E3 | События/протокол, журнал, leases, модель session/task/run/result, fold/snapshot, fake transport и библиотеки TUI входят в полный набор | Включены в принятые S0 полные наборы E5/E6 | Полная трассировка закрытого PRD; production broker/transport не реализованы |
+| Этап 1 / E4 — обзор | Коллекторы, разделение состояний, ожидание пакета/слова, фильтр свежести, описания, один блок на сессию, все Terminal tabs, raw /dev/ttysNNN, ps show, ограниченные файлы/SSH/JSON | f326b24: живые 3 вкладки Мака + 18 свежих newa без дублей; f4b0a73: ps show через SSH принят, 245/245 | Нельзя выдавать journal/status running за доказательство живости; точные say/process данные остаются unknown без источника |
+| Этап 2 / E5 — управление | Opt-in work CLI/TUI, адресные команды, short IDs, preview/confirm, digest/revision, полный текст результата, только owned stop, чистый выход/PTY | 4cc3e8d: 274/274 macOS; вручную init/session/task/local-demo/status, неверный digest → отказ, accept → готово; PTY зелёный | Реальные Kimi/Codex/Claude run не проверены; Codex/Claude не подключены как work-executor adapters |
+| Этап 3 / E6 — восстановление | Reconcile с причиной без kill, новый явный attempt, поздние ответы отвергаются, crash/restart/fault tests, legacy snapshots, history/export, remote status только чтение | 3940a73: 286/286 macOS; вручную init/session/task/run/status с accept-командой/history. Этап принят S0 | Живые reconcile/attempt и remote work status отдельно в say не описаны; provider resume не реализован, новый запуск им не является |
+| Этап 4 / E7 — упаковка | Native Linux x64 standalone: embedded figlet, пустой PATH/cwd=/ без node_modules; define git/date/dirty; ранние version/help; PTY watch с drainage; frozen install и валидный стабильный ps.json | Новые бинарь/font/build metadata/watch E7 ещё не проверялись S0 на Маке | macOS arm64 standalone, Intel-Мак, нативный UX и публикация установочных бинарей не выполнены в этом ходе; install.sh не менялся |
+| Отложенная оркестрация/эксплуатация | Границы зафиксированы; автоматический run/retry/accept и чужой stop не добавлялись | Решение S0: broker/scheduler/budgets отложить | Production broker, scheduler, реальные budgets, межмашинное управление, durable external-send receipts, performance на реальных 3/7 движках и release/deployment |
+
+### Требует живого движка
+
+- Kimi run: настоящий CLI/auth/model, поток, завершение/ошибка/timeout и owned stop; здесь только fake transport/process и local-demo.
+- Codex/Claude run: сначала отдельные work-adapters и capability receipts, затем согласованные живые проверки. Наблюдение сессии в ps не означает управление её движком.
+- Provider resume: подтверждённая возможность и реальный transcript/receipt; сейчас честный новый запуск, продолжение не имитируется.
+- Реальные затраты/budgets и production внешние действия/повторы: отдельное решение и проверка, не synthetic результат.
+
+### Требует родного Terminal
+
+- IME/кириллический ввод, resize на маленьком/большом окне, slow terminal, screen reader/accessibility.
+- Свежий E7 compiled binary: --banner/--version, ps --watch, возврат экрана и курсора, реальные вкладки и read-only SSH на newa.
+- Автоматические PTY-тесты на newa не заменяют эту ручную проверку; прежний Mac PTY E5 принят отдельно.
+
+### Требует Intel-Мака
+
+- Нативная macOS x64 сборка на поддерживаемом Bun и запуск вне checkout без node_modules; баннер/font, версии, ps/work и TUI/watch.
+- Повтор симптома issue #1 и проверка установленного бинаря. Linux x64 smoke не заменяет Intel macOS; issue/release автоматически не закрывались.
+
+Проверяемый build-toolchain: Bun 1.3.11; местный Bun 1.3.0 создавал compile
+с нулевым ELF header/ENOEXEC. Новый build script требует >=1.3.11. Registry
+зависимости установлены штатно; package-lock сохранён, bun.lock получен штатной
+миграцией и проверен --frozen-lockfile. Полный финальный счёт тестов и HEAD
+зафиксированы в REPORT-S0.md, чтобы не создавать самоссылочный hash в коммите.
