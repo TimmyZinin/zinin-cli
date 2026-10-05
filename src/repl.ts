@@ -166,6 +166,7 @@ async function psMainDispatch(): Promise<void> {
   await psMain(process.argv.slice(3));
 }
 async function main() {
+  if(process.argv[2]==="--banner"){const art=await import("./banner-v2.js");art.default.splash();return;}
   if (process.argv[2] === "work") { const {workMain}=await import("./work"); await workMain(process.argv.slice(3)); return; }
   if (process.argv[2] === "ps") { await psMainDispatch(); return; }
   MASCOT = (await loadBanner()).MASCOT;

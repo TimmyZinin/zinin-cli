@@ -279,6 +279,10 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
       opts.detailId=Buffer.from(encoded,"base64url").toString("utf8");
       opts.all=true;
     }
+    else if(arg==="--newa-root"){
+      const root=argv[++i];if(!root||root.startsWith("--"))throw new Error("--newa-root expects a local directory");
+      deps={...deps,host:"newa",newaOptions:{...deps.newaOptions,root}};
+    }
     else if (arg === "--all") opts.all = true;
     else if (arg === "--since") opts.sinceMs = parseSince(argv[++i]);
     else if (arg === "--watch") {
@@ -304,6 +308,7 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
         "  --json             машинный вывод\n" +
         "  --since 24h        период свежести (m/h/d), всегда включает running\n" +
         "  --all              включить старые сессии\n" +
+        "  --newa-root DIR     читать локальный каталог newa (для offline-проверки)\n" +
         "  --stuck-minutes N  порог stuck для всех движков (claude 20, kimi/codex 30)\n" +
         "  --sources mac|newa|all  источники (с Мака newa читается по ssh: ZININ_PS_NEWA_CMD)");
       return;
