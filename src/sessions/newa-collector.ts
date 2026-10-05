@@ -76,8 +76,8 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
               const entry = lstatSync(filePath);
               if (!entry.isFile() || entry.nlink !== 1 || !same(stat, entry)) throw new Error("file changed");
             };
-            verifyFile();
             if (!stat.isFile() || stat.nlink !== 1) { note(`${worker.name}: ${name} is not a single regular file`); return null; }
+            verifyFile();
             if (stat.size > maxBytes) { note(`${worker.name}: ${name} exceeds input limit`); return null; }
             const buffer = Buffer.alloc(Math.min(stat.size + 1, maxBytes + 1));
             let count = 0;
