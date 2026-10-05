@@ -36,7 +36,7 @@ export function renderTable(rows: SessionRow[], machines: MachineInfo[], nowMs: 
   const out = [line(HEADERS), line(widths.map(w => "-".repeat(w)))];
   for (const cols of table) out.push(line(cols));
   for (const machine of machines) {
-    if (machine.memFreeMb === null && machine.diskFreeMb === null) {
+    if (machine.available === false || (machine.available === undefined && machine.memFreeMb === null && machine.diskFreeMb === null)) {
       out.push(`${machine.machine}: недоступна`);
       continue;
     }
@@ -44,7 +44,8 @@ export function renderTable(rows: SessionRow[], machines: MachineInfo[], nowMs: 
       machine.memFreeMb === null ? null : `mem ${machine.memFreeMb}M free`,
       machine.diskFreeMb === null ? null : `disk ${machine.diskFreeMb}M free`,
     ].filter(Boolean).join(" · ");
-    out.push(`${machine.machine}: ${parts}`);
+    out.push(`${machine.machine}: ${parts || "источник доступен; метрики не собираются"}`);
+    for (const warning of machine.warnings ?? []) out.push(`${machine.machine}: ${warning}`);
   }
   return out.join("\n");
 }

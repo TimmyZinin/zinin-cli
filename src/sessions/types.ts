@@ -13,6 +13,13 @@ export interface SessionEvidence {
 export interface DecisionEvidence extends SessionEvidence {
   freshness: "current" | "stale" | "unknown";
 }
+export type OverviewGroup = "working" | "waiting" | "submitted" | "idle" | "stopped" | "unknown";
+export interface StatusEstimate<T> {
+  value: T;
+  source: "status-mtime";
+  confidence: "estimate";
+  atMs: number | null;
+}
 export interface SessionRow {
   id: string;
   machine: "mac" | "newa" | "unknown";
@@ -31,5 +38,9 @@ export interface SessionRow {
   activity?: SessionActivity;
   decision?: DecisionEvidence | null;
   lastSubmission?: SessionEvidence | null;
+  lastSayMs?: number | null;
+  overviewGroup?: StatusEstimate<OverviewGroup>;
+  possiblyStuck?: StatusEstimate<boolean | null>;
+  stoppedReason?: StatusEstimate<string | null>;
 }
-export interface MachineInfo { machine: string; memFreeMb: number | null; diskFreeMb: number | null; version?: string | null }
+export interface MachineInfo { machine: string; memFreeMb: number | null; diskFreeMb: number | null; version?: string | null; available?: boolean; warnings?: string[] }
