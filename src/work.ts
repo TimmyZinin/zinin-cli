@@ -22,7 +22,7 @@ export const defaultJournal=()=>join(homedir(),".zinin","work","journal");
 export const workPaths=(path=defaultJournal()):WorkPaths=>({journal:resolve(path),leases:resolve(path)+".leases"});
 export function parseWorkArgs(argv:string[]) {
  const options:Record<string,string>={};let command="";let json=false;
- const allowed=new Set(["journal","session","task","run","result","revision","digest","goal","criteria","engine","model","bin","cwd","command-id","id","as","reason","expected-seq","attempt","out"]);
+ const allowed=new Set(["journal","session","task","run","result","revision","digest","goal","criteria","engine","model","bin","cwd","command-id","id","as","reason","expected-seq","attempt","out","remote"]);
  for(let i=0;i<argv.length;i++){
   if(argv[i]==="--confirm"){options.confirm="true";continue;}
   if(argv[i]==="--json"){json=true;continue;}
@@ -36,7 +36,7 @@ const safe=(s:string)=>s.replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g,"").replace(/\
 export function resultAwaitsAcceptance(state:CoreState,result:CoreState["results"][string]):boolean {
  return result.status==="recorded"&&state.tasks[result.task_id]?.status==="review_ready"&&!Object.values(state.runs).some(run=>run.task_id===result.task_id&&run.status==="running")&&!Object.values(state.results).some(other=>other.task_id===result.task_id&&other.status!=="rejected"&&other.revision>result.revision);
 }
-export function renderWorkStatus(state:CoreState,journalPath?:string,ownedRuns:ReadonlySet<string>=new Set()):string {
+export function renderWorkStatus(state:CoreState,journalPath?:string,ownedRuns:ReadonlySet<string>=new Set(),remote=false):string {
  const labels:Record<string,string>={draft:"черновик",queued:"в очереди",active:"в работе",review_ready:"ждёт приёмки",finalizing:"сохраняется",done:"готово",blocked:"заблокирована",cancelled:"отменена",running:"работает",succeeded:"завершён",failed:"ошибка",stopped:"остановлен",interrupted:"прерван"};
  const out:string[]=[];
  for(const session of Object.values(state.sessions)){
@@ -50,7 +50,7 @@ export function renderWorkStatus(state:CoreState,journalPath?:string,ownedRuns:R
     if(resultAwaitsAcceptance(state,result)){
      const preview=result.text===undefined?["Текст результата не сохранён (историческая запись)"]:result.text.split(/\r?\n/).filter(line=>line.trim()).slice(0,5);
      out.push(...preview.map(line=>"      │ "+safe(line)));
-     out.push(`      zinin work accept${journalPath?" --journal "+shellQuote(journalPath):""} --result ${shellQuote(safe(result.result_id))} --revision ${result.revision} --digest ${shellQuote(safe(result.digest))}`);
+     if(!remote)out.push(`      zinin work accept${journalPath?" --journal "+shellQuote(journalPath):""} --result ${shellQuote(safe(result.result_id))} --revision ${result.revision} --digest ${shellQuote(safe(result.digest))}`);
     }
    }
   }
@@ -95,6 +95,11 @@ export async function executeWork(service:WorkCommandService,command:string,o:Re
 }
 async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
  const {command,options:o,json}=parseWorkArgs(argv),paths=workPaths(o.journal);
+ if(o.remote){
+  if(command!=="status"||o.remote!=="newa")throw new WorkUsageError("По SSH разрешено только work status --remote newa");
+  const {remoteWorkStatus}=await import("./work-remote");const state=await remoteWorkStatus(o.journal);
+  console.log(json?JSON.stringify(state):"newa · удалённый журнал, только чтение\n"+renderWorkStatus(state,undefined,new Set(),true));return;
+ }
  if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|reconcile|status|history|export] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]).");return;}
  if(command==="init"){mkdirSync(dirname(paths.journal),{recursive:true});new WorkCommandService(paths,{create:true});console.log(json?JSON.stringify({journal:paths.journal,initialized:true}):"Журнал готов: "+paths.journal);return;}
  if(!command&&(!process.stdin.isTTY||!process.stdout.isTTY))throw new WorkUsageError("TUI требует терминал; используйте work status");

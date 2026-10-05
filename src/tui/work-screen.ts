@@ -22,7 +22,7 @@ export class WorkScreen {
   else if(key.kind==="enter"&&this.draft.trim()){
    try{
     const {command,options}=parseWorkArgs(splitWorkCommand(this.draft.replace(/^\//,"")));
-    if(!["session","task","run","accept","stop","status","reconcile","history"].includes(command)||options.journal)throw Error("Используйте session/task/run/accept/stop/status в текущем журнале");
+    if(!["session","task","run","accept","stop","status","reconcile","history"].includes(command)||options.journal||options.remote)throw Error("Используйте session/task/run/accept/stop/status в текущем журнале");
     if(this.preview!==this.draft){
      this.addressed=resolveWorkOptions(this.service.state(),command,options);
      if(command==="reconcile"){
