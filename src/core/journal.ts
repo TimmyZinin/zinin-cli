@@ -16,11 +16,11 @@ export type RunStatus = "running" | "succeeded" | "failed" | "stopped";
 export type ResultStatus = "recorded" | "accepted" | "rejected";
 
 export interface AgentState { agent_id: string; role: string; engine: string; status: "active" | "retired" }
-export interface SessionState { session_id: string; agent_id: string; service: string; group: string; goal: string; status: "open" | "closed" }
-export interface TaskState { task_id: string; session_id: string; goal: string; criteria: string; status: TaskStatus; version: number }
+export interface SessionState { created_seq?:number; session_id: string; agent_id: string; service: string; group: string; goal: string; status: "open" | "closed" }
+export interface TaskState { created_seq?:number; task_id: string; session_id: string; goal: string; criteria: string; status: TaskStatus; version: number }
 export interface StepState { step_id: string; task_id: string; owner: string; required: boolean; status: StepStatus }
-export interface RunState { run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
-export interface ResultState { result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
+export interface RunState { created_seq?:number; run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
+export interface ResultState { created_seq?:number; result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
 export interface CoreState {
   seq: number;
   agents: Record<string, AgentState>;
@@ -149,6 +149,10 @@ export class CoreJournal {
       try { this.applyTo(state, row.type, JSON.parse(row.payload)); state.seq = row.seq; }
       catch (error) { throw new JournalError("corrupt", `Journal entry ${row.seq} failed replay: ${(error as Error).message}`); }
     }
+    for(const row of this.db.query("SELECT seq,type,payload FROM journal_entries WHERE type IN ('session_opened','task_created','run_started','result_recorded') ORDER BY seq").all() as {seq:number;type:string;payload:string}[]) {
+      const spec=({session_opened:["sessions","session_id"],task_created:["tasks","task_id"],run_started:["runs","run_id"],result_recorded:["results","result_id"]} as const)[row.type as "session_opened"|"task_created"|"run_started"|"result_recorded"];
+      const entity=state[spec[0]][JSON.parse(row.payload)[spec[1]]];if(entity)entity.created_seq=row.seq;
+    }
     return state;
   }
   /** Read-only projection for status/ps: never creates tables, files or snapshots. */
@@ -220,7 +224,7 @@ export class CoreJournal {
         const id = str(p, "session_id");
         if (s.sessions[id]) throw new JournalError("conflict", `Session ${id} already open`);
         need(s.agents, str(p, "agent_id"), "Agent");
-        s.sessions[id] = { session_id: id, agent_id: str(p, "agent_id"), service: str(p, "service"), group: str(p, "group"), goal: str(p, "goal"), status: "open" };
+        s.sessions[id] = { created_seq:s.seq+1, session_id: id, agent_id: str(p, "agent_id"), service: str(p, "service"), group: str(p, "group"), goal: str(p, "goal"), status: "open" };
         break;
       }
       case "session_closed": {
@@ -233,7 +237,7 @@ export class CoreJournal {
         if (s.tasks[id]) throw new JournalError("conflict", `Task ${id} already exists`);
         const session = need(s.sessions, str(p, "session_id"), "Session");
         if (session.status !== "open") throw new JournalError("conflict", "Session is closed");
-        s.tasks[id] = { task_id: id, session_id: session.session_id, goal: str(p, "goal"), criteria: str(p, "criteria"), status: "draft", version: 1 };
+        s.tasks[id] = { created_seq:s.seq+1, task_id: id, session_id: session.session_id, goal: str(p, "goal"), criteria: str(p, "criteria"), status: "draft", version: 1 };
         break;
       }
       case "task_transitioned": {
@@ -271,7 +275,7 @@ export class CoreJournal {
         const running = Object.values(s.runs).some(r => r.task_id === task.task_id && r.status === "running");
         if (running) throw new JournalError("conflict", "One running run per task (single writer, PRD §2)");
         const provider = p.provider_session;
-        s.runs[id] = { run_id: id, task_id: task.task_id, session_id: session.session_id, provider_session: typeof provider === "string" ? provider : null, status: "running" };
+        s.runs[id] = { created_seq:s.seq+1, run_id: id, task_id: task.task_id, session_id: session.session_id, provider_session: typeof provider === "string" ? provider : null, status: "running" };
         break;
       }
       case "run_finished": {
@@ -284,7 +288,7 @@ export class CoreJournal {
         const id = str(p, "result_id");
         if (s.results[id]) throw new JournalError("conflict", `Result ${id} already recorded`);
         need(s.tasks, str(p, "task_id"), "Task");
-        s.results[id] = { result_id: id, task_id: str(p, "task_id"), revision: int(p, "revision"), digest: str(p, "digest"), evidence_ref: str(p, "evidence_ref"), status: "recorded" };
+        s.results[id] = { created_seq:s.seq+1, result_id: id, task_id: str(p, "task_id"), revision: int(p, "revision"), digest: str(p, "digest"), evidence_ref: str(p, "evidence_ref"), status: "recorded" };
         break;
       }
       case "result_decided": {

@@ -6,7 +6,8 @@ import {randomUUID} from "node:crypto";
 import {WorkCommandService,type WorkPaths} from "./core/work-service";
 import {KimiEngine,kimiTransport} from "./core/engines";
 import {JournalError,type CoreState} from "./core/journal";
-export class WorkUsageError extends Error {}
+import {WorkUsageError,resolveWorkOptions,shortWorkId,shellQuote} from "./work-address";
+export {WorkUsageError} from "./work-address";
 export function workError(error:unknown):{code:number;message:string} {
  if(error instanceof WorkUsageError)return {code:2,message:safe(error.message)};
  if(error instanceof JournalError){
@@ -31,20 +32,23 @@ export function parseWorkArgs(argv:string[]) {
  return {command,options,json};
 }
 const safe=(s:string)=>s.replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g,"").replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,"").replace(/[\x00-\x1f\x7f-\x9f]/g," ");
-export function renderWorkStatus(state:CoreState):string {
+export function renderWorkStatus(state:CoreState,journalPath?:string):string {
  const labels:Record<string,string>={draft:"черновик",queued:"в очереди",active:"в работе",review_ready:"ждёт приёмки",finalizing:"сохраняется",done:"готово",blocked:"заблокирована",cancelled:"отменена",running:"работает",succeeded:"завершён",failed:"ошибка",stopped:"остановлен"};
  const out:string[]=[];
  for(const session of Object.values(state.sessions)){
-  out.push(`Сессия ${safe(session.session_id)} (${session.status==="open"?"открыта":"закрыта"}): ${safe(session.goal)}`);
+  out.push(`Сессия ${shortWorkId(state,"session",session.session_id)} · ${safe(session.session_id)} (${session.status==="open"?"открыта":"закрыта"}): ${safe(session.goal)}`);
   for(const task of Object.values(state.tasks).filter(t=>t.session_id===session.session_id)){
-   out.push(`  Задача ${safe(task.task_id)} — ${labels[task.status]}: ${safe(task.goal)}`);
-   for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${safe(run.run_id)} — ${labels[run.status]}`);
-   for(const result of Object.values(state.results).filter(r=>r.task_id===task.task_id))out.push(`    Результат ${safe(result.result_id)} — ${result.status==="recorded"?"ждёт приёмки":result.status==="accepted"?"принят":"отклонён"}; revision=${result.revision}; digest=${safe(result.digest)}; ${safe(result.evidence_ref)}`);
+   out.push(`  Задача ${shortWorkId(state,"task",task.task_id)} · ${safe(task.task_id)} — ${labels[task.status]}: ${safe(task.goal)}`);
+   for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${shortWorkId(state,"run",run.run_id)} · ${safe(run.run_id)} — ${labels[run.status]}`);
+   for(const result of Object.values(state.results).filter(r=>r.task_id===task.task_id)){out.push(`    Результат ${shortWorkId(state,"result",result.result_id)} · ${safe(result.result_id)} — ${result.status==="recorded"?"ждёт приёмки":result.status==="accepted"?"принят":"отклонён"}; revision=${result.revision}; digest=${safe(result.digest)}; ${safe(result.evidence_ref)}`);
+    if(result.status==="recorded"&&task.status==="review_ready")out.push(`      zinin work accept${journalPath?" --journal "+shellQuote(journalPath):""} --result ${shellQuote(safe(result.result_id))} --revision ${result.revision} --digest ${shellQuote(safe(result.digest))}`);
+   }
   }
  }
  return out.join("\n")||"Сессий пока нет. Создайте work session --goal …";
 }
 export async function executeWork(service:WorkCommandService,command:string,o:Record<string,string>,signal?:AbortSignal):Promise<any>{
+ o=resolveWorkOptions(service.state(),command,o);
  const need=(key:string)=>{if(!o[key]?.trim())throw new WorkUsageError("Нужен --"+key);return o[key];};
  const now=new Date().toISOString(),cmd=o["command-id"]??randomUUID();
  switch(command){
@@ -72,7 +76,7 @@ async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
  if(!command){const {runWorkScreen}=await import("./tui/work-screen");onTui();await runWorkScreen(service);return;}
  const controller=new AbortController();const cancel=()=>{controller.abort();service.stopOwned();};
  process.on("SIGINT",cancel);process.on("SIGTERM",cancel);
- try {const result=await executeWork(service,command,o,controller.signal);if(result?.error)throw new Error(result.error);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
+ try {const result=await executeWork(service,command,o,controller.signal);if(result?.error)throw new Error(result.error);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result,service.journalPath):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
  finally{process.removeListener("SIGINT",cancel);process.removeListener("SIGTERM",cancel);}
 }
 

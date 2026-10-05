@@ -19,6 +19,7 @@ export class WorkCommandService {
     const journal=new CoreJournal(this.paths.journal);
     try {return operation(journal);} finally {journal.close();}
   }
+  get journalPath():string {return this.paths.journal;}
   state():CoreState {return CoreJournal.readOnly(this.paths.journal);}
   session(commandId:string, sessionId:string, goal:string, now:string) {
     const key=commandKey(commandId);

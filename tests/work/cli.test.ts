@@ -49,3 +49,20 @@ test("non-terminal work gives usage guidance without creating a journal or print
   expect(answer.code).toBe(2);expect(answer.err).toBe("TUI требует терминал; используйте work status\n");expect(answer.out).toBe("");expect(existsSync(journal)).toBe(initialized);
  }
 });
+
+test("CLI short addresses survive reopening, ambiguous prefixes never mutate, and status offers exact accept",async()=>{
+ const journal=join(root(),"journal");await cli(journal,"init");
+ await cli(journal,"session","--id","session-abcd-first","--goal","first");await cli(journal,"session","--id","session-abcd-second","--goal","second");
+ const before=JSON.parse((await cli(journal,"status","--json")).out);
+ const amb=await cli(journal,"task","--session","session-abcd","--goal","goal","--criteria","criteria");expect(amb.code).toBe(2);expect(amb.err).toContain("session-abcd-first, session-abcd-second");expect(JSON.parse((await cli(journal,"status","--json")).out)).toEqual(before);
+ expect((await cli(journal,"task","--session","session-abc","--goal","goal","--criteria","criteria")).code).toBe(2);
+ expect((await cli(journal,"task","--id","task-unique","--session","s2","--goal","selected","--criteria","criteria")).code).toBe(0);
+ expect((await cli(journal,"run","--task","uniq","--engine","local-demo")).code).toBe(0);
+ const status=await cli(journal,"status");expect(status.out).toContain("Сессия s1 · session-abcd-first");expect(status.out).toContain("Сессия s2 · session-abcd-second");expect(status.out).toContain("Задача t1 · task-unique");expect(status.out).toContain("Запуск r1 · run-task-unique-1");
+ const accept=status.out.split("\n").find(line=>line.includes("zinin work accept"))!;expect(accept).toContain("--journal '");expect(accept).toContain("--revision 1 --digest '");
+ expect((await cli(journal,"accept","--result","v1")).code).toBe(2);
+ const result=JSON.parse((await cli(journal,"status","--json")).out).results["res-task-unique"];
+ expect((await cli(journal,"accept","--result","v1","--revision","1","--digest",result.digest)).code).toBe(0);
+ expect(JSON.parse((await cli(journal,"status","--json")).out).tasks["task-unique"].session_id).toBe("session-abcd-second");
+ expect((await cli(journal,"stop","--run","r1")).out).toContain("Запуск уже завершён");
+});

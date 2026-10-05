@@ -1,6 +1,7 @@
 /** Foreground work TUI. Commands share the CLI service; Enter previews before execution. */
 import type {WorkCommandService} from "../core/work-service";
 import {executeWork,parseWorkArgs,renderWorkStatus,WorkUsageError} from "../work";
+import {resolveWorkOptions} from "../work-address";
 import {KeyParser,type Key} from "./input";
 const plain=(s:string)=>s.replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g,"").replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,"").replace(/[\x00-\x09\x0b-\x1f\x7f-\x9f]/g," ");
 export function splitWorkCommand(text:string):string[]{
@@ -11,6 +12,7 @@ export function splitWorkCommand(text:string):string[]{
 }
 export class WorkScreen {
  draft="";preview:string|null=null;message="";width=100;height=30;
+ private addressed:Record<string,string>={};
  readonly pending=new Set<Promise<void>>();
  constructor(private service:WorkCommandService,private write:(s:string)=>void,private quit:()=>void){}
  key(key:Key){
@@ -22,12 +24,13 @@ export class WorkScreen {
     const {command,options}=parseWorkArgs(splitWorkCommand(this.draft.replace(/^\//,"")));
     if(!["session","task","run","accept","stop","status"].includes(command)||options.journal)throw Error("Используйте session/task/run/accept/stop/status в текущем журнале");
     if(this.preview!==this.draft){
+     this.addressed=resolveWorkOptions(this.service.state(),command,options);
      this.preview=this.draft;
-     this.message=`Адресат: ${Object.entries(options).filter(([key])=>["session","task","result","run","id"].includes(key)).map(([key,value])=>`${key}=${value}`).join("; ")||"текущий журнал / новая сессия"}. Enter ещё раз — выполнить; изменение строки отменяет подтверждение.`;
+     this.message=`Адресат: ${Object.entries(this.addressed).filter(([key])=>["session","task","result","run","id"].includes(key)).map(([key,value])=>`${key}=${value}`).join("; ")||"текущий журнал / новая сессия"}. Enter ещё раз — выполнить; изменение строки отменяет подтверждение.`;
     }else{
      this.draft="";this.preview=null;this.message="Команда выполняется";
      let pending:Promise<void>;
-     pending=(async()=>{try{const result=await executeWork(this.service,command,options);this.message=result?.message??(command==="status"?"Состояние обновлено":JSON.stringify(result));}catch(error){this.message=`Ошибка: ${(error as Error).message}`;}})();
+     pending=(async()=>{try{const result=await executeWork(this.service,command,this.addressed);this.message=result?.message??(command==="status"?"Состояние обновлено":JSON.stringify(result));}catch(error){this.message=`Ошибка: ${(error as Error).message}`;}})();
      this.pending.add(pending);void pending.finally(()=>this.pending.delete(pending));
     }
    }catch(error){this.preview=null;this.message=`Ошибка: ${(error as Error).message}`;}
@@ -35,7 +38,7 @@ export class WorkScreen {
   this.render();
  }
  render(){
-  const tree=renderWorkStatus(this.service.state()).split("\n");
+  const tree=renderWorkStatus(this.service.state(),this.service.journalPath).split("\n");
   const rows=["ZININ work — явные адресные команды; Ctrl-C/Ctrl-D: выход",...tree.slice(0,Math.max(1,this.height-7)),"",plain(this.message),`> ${plain(this.draft)}`,"session / task / run / accept / stop / status; Enter: сначала адресат, затем выполнение"];
   this.write("\x1b[H\x1b[2J"+rows.map(line=>{let out="";for(const c of plain(line)){if(Bun.stringWidth(out+c)>this.width-1)break;out+=c;}return out;}).join("\r\n"));
  }
