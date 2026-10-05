@@ -198,6 +198,7 @@ export function parseTerminalWindows(
     onScreen?.(id, { statusline: picked.statusline, cwd, spinning: picked.spinning, busy, tty });
     rows.push({
       id,
+      windowId: index.split("-")[0],
       machine: "mac",
       engine,
       model,

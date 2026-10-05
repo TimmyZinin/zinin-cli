@@ -1,3 +1,4 @@
+import { sessionName } from "./name";
 import { meaningfulDescription } from "./description";
 import type { SessionRow, MachineInfo } from "./types";
 
@@ -35,7 +36,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
   const blocks: string[][] = titles.map(() => []);
   const width = Number.isFinite(terminalWidth) ? Math.max(40, Math.floor(terminalWidth)) : 100;
   const machineWidth = Math.max(4, ...rows.map(row => Bun.stringWidth(machineName(row.machine))));
-  const idWidth = Math.max(1, Math.min(Math.floor(width * 0.32), 36, Math.max(1, ...rows.map(row => Bun.stringWidth(short(row.id, 64))))));
+  const idWidth = Math.max(1, Math.min(Math.floor(width * 0.32), 36, Math.max(1, ...rows.map(row => Bun.stringWidth(short(sessionName(row), 64))))));
   const timeWidth = Math.max(5, ...rows.map(row => Bun.stringWidth(humanIdle(row.lastActivityMs, nowMs))));
   const descriptionWidth = Math.max(1, width - machineWidth - idWidth - timeWidth - 6);
   const pad = (value: string, columns: number) => value + " ".repeat(Math.max(0, columns - Bun.stringWidth(value)));
@@ -53,7 +54,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     if (question && target !== 1) notes.push(`вопрос: ${short(question)}`);
     if (question && row.decision?.freshness === "stale") notes.push("вопрос из прошлого хода");
     const detail = `${short(description, 120) || (row.machine === "newa" ? `${short(row.id)} (по имени папки)` : "задача не указана")}${notes.length ? " · " + notes.join(" · ") : ""}`;
-    return [pad(machineName(row.machine), machineWidth), pad(short(row.id, idWidth), idWidth),
+    return [pad(machineName(row.machine), machineWidth), pad(short(sessionName(row), idWidth), idWidth),
       pad(short(detail, descriptionWidth), descriptionWidth), pad(idle, timeWidth)].join("  ").trimEnd();
   };
   for (const row of [...rows].sort((a, b) => (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {

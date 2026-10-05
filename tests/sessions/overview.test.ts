@@ -156,3 +156,10 @@ test("both machine summaries count exactly their four visible blocks", () => {
   const out=renderOverview(inputs,[],NOW);
   for(const label of ["Мак","newa"]) expect(out).toContain(`${label}: 1 работают, 1 ждут решения, 1 сданы, 1 простаивают`);
 });
+
+test("Mac readable names show engine or window number while preserving JSON identity", () => {
+  const mac={...row(),id:"mac-tab-ttys000",machine:"mac" as const,windowId:"501",engine:"claude"};
+  expect(renderOverview([mac],[],NOW)).toMatch(/Мак\s+claude\s/);
+  expect(renderOverview([{...mac,engine:null}],[],NOW)).toMatch(/Мак\s+окно 501\s/);
+  expect(mac.id).toBe("mac-tab-ttys000");
+});
