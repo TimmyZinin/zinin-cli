@@ -65,9 +65,10 @@ test("broken json files degrade to idle unknown, never throw", () => {
   expect(row.engine).toBeNull();
   expect(row.state).toBe("idle");
 });
-test("without TASK file the task column stays empty instead of borrowing a TO-S0 heading", () => {
+test("without TASK file description falls back to report content instead of a TO-S0 heading", () => {
   const row = parseNewaDir(base({ taskText: null, toS0Text: "# S0 → newa\n\nвсё в порядке\n" }));
-  expect(row.task).toBeNull();
+  expect(row.task).toBe("всё ок");
+  expect(row.taskSource).toBe("REPORT-S0.md:line");
   expect(row.needs).toBeNull();
 });
 test("long lines are clipped to 120 chars", () => {

@@ -26,6 +26,7 @@ export interface SessionRow {
   engine: string | null;
   model: string | null;
   task: string | null;
+  taskSource?: string | null;
   state: PsState;
   lastActivityMs: number | null;
   stuckOn: string | null;

@@ -38,3 +38,13 @@ test("control sequences cannot escape into readable output and long descriptions
   const out = renderOverview([r], [], NOW);
   expect(out).not.toContain("\x1b"); expect(out).not.toContain("x".repeat(73)); expect(out).toContain("…");
 });
+test("description fallbacks preserve priority, dated heading cleanup and source", () => {
+  const parse = (reportText: string | null, readmeText: string | null = null, toS0Text: string | null = null) => parseNewaDir({name: "example", nowMs: NOW, statusText: null, metaText: null, taskText: null, reportText, readmeText, toS0Text});
+  expect(parse("## 2026-10-05 — Исправление импорта\nПроверки прошли").task).toBe("Исправление импорта");
+  expect(parse("## Заголовок\nСТАТУС: Проверяет экспорт").taskSource).toBe("REPORT-S0.md:status");
+  expect(parse("## Заголовок\nХвост").taskSource).toBe("REPORT-S0.md:heading");
+  expect(parse("Первая строка\nПоследняя работа").task).toBe("Последняя работа");
+  expect(parse(null, "# Исполнитель newa\nТы выполняешь только поручение S0 в текущей рабочей папке.", "Проверяет архив").taskSource).toBe("TO-S0.md");
+  expect(parse(null, "# Проект\nПроверяет архив").taskSource).toBe("README.md");
+  expect(parse(null)).toMatchObject({task:null, taskSource:null});
+});

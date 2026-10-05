@@ -73,11 +73,12 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
         const to = read("TO-S0.md"), report = read("REPORT-S0.md");
         const taskNames = [...regular].filter(n => /^TASK.*\.md$/i.test(n)).sort();
         let task: ReturnType<typeof read> = null;
+        let taskFile: string | undefined;
         if (taskNames.length > 16) note(`${worker.name}: task file limit reached`);
-        for (const name of taskNames.slice(0, 16)) { task = read(name); if (task?.text.trim()) break; }
+        for (const name of taskNames.slice(0, 16)) { task = read(name); if (task?.text.trim()) { taskFile = name; break; } }
         const times = [status, to, report, task].flatMap(f => f && f.mtimeMs <= nowMs ? [f.mtimeMs] : []);
         const row = parseNewaDir({ name: worker.name, metaText: meta?.text ?? null, statusText: status?.text ?? null,
-          toS0Text: to?.text ?? null, reportText: report?.text ?? null, taskText: task?.text ?? null,
+          toS0Text: to?.text ?? null, reportText: report?.text ?? null, taskText: task?.text ?? null, taskFile, readmeText: read("README.md")?.text ?? null,
           activityMs: times.length ? Math.max(...times) : null, lastSayMs: null, nowMs });
         rows.push(addStatusEstimates({ ...row, liveness: "unknown", lastSayMs: null }, status?.text ?? null,
           status?.mtimeMs ?? null, to?.mtimeMs ?? null, nowMs, options));

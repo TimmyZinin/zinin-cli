@@ -11,6 +11,8 @@ export interface NewaDirInput {
   toS0Text: string | null;
   reportText: string | null;
   taskText: string | null;     // first lines of TASK*.md
+  readmeText?: string | null;
+  taskFile?: string;
   turnMtimesMs?: number[];     // legacy caller input; E4 collectors must not read turns/
   activityMs?: number | null; // observed activity, never collection time
   lastSayMs?: number | null;  // explicit incoming-message boundary; absent means unknown
@@ -29,7 +31,7 @@ function clip(value: string | null | undefined, max = 120): string | null {
 /** Signature lines ("— newa (E3)") are not content — skip them when looking
  * for substantive lines (K3-4). */
 const SIGNATURE = /^\s*[—–-]\s+\S.{0,40}\([^)]*\)\s*$/;
-interface SignalLine { line: string; heading: boolean; atMs: number | null }
+interface SignalLine { line: string; heading: boolean; level: number; atMs: number | null }
 const ISO_PREFIX = /^\[?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))\]?/;
 function validTime(value: number | null | undefined, nowMs: number): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= nowMs ? value : null;
@@ -55,7 +57,7 @@ function signalLines(text: string | null, nowMs: number): SignalLine[] {
     const explicitTime = iso ? validTime(Date.parse(iso[1]), nowMs) : null;
     if (heading) headingTime = explicitTime;
     if (iso) line = line.slice(iso[0].length).replace(/^\s*[—–:]?\s*/, "");
-    if (line) lines.push({ line, heading, atMs: iso ? explicitTime : headingTime });
+    if (line) lines.push({ line, heading, level: /^#+/.exec(trimmed)?.[0].length ?? 0, atMs: iso ? explicitTime : headingTime });
   }
   return lines;
 }
@@ -155,9 +157,21 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
       lastSubmission = candidate;
     }
   }
-  const taskLine = signalLines(input.taskText, input.nowMs).find(item => !item.heading)?.line;
-  const statusLine = [...reportLines].reverse().find(item => /^СТАТУС:\s*/i.test(item.line))?.line.replace(/^СТАТУС:\s*/i, "");
-  const task = clip((taskLine ?? statusLine)?.replace(/^[*_-]+\s*|[*_]+$/g, "").replace(/\s+/g, " ") ?? null);
+  // Skip boilerplate instructions; descriptions must identify actual work.
+  const useful = (line: string) => !/^(?:[-*_]{3,}|исполнитель(?:\s+newa)?|read AGENTS\.md|communicate only|ты выполняешь только|с Тимом напрямую|вопросы\/блокеры|результаты и доказательства|перед существенным|не передавать в пакет|работай только|не читать auth|не выполнять отправки|никаких Telegram|не включать MCP|не запускать демоны|логи\/история|данные из сети|при недоступности модели|#?\s*REPORT-S0|#?\s*TO-S0)(?=\s|[.,:]|$)/i.test(line);
+  const meaningful = (text: string | null | undefined) => signalLines(text ?? null, input.nowMs).find(item => !item.heading && useful(item.line))?.line;
+  const withoutDate = (line: string) => line.replace(/^\[?\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?(?:Z| UTC)?)?\]?\s*[—–:|-]?\s*/, "");
+  const candidates: [string | undefined, string][] = [
+    [meaningful(input.taskText), input.taskFile ?? "TASK*.md"],
+    [[...reportLines].reverse().find(item => /^СТАТУС:\s*\S/i.test(item.line))?.line.replace(/^СТАТУС:\s*/i, ""), "REPORT-S0.md:status"],
+    [[...reportLines].reverse().filter(item => item.level === 2).map(item => withoutDate(item.line)).find(line => line && useful(line)), "REPORT-S0.md:heading"],
+    [[...reportLines].reverse().find(item => !item.heading && useful(item.line))?.line, "REPORT-S0.md:line"],
+    [meaningful(input.readmeText), "README.md"],
+    [meaningful(input.toS0Text), "TO-S0.md"],
+  ];
+  const selected = candidates.find(([text]) => text?.trim());
+  const task = clip(selected?.[0]?.replace(/^[*_-]+\s*|[*_]+$/g, "").replace(/\s+/g, " ") ?? null);
+  const taskSource = task ? selected![1] : null;
   let contextPct: number | null = null;
   const haystack = `${toLines.at(-1)?.line ?? ""}\n${reportLines.at(-1)?.line ?? ""}`;
   const ctx = /context:\s*(\d+)%/i.exec(haystack);
@@ -168,6 +182,7 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     engine,
     model,
     task,
+    taskSource,
     state: activity === "unknown" ? "idle" : activity,
     liveness,
     activity,
