@@ -20,6 +20,15 @@ export interface StatusEstimate<T> {
   confidence: "estimate";
   atMs: number | null;
 }
+export interface SessionDetails {
+  task: { text: string | null; source: string | null };
+  question: DecisionEvidence | null;
+  submission: SessionEvidence | null;
+  reportLines: string[];
+  status: string | null;
+  reason: string | null;
+  terminal: { title: string; tty: string | null; cwd: string | null; screenLines: string[] } | null;
+}
 export interface SessionRow {
   id: string;
   machine: "mac" | "newa" | "unknown";
@@ -28,6 +37,7 @@ export interface SessionRow {
   task: string | null;
   taskSource?: string | null;
   windowId?: string;
+  details?: SessionDetails;
   state: PsState;
   lastActivityMs: number | null;
   stuckOn: string | null;

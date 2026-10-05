@@ -154,7 +154,7 @@ export function parseLaunchDirs(psText: string, lsofText: string): Map<string, s
 export function parseTerminalWindows(
   text: string,
   onScreen?: (id: string, screen: { statusline: string; cwd: string | null; spinning: boolean; busy: boolean; tty: string | null }) => void,
-  options: { tabs?: boolean } = {},
+  options: { tabs?: boolean; details?: boolean } = {},
 ): SessionRow[] {
   const rows: SessionRow[] = [];
   for (const record of text.split(RECORD_SEP)) {
@@ -204,6 +204,11 @@ export function parseTerminalWindows(
       model,
       task,
       taskSource: task ? "terminal-title" : null,
+      ...(options.details ? { details: {
+        task: {text: title, source: "terminal-title"}, question: null, submission: null, reportLines: [],
+        status: state, reason: null,
+        terminal: {title, tty: tty ? `/dev/${tty}` : null, cwd, screenLines: screen.replace(/\r/g, "").split("\n").filter(line => line.trim()).slice(-15)},
+      } } : {}),
       state,
       lastActivityMs: null,
       stuckOn: status.stuckOn ?? (interrupted ? clip(interrupted) : null),

@@ -12,6 +12,7 @@ export interface NewaDirInput {
   toS0Text: string | null;
   reportText: string | null;
   taskText: string | null;     // first lines of TASK*.md
+  includeDetails?: boolean;
   readmeText?: string | null;
   taskFile?: string;
   turnMtimesMs?: number[];     // legacy caller input; E4 collectors must not read turns/
@@ -91,15 +92,17 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   const toLines = signalLines(input.toS0Text, input.nowMs);
   const reportLines = signalLines(input.reportText, input.nowMs);
   const lastSayMs = validTime(input.lastSayMs, input.nowMs);
+  let fullQuestion: DecisionEvidence | null = null;
   let decision: DecisionEvidence | null = null;
   for (const item of toLines) {
-    if (RESOLVED.test(item.line)) { decision = null; continue; }
+    if (RESOLVED.test(item.line)) { decision = null; fullQuestion = null; continue; }
     if (!QUESTION.test(item.line)) continue;
     decision = {
       text: clip(item.line)!, source: "TO-S0.md", atMs: item.atMs,
       freshness: item.atMs === null || lastSayMs === null ? "unknown"
         : item.atMs > lastSayMs ? "current" : "stale",
     };
+    fullQuestion = { ...decision, text: item.line };
   }
   const needs = decision?.freshness === "current" ? decision.text : null;
   const DONE_WORDS = new Set(["готово", "готов", "готова", "готовы", "итог", "сдано", "сдача", "done", "finished"]);
@@ -146,17 +149,19 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     if (marker.word === "итог" && !marker.punct.includes(":")) return false;
     return true;
   }
+  let fullSubmission: SessionEvidence | null = null;
   let lastSubmission: SessionEvidence | null = null;
   for (const [source, lines] of [["TO-S0.md", toLines], ["REPORT-S0.md", reportLines]] as const) {
     let candidate: SessionEvidence | null = null;
     for (const item of lines) {
       if (item.heading ? headingMarker(item.line) : markerInSegment(item.line)) {
-        candidate = { text: clip(item.line)!, source, atMs: item.atMs };
+        candidate = { text: item.line, source, atMs: item.atMs };
       }
     }
     // Prefer REPORT for undated cross-file evidence; never invent chronology.
     if (candidate && (!lastSubmission || candidate.atMs === null || lastSubmission.atMs === null || candidate.atMs >= lastSubmission.atMs)) {
-      lastSubmission = candidate;
+      fullSubmission = candidate;
+      lastSubmission = { ...candidate, text: clip(candidate.text)! };
     }
   }
   // Skip boilerplate instructions; descriptions must identify actual work.
@@ -185,6 +190,12 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     model,
     task,
     taskSource,
+    ...(input.includeDetails ? { details: {
+      task: { text: taskSource === (input.taskFile ?? "TASK*.md") ? input.taskText?.trim() ?? task : selected?.[0] ?? task, source: taskSource },
+      question: fullQuestion, submission: fullSubmission,
+      reportLines: reportLines.filter(item => !item.heading).slice(-15).map(item => item.line),
+      status: stateRaw, reason: typeof status?.reason === "string" ? status.reason : null, terminal: null,
+    } } : {}),
     state: activity === "unknown" ? "idle" : activity,
     liveness,
     activity,

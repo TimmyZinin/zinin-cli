@@ -11,6 +11,7 @@ export const MAX_WORKERS = 1024;
 export interface NewaCollectorOptions extends EstimateOptions {
   root?: string; nowMs?: number; maxBytes?: number; maxWorkers?: number;
   timeoutMs?: number; signal?: AbortSignal;
+  detailId?: string; // exact directory name; never joined from user input
   pathMode?: "descriptor" | "portable"; // injectable to exercise the macOS path on Linux
 }
 const bounded = (n: number | undefined, fallback: number) => n !== undefined && Number.isSafeInteger(n) && n > 0 ? Math.min(n, fallback) : fallback;
@@ -51,7 +52,7 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
   } catch { return { rows, machine: { ...machine, available: false, warnings: ["work root unavailable"] } }; }
   try {
     verifyDir(rootFd, root);
-    const workers = readdirSync(dirPath(rootFd, root), { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name));
+    const workers = readdirSync(dirPath(rootFd, root), { withFileTypes: true }).filter(e => e.isDirectory() && (options.detailId === undefined || e.name === options.detailId)).sort((a, b) => a.name.localeCompare(b.name));
     verifyDir(rootFd, root);
     if (workers.length > maxWorkers) note("worker limit reached; overview is partial");
     for (const worker of workers.slice(0, maxWorkers)) {
@@ -117,7 +118,7 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
         const times = [status, to, report, task].flatMap(f => f && f.mtimeMs <= nowMs ? [f.mtimeMs] : []);
         const row = parseNewaDir({ name: worker.name, metaText: meta?.text ?? null, statusText: status?.text ?? null,
           toS0Text: to?.text ?? null, reportText: report?.text ?? null, taskText: task?.text ?? null, taskFile, readmeText: read("README.md")?.text ?? null,
-          activityMs: times.length ? Math.max(...times) : null, lastSayMs: null, nowMs });
+          activityMs: times.length ? Math.max(...times) : null, lastSayMs: null, nowMs, includeDetails: options.detailId === worker.name });
         verifyWorker();
         rows.push(addStatusEstimates({ ...row, liveness: "unknown", lastSayMs: null }, status?.text ?? null,
           status?.mtimeMs ?? null, to?.mtimeMs ?? null, nowMs, options));

@@ -21,11 +21,14 @@ import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderJson } from "./sessions/render";
 import { filterRecent, parseSince } from "./sessions/freshness";
+import { matchSessions, renderSessionDetails, type ShowResult } from "./sessions/details";
 import { renderOverview } from "./sessions/overview";
 import { enrichRowsWithTranscripts, windowProjectKey, type SlugFacts, type WindowScreen } from "./sessions/enrich";
 import { parsePsConfig } from "./sessions/psconfig";
 
 export interface PsOptions {
+  show?: string;
+  detailId?: string;
   all?: boolean;
   sinceMs?: number;
   watchSeconds: number | null;
@@ -90,7 +93,7 @@ export function collectTranscriptFacts(root: string, nowMs: number): Map<string,
   }
   return facts;
 }
-async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner, signal: AbortSignal): Promise<MachineInfo> {
+async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner, signal: AbortSignal, details = false): Promise<MachineInfo> {
   let available = false;
   let windowsRaw = "";
   try {
@@ -100,7 +103,7 @@ async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner,
     warn(`mac windows unavailable: ${(error as Error).message}`);
   }
   const screens = new Map<string, WindowScreen>();
-  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen), { tabs: true })) {
+  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen), { tabs: true, details })) {
     rows.push(row);
   }
   // К4-2: engine-process launch directories by tty (ps + lsof, reads-only).
@@ -118,6 +121,8 @@ async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner,
     }
     for (const [id, screen] of screens) {
       screen.key = windowProjectKey(screen, launchDirs, cwdToProjectSlug);
+      const row = rows.find(row => row.id === id);
+      if (row?.details?.terminal) row.details.terminal.cwd = (screen.tty ? launchDirs.get(screen.tty) : null) ?? screen.cwd;
     }
   } catch (error) {
     warn(`launch dirs unavailable: ${(error as Error).message}`);
@@ -204,21 +209,37 @@ export async function collect(opts: PsOptions, deps: CollectorDependencies = {},
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new Error("invalid source timeout");
   const mac = deps.mac ?? (async (now: number, abort: AbortSignal) => {
     const rows: SessionRow[] = [];
-    const machine = await collectMac(rows, now, run, abort);
+    const machine = await collectMac(rows, now, run, abort, opts.show !== undefined);
     return { rows, machine };
   });
   const newa = deps.newa ?? (async (now: number, abort: AbortSignal) => {
-    const snapshot = collectNewaSnapshot({ ...deps.newaOptions, nowMs: now, signal: abort });
+    const snapshot = collectNewaSnapshot({ ...deps.newaOptions, nowMs: now, signal: abort, detailId: opts.detailId });
     snapshot.machine.version = codeVersion();
     return snapshot;
   });
   const remote = deps.remote ?? (async (_now: number, abort: AbortSignal) =>
-    parseRemoteSnapshot(await run([...(deps.remoteCommand ?? resolveNewaCmd()), "--all"], { signal: abort })));
+    parseRemoteSnapshot(await run([...(deps.remoteCommand ?? resolveNewaCmd()), "--all", ...(opts.detailId === undefined ? [] : ["--detail-id", Buffer.from(opts.detailId).toString("base64url")])], { signal: abort })));
   const sources: Promise<SourceSnapshot>[] = [];
   if ((opts.sources === "mac" || opts.sources === "all") && host !== "newa") sources.push(boundedSource("mac", abort => mac(nowMs, abort), timeoutMs, signal));
   if (opts.sources === "newa" || opts.sources === "all") sources.push(boundedSource("newa", abort => (host === "newa" ? newa : remote)(nowMs, abort), timeoutMs, signal));
   const snapshots = await Promise.all(sources);
   return { ...filterRecent(applyDerivedStates(mergeRows(snapshots.flatMap(s => s.rows)), nowMs, opts.stuckMinutes), nowMs, opts.all, opts.sinceMs), machines: snapshots.map(s => s.machine), nowMs };
+}
+/** Resolve against an unfiltered overview, then request details only for the exact worker. */
+export async function showSession(query: string, opts: PsOptions, deps: CollectorDependencies = {}, signal?: AbortSignal): Promise<ShowResult> {
+  if (!query.trim() || query.length > 256 || /[\x00-\x1f]/.test(query)) throw new Error("show expects a session name or id");
+  const snapshot = await collect({...opts, all:true, show:query, detailId:undefined},deps,signal);
+  const matches = matchSessions(snapshot.rows,query);
+  const result: ShowResult = {query, status: matches.length > 1 ? "ambiguous" : matches.length ? "found" : snapshot.machines.some(m=>m.available===false) ? "unavailable" : "not-found",
+    sessions:matches, machines:snapshot.machines, generatedAt:new Date(snapshot.nowMs).toISOString()};
+  if(matches.length!==1) return result;
+  if(matches[0].machine==="newa") {
+    const details=await collect({...opts,sources:"newa",all:true,detailId:matches[0].id},deps,signal);
+    const found=details.rows.find(row=>row.machine==="newa" && row.id===matches[0].id && row.details);
+    result.machines=[...result.machines.filter(m=>m.machine!=="newa"),...details.machines];
+    if(found) result.sessions=[found]; else { result.status="unavailable"; result.sessions=[]; }
+  }
+  return result;
 }
 function print(out: string): void {
   process.stdout.write(out + "\n");
@@ -241,6 +262,17 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--json") opts.json = true;
+    else if (arg === "show") {
+      const query=argv[++i];
+      if (!query || query.startsWith("--")) throw new Error("show expects a session name or id");
+      opts.show=query;
+    }
+    else if (arg === "--detail-id") {
+      const encoded=argv[++i];
+      if (!encoded || !/^[A-Za-z0-9_-]+$/.test(encoded) || encoded.length>1400) throw new Error("invalid detail id");
+      opts.detailId=Buffer.from(encoded,"base64url").toString("utf8");
+      opts.all=true;
+    }
     else if (arg === "--all") opts.all = true;
     else if (arg === "--since") opts.sinceMs = parseSince(argv[++i]);
     else if (arg === "--watch") {
@@ -261,6 +293,7 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
     }
     else if (arg === "--help" || arg === "-h") {
       print("zinin ps — обзор всех сессий (только чтение)\n" +
+        "  show <имя|id>     подробности; неоднозначное имя показывает совпадения\n" +
         "  --watch [N]        обновлять раз в N секунд (по умолчанию 5)\n" +
         "  --json             машинный вывод\n" +
         "  --since 24h        период свежести (m/h/d), всегда включает running\n" +
@@ -271,11 +304,17 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
     }
     else { warn(`unknown argument: ${arg}`); process.exit(2); }
   }
+  if (opts.show !== undefined && opts.watchSeconds !== null) throw new Error("show does not support --watch");
   const controller = new AbortController();
   const stop = () => controller.abort();
   process.on("SIGINT", stop);
   process.on("SIGTERM", stop);
   try {
+    if (opts.show !== undefined) {
+      const result=await showSession(opts.show,opts,deps,controller.signal);
+      print(opts.json ? JSON.stringify(result,null,2) : renderSessionDetails(result));
+      return;
+    }
     do {
       const { rows, machines, nowMs, hidden_count } = await collect(opts, deps, controller.signal);
       if (controller.signal.aborted) break;

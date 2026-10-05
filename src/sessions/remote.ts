@@ -1,3 +1,4 @@
+import { parseRemoteDetails } from "./details";
 import type { SessionRow, MachineInfo } from "./types";
 import type { SourceSnapshot } from "./newa-collector";
 import { MAX_COMMAND_BYTES } from "./command";
@@ -54,6 +55,7 @@ export function parseRemoteSnapshot(raw: string): SourceSnapshot {
       const signal = v[key];
       if (object(signal)) copy[key] = { value: signal.value, source: signal.source, confidence: signal.confidence, atMs: signal.atMs };
     }
+    if (v.details !== undefined) copy.details = parseRemoteDetails(v.details);
     rows.push(copy as unknown as SessionRow);
   }
   const m = parsed.machines[0];
