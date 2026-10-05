@@ -53,3 +53,17 @@ test("human idle duration uses minutes, hours and days at exact boundaries", () 
   for (const [minutes, label] of [[7,"7 мин"],[59,"59 мин"],[60,"1 ч"],[240,"4 ч"],[1439,"23 ч"],[1440,"1 дн"],[4320,"3 дн"]] as const) expect(humanIdle(NOW - minutes * 60_000,NOW)).toBe(label);
   expect(humanIdle(null,NOW)).toBe("неизвестно"); expect(humanIdle(NOW+1,NOW)).toBe("0 мин");
 });
+
+test("decisions lead the overview and every block sorts newest movement first", () => {
+  const rows = ["running","idle"].flatMap(state => [
+    {...row(state, "Вопрос: формат?", "СДАНО: отчёт"), id: state+"-old", lastActivityMs: NOW-120_000},
+    {...row(state, "Вопрос: формат?", "СДАНО: отчёт"), id: state+"-new", lastActivityMs: NOW-60_000},
+  ]);
+  const out=renderOverview(rows,[],NOW);
+  expect(out.startsWith("Ждут решения владельца\n")).toBe(true);
+  expect(out.indexOf("Работают сейчас")).toBeLessThan(out.indexOf("Сданы"));
+  for (const block of out.split(/\n\n/)) for (const state of ["running","idle"]) {
+    if(block.includes(state+"-old")) expect(block.indexOf(state+"-new")).toBeLessThan(block.indexOf(state+"-old"));
+  }
+  expect(rows[0].id).toBe("running-old");
+});

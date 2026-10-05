@@ -45,13 +45,13 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     if (question && row.decision?.freshness === "unknown") notes.push("точная свежесть вопроса неизвестна");
     return `${machineName(row.machine)}  ${short(row.id, 64)}  ${short(description) || "задача не указана"}  — без движения ${idle}${notes.length ? " · " + notes.join(" · ") : ""}`;
   };
-  for (const row of rows) {
+  for (const row of [...rows].sort((a, b) => (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
     const target = group(row);
     blocks[target].push(line(row, target));
     // A previous submission survives while the same session works or waits.
     if (row.lastSubmission && target !== 2) blocks[2].push(line(row, 2));
   }
-  const out = titles.flatMap((title, i) => [title, ...(blocks[i].length ? blocks[i] : ["нет"]), ""]);
+  const out = [1, 0, 2, 3].flatMap(i => [titles[i], ...(blocks[i].length ? blocks[i] : ["нет"]), ""]);
   for (const machine of machines) {
     if (machine.available === false) out.push(`${machineName(machine.machine)}: источник недоступен`);
     for (const warning of machine.warnings ?? []) out.push(`${machineName(machine.machine)}: ${short(warning, 160)}`);
