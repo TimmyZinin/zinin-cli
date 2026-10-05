@@ -23,3 +23,10 @@ test("fault after durable run finish and result but before review preserves old 
  expect(service.stop(p.run_id).message).toContain("процесс мог остаться жив");
  const result=await service.run("task-one",now,{kind:"local-demo"},{attempt:2});expect(service.state().results["result-before-crash"].digest).toBe("legacy-digest");expect(service.state().results[result!.result_id!].revision).toBe(2);expect(CoreJournal.fold(paths.journal)).toEqual(service.state());
 });
+test("an explicit attempt never silently succeeds on a reviewed or accepted task",async()=>{
+ const {service}=fixture(),p=service.reconcilePreview("run-task-one-1");service.reconcile("reconcile",p.run_id,"lost","manual",p.expected_seq,now);
+ const run=await service.run("task-one",now,{kind:"local-demo"},{attempt:2}),result=service.state().results[run!.result_id!],review=service.state();
+ await expect(service.run("task-one",now,{kind:"local-demo"},{attempt:99})).rejects.toThrow("новая попытка");expect(service.state()).toEqual(review);
+ service.accept("accept",result.result_id,result.revision,result.digest,now);const done=service.state();
+ await expect(service.run("task-one",now,{kind:"local-demo"},{attempt:3})).rejects.toThrow("новая попытка");expect(service.state()).toEqual(done);
+});

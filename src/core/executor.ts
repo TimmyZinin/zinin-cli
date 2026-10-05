@@ -51,7 +51,10 @@ export class LocalExecutor {
     const task = state.tasks[taskId];
     if (!task) throw new JournalError("not_found", `Task ${taskId} missing`);
     if (state.sessions[task.session_id]?.status !== "open") throw new JournalError("conflict", "Session is closed");
-    if (["review_ready", "finalizing", "done"].includes(task.status)) return null;
+    if (["review_ready", "finalizing", "done"].includes(task.status)) {
+      if(options.attempt!==undefined)throw new JournalError("conflict","Задача уже сдана; новая попытка без сверки недоступна");
+      return null;
+    }
     if (!["draft", "queued", "active"].includes(task.status)) throw new JournalError("conflict", `Task is ${task.status}`);
     if (Object.values(state.runs).some(run => run.task_id === taskId && run.status === "running")) throw new JournalError("conflict", "Task already has an active run");
     const previousRuns=Object.values(state.runs).filter(r=>r.task_id===taskId).sort((a,b)=>(a.created_seq??0)-(b.created_seq??0));
