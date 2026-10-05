@@ -9,6 +9,8 @@ function short(value: string | null | undefined, max = 72): string {
 }
 const machineName = (value: string) => value === "mac" ? "Мак" : value === "newa" ? "newa" : "неизвестно";
 function group(row: SessionRow): number {
+  // Explicit running activity wins over any stale submission/group label.
+  if (row.activity === "working" || row.overviewGroup?.value === "working") return 0;
   if (row.overviewGroup?.value === "waiting" || row.state === "waiting-tim") return 1;
   if (row.activity === "working" || row.overviewGroup?.value === "working" ||
       (!row.activity && ["working", "starting", "closing", "stuck"].includes(row.state))) return 0;
@@ -57,7 +59,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
   const working = newa.filter(row => group(row) === 0).length;
   const waiting = newa.filter(row => group(row) === 1).length;
   // Undated and stale evidence cannot substantiate "submitted within a day".
-  const submitted = newa.filter(row => row.lastSubmission?.atMs != null && row.lastSubmission.atMs >= nowMs - 86_400_000 && row.lastSubmission.atMs <= nowMs).length;
+  const submitted = newa.filter(row => group(row) === 2 && row.lastSubmission?.atMs != null && row.lastSubmission.atMs >= nowMs - 86_400_000 && row.lastSubmission.atMs <= nowMs).length;
   out.push(`Мак: ${macLive} живых · newa: ${working} работают, ${waiting} ждут решения, ${submitted} сдано за сутки`);
   return out.join("\n").trimEnd();
 }

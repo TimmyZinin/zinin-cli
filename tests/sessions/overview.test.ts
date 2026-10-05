@@ -73,7 +73,7 @@ test("summary counts sessions once and counts only dated submissions in the last
   const waiting={...row("idle","Вопрос: формат?","СДАНО: без даты"),id:"waiting"};
   const old={...row("idle",null,"2026-10-03T11:00:00Z СДАНО: старое"),id:"old"};
   const mac={...row(),id:"mac",machine:"mac" as const,source:"terminal-mac"};
-  expect(renderOverview([working,waiting,old,mac],[],NOW).split("\n").at(-1)).toBe("Мак: 1 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
+  expect(renderOverview([working,waiting,old,mac],[],NOW).split("\n").at(-1)).toBe("Мак: 1 живых · newa: 1 работают, 1 ждут решения, 0 сдано за сутки");
 });
 
 test("each session occupies one block and previous submissions stay on that same line", () => {
@@ -85,4 +85,19 @@ test("each session occupies one block and previous submissions stay on that same
   expect(out.split("\n").find(line=>line.includes("work-one"))).toContain("сдано раньше:");
   const submitted=out.split("Сданы\n")[1].split("\n\n")[0];
   expect(submitted).toContain("done-one"); expect(submitted).not.toContain("work-one");
+});
+
+test("running wins over old submission groups; empty blocks and footer agree with rows", () => {
+  const working={...row("running",null,"2026-10-05T11:00:00Z СДАНО: старый результат"),id:"live-worker"};
+  working.overviewGroup={value:"submitted",source:"status-mtime",confidence:"estimate",atMs:NOW};
+  const done={...row("idle",null,"2026-10-05T11:30:00Z СДАНО: результат"),id:"done-worker"};
+  const waiting={...row("idle","Вопрос: формат?"),id:"wait-worker"};
+  const out=renderOverview([working,done,waiting],[],NOW);
+  const block=(title:string)=>out.split(title+"\n")[1].split("\n\n")[0];
+  expect(block("Работают сейчас")).toContain("live-worker");
+  expect(block("Сданы")).not.toContain("live-worker");
+  for(const title of ["Работают сейчас","Ждут решения владельца","Сданы"]) expect(block(title).split("\n")).toHaveLength(1);
+  expect(out.split("\n").at(-1)).toBe("Мак: 0 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
+  const empty=renderOverview([],[],NOW);
+  for(const title of ["Работают сейчас","Ждут решения владельца","Сданы","Не отвечают/неизвестно"]) expect(empty).toContain(title+"\nнет");
 });
