@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  parseTerminalWindows, parseWindowTitle, parseStatusLine, pickStatusLine,
+  parseTerminalWarnings, parseTerminalWindows, parseWindowTitle, parseStatusLine, pickStatusLine,
   detectEngine, detectEngineFromTitle, modelFromTitle, RECORD_SEP,
 } from "../../src/adapters/sessions/terminal-mac";
 import type { SessionRow } from "../../src/sessions/types";
@@ -210,8 +210,21 @@ test("E4 raw Terminal tabs retain nonselected tabs, tty IDs and embedded ASCII 9
 });
 test("E4 Terminal script collects every tab with literal ASCII separators", async () => {
   const { TERMINAL_TABS_SCRIPT: script } = await import("../../src/adapters/sessions/terminal-script");
-  expect(script).toContain("repeat with t in tabs of w");
-  expect(script).toContain("contents of t"); expect(script).toContain("busy of t");
+  expect(script).toContain("repeat with tabIndex from 1 to (count of tabs of w)");
+  expect(script).toContain("set t to tab tabIndex of w");
+  expect(script).not.toMatch(/contents of t(?:\s|"|$)/);
+  expect(script).toContain("set tabScreen to (contents of tab tabIndex of w) as text");
+  expect(script).toContain("on error errorText number errorNumber");
+  expect(script).toContain("__TAB_ERROR__"); expect(script).toContain("busy of t");
   expect(script).toContain("tty of t"); expect(script).toContain("ASCII character 9");
   expect(script).toContain("ASCII character 30"); expect(script).not.toContain("contents of selected tab");
+});
+
+test("tab coercion failure is visible as a diagnostic without discarding healthy tabs", () => {
+  const error = "__TAB_ERROR__\t501-2\t-1700: Can't make tab into Unicode text";
+  const raw = readFileSync(join(FIX,"mac-tabs-raw.txt"),"utf8") + error + RECORD_SEP;
+  expect(parseTerminalWindows(raw,undefined,{tabs:true})).toHaveLength(3);
+  expect(parseTerminalWarnings(raw)).toEqual(["Terminal 501-2: -1700: Can't make tab into Unicode text"]);
+  expect(parseTerminalWindows(error,undefined,{tabs:true})).toHaveLength(0);
+  expect(parseTerminalWarnings(error)).toHaveLength(1);
 });

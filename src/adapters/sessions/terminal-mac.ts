@@ -160,6 +160,7 @@ export function parseTerminalWindows(
   for (const record of text.split(RECORD_SEP)) {
     const fields = record.replace(/^\n+/, "").split("\t");
     const index = (fields[0] ?? "").trim();
+    if (index === "__TAB_ERROR__") continue;
     const title = (fields[1] ?? "").trim();
     if (!title) continue; // window without tabs (closed) — skip the phantom
     // Trailing metadata fields: busy ("true"/"false") and tty ("ttysNNN").
@@ -212,4 +213,12 @@ export function parseTerminalWindows(
     });
   }
   return rows;
+}
+
+/** Error records are diagnostics, never fabricated session rows. */
+export function parseTerminalWarnings(text: string): string[] {
+  return text.split(RECORD_SEP).flatMap(record => {
+    const fields = record.replace(/^\n+/, "").split("\t");
+    return fields[0] === "__TAB_ERROR__" ? [`Terminal ${fields[1] || "unknown"}: ${fields.slice(2).join(" ").slice(0, 512)}`] : [];
+  }).slice(0, 100);
 }

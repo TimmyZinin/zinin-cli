@@ -10,7 +10,7 @@ import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, cl
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
 import { TERMINAL_TABS_SCRIPT } from "./adapters/sessions/terminal-script";
-import { parseTerminalWindows, parseLaunchDirs } from "./adapters/sessions/terminal-mac";
+import { parseTerminalWindows, parseTerminalWarnings, parseLaunchDirs } from "./adapters/sessions/terminal-mac";
 import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
 import { collectNewaSnapshot, type SourceSnapshot, type NewaCollectorOptions } from "./sessions/newa-collector";
 import { runCommand, type CommandRunner } from "./sessions/command";
@@ -152,7 +152,7 @@ async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner,
     const df = await run(["df", "-k", "/"], { signal });
     disk = parseDf(df);
   } catch { /* df unavailable */ }
-  return { machine: "mac", memFreeMb: mem, diskFreeMb: disk, version: codeVersion(), available };
+  return { machine: "mac", memFreeMb: mem, diskFreeMb: disk, version: codeVersion(), available, warnings: parseTerminalWarnings(windowsRaw) };
 }
 /** N-5: from the Mac, newa rows come over the same ssh lock as remote.py get.
  * Default reaches the pinned bun and the deployed checkout on newa by absolute
