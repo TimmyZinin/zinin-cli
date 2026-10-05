@@ -10,3 +10,11 @@ test("compiled CLI and embedded figlet run away from checkout with no PATH or no
  for(const args of [["ps","--help"],["work","--help"],["--banner"]]){const run=await capture([binary,...args],{cwd:"/",env});expect(run.code).toBe(0);expect(run.err).not.toContain("ENOENT");expect(run.out.length).toBeGreaterThan(30);if(args[0]==="--banner")expect(run.out).toContain("██");}
  const run=await capture([binary,"ps","--sources","newa","--newa-root",root,"--json"],{cwd:"/",env});expect(run.code).toBe(0);expect(run.err).not.toContain("ENOENT");expect(JSON.parse(run.out).sessions[0].id).toBe("synthetic-worker");expect(existsSync(join(home,".zinin"))).toBe(false);
 },120_000);
+
+test("release build embeds git and build date independently of the user's cwd and PATH",async()=>{
+ const dir=mkdtempSync(join(tmpdir(),"zinin-versioned-")),binary=join(dir,"zinin"),root=join(dir,"workers");mkdirSync(root);
+ const before=Date.now(),built=await capture([process.execPath,"scripts/build.ts","--outfile",binary],{cwd:repo});expect(built.code).toBe(0);
+ const expected=(await capture(["git","-C",repo,"rev-parse","HEAD"])).out.trim(),env={PATH:"",HOME:dir,ZININ_NO_TELEMETRY:"1"};
+ const version=await capture([binary,"--version"],{cwd:"/",env});expect(version.code).toBe(0);expect(version.err).toBe("");expect(version.out.trim().split("\n")).toHaveLength(1);expect(version.out).toContain(expected);
+ const state=JSON.parse((await capture([binary,"ps","--sources","newa","--newa-root",root,"--json"],{cwd:"/",env})).out);expect(state.build.git).toBe(expected);expect(Date.parse(state.build.builtAt)).toBeGreaterThanOrEqual(before);expect(state.machines[0].version).toContain(expected);expect(state.machines[0].version).toContain(state.build.builtAt);expect(existsSync(join(dir,".zinin"))).toBe(false);
+},120_000);

@@ -17,7 +17,7 @@ import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claud
 import { collectNewaSnapshot, type SourceSnapshot, type NewaCollectorOptions } from "./sessions/newa-collector";
 import { runCommand, type CommandRunner } from "./sessions/command";
 import { parseRemoteSnapshot } from "./sessions/remote";
-import { spawnSync } from "node:child_process";
+import {buildVersion,BUILD_INFO} from "./build-info";
 import { parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/machine";
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
@@ -250,19 +250,8 @@ export async function showSession(query: string, opts: PsOptions, deps: Collecto
 function print(out: string): void {
   process.stdout.write(out + "\n");
 }
-/** Code version lookup has a bounded foreground git invocation. */
-export function codeVersion(dir = import.meta.dir): string {
-  try {
-    const proc = spawnSync("git", ["-C", dir, "rev-parse", "--short", "HEAD"], { timeout: 2000, maxBuffer: 4096, encoding: "utf8" });
-    const sha = (proc.stdout ?? "").trim();
-    if (proc.status === 0 && sha) return `git-${sha}`;
-  } catch { /* not a git checkout */ }
-  try {
-    const pkg = JSON.parse(readFileSync(join(dir, "..", "package.json"), "utf8")) as { version?: string };
-    if (pkg.version) return `v${pkg.version}`;
-  } catch { /* no package.json */ }
-  return "unknown";
-}
+/** Installed binaries use embedded metadata and never inspect the caller's .git. */
+export function codeVersion(_dir?:string):string {return buildVersion();}
 export async function psMain(argv: string[], deps: CollectorDependencies = {}): Promise<void> {
   const opts: PsOptions = { watchSeconds: null, json: false, stuckMinutes: undefined, sources: "all" };
   for (let i = 0; i < argv.length; i++) {
@@ -323,7 +312,7 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
   try {
     if (opts.show !== undefined) {
       const result=await showSession(opts.show,opts,deps,controller.signal);
-      print(opts.json ? JSON.stringify(result,null,2) : renderSessionDetails(result));
+      print(opts.json ? JSON.stringify({...result,build:BUILD_INFO},null,2) : renderSessionDetails(result));
       return;
     }
     do {
