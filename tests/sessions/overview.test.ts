@@ -143,3 +143,9 @@ test("columns align in terminal cells and descriptions fit narrow and default wi
   }
   expect(renderOverview(inputs,[],NOW)).toBe(renderOverview(inputs,[],NOW,0,process.stdout.columns || 100));
 });
+
+test("controller stopped-turn notices are neither task descriptions nor owner questions", () => {
+  const r=parseNewaDir({name:"notice-worker",nowMs:NOW,metaText:null,statusText:'{"state":"failed"}',taskText:null,reportText:null,
+    toS0Text:"Turn 000001 stopped: exit=1, reason=Вопрос: проверить?; inspect tail. No automatic restart."});
+  expect(r.taskSource).toBe("directory-name"); expect(r.decision).toBeNull();
+});

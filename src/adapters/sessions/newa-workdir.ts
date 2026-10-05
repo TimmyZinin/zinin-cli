@@ -2,7 +2,7 @@
  * Pure inputs assembled by the live wrapper (texts + explicit observations);
  * never touches the filesystem itself.
  */
-import { cleanDescription, meaningfulDescription } from "../../sessions/description";
+import { CONTROLLER_NOTICE, cleanDescription, meaningfulDescription } from "../../sessions/description";
 import type { SessionRow, SessionActivity, SessionEvidence, DecisionEvidence } from "../../sessions/types";
 
 export interface NewaDirInput {
@@ -58,6 +58,7 @@ function signalLines(text: string | null, nowMs: number): SignalLine[] {
     const explicitTime = iso ? validTime(Date.parse(iso[1]), nowMs) : null;
     if (heading) headingTime = explicitTime;
     if (iso) line = line.slice(iso[0].length).replace(/^\s*[—–:]?\s*/, "");
+    if (CONTROLLER_NOTICE.test(cleanDescription(line))) continue;
     if (line) lines.push({ line, heading, level: /^#+/.exec(trimmed)?.[0].length ?? 0, atMs: iso ? explicitTime : headingTime });
   }
   return lines;

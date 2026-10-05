@@ -1,3 +1,4 @@
+export const CONTROLLER_NOTICE = /^Turn\s+\d+\s+stopped:/i;
 /** Remove list/date scaffolding without interpreting or rewriting the task. */
 export function cleanDescription(line: string): string {
   return line.replace(/^\s*(?:[-*+]\s+|\d+[.)]\s+)/, "")
@@ -6,6 +7,7 @@ export function cleanDescription(line: string): string {
 }
 export function meaningfulDescription(line: string): string | null {
   const text = cleanDescription(line);
+  if (CONTROLLER_NOTICE.test(text)) return null;
   if (text.endsWith(":")) return null;
   if ((text.match(/[\p{L}\p{N}]/gu) ?? []).length < 12) return null;
   return text;
