@@ -38,7 +38,7 @@ export class WorkScreen {
   this.render();
  }
  render(){
-  const tree=renderWorkStatus(this.service.state(),this.service.journalPath).split("\n");
+  const tree=renderWorkStatus(this.service.state(),this.service.journalPath,this.service.ownedRunIds()).split("\n");
   const rows=["ZININ work — явные адресные команды; Ctrl-C/Ctrl-D: выход",...tree.slice(0,Math.max(1,this.height-7)),"",plain(this.message),`> ${plain(this.draft)}`,"session / task / run / accept / stop / status; Enter: сначала адресат, затем выполнение"];
   this.write("\x1b[H\x1b[2J"+rows.map(line=>{let out="";for(const c of plain(line)){if(Bun.stringWidth(out+c)>this.width-1)break;out+=c;}return out;}).join("\r\n"));
  }

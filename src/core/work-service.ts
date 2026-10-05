@@ -49,6 +49,7 @@ export class WorkCommandService {
     if(!run) throw new JournalError("not_found","Запуск не найден");
     return {run_id:runId,stop_requested:false,message:run.status!=="running" ? "Запуск уже завершён; сигнал не отправлен" : "Владение неизвестно, процесс не остановлен"};
   }
+  ownedRunIds():ReadonlySet<string> {return new Set(this.owned.keys());}
   stopOwned() {for(const owned of this.owned.values()) owned.abort();}
   accept(commandId:string, resultId:string, revision:number, digest:string, now:string) {
     return this.withJournal(journal=>{

@@ -35,14 +35,14 @@ const safe=(s:string)=>s.replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g,"").replace(/\
 export function resultAwaitsAcceptance(state:CoreState,result:CoreState["results"][string]):boolean {
  return result.status==="recorded"&&state.tasks[result.task_id]?.status==="review_ready"&&!Object.values(state.runs).some(run=>run.task_id===result.task_id&&run.status==="running")&&!Object.values(state.results).some(other=>other.task_id===result.task_id&&other.status!=="rejected"&&other.revision>result.revision);
 }
-export function renderWorkStatus(state:CoreState,journalPath?:string):string {
+export function renderWorkStatus(state:CoreState,journalPath?:string,ownedRuns:ReadonlySet<string>=new Set()):string {
  const labels:Record<string,string>={draft:"черновик",queued:"в очереди",active:"в работе",review_ready:"ждёт приёмки",finalizing:"сохраняется",done:"готово",blocked:"заблокирована",cancelled:"отменена",running:"работает",succeeded:"завершён",failed:"ошибка",stopped:"остановлен"};
  const out:string[]=[];
  for(const session of Object.values(state.sessions)){
   out.push(`Сессия ${shortWorkId(state,"session",session.session_id)} · ${safe(session.session_id)} (${session.status==="open"?"открыта":"закрыта"}): ${safe(session.goal)}`);
   for(const task of Object.values(state.tasks).filter(t=>t.session_id===session.session_id)){
    out.push(`  Задача ${shortWorkId(state,"task",task.task_id)} · ${safe(task.task_id)} — ${labels[task.status]}: ${safe(task.goal)}`);
-   for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${shortWorkId(state,"run",run.run_id)} · ${safe(run.run_id)} — ${labels[run.status]}`);
+   for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${shortWorkId(state,"run",run.run_id)} · ${safe(run.run_id)} — ${labels[run.status]}${run.status==="running"?ownedRuns.has(run.run_id)?" · свой процесс":" · владение неизвестно":""}`);
    for(const result of Object.values(state.results).filter(r=>r.task_id===task.task_id)){out.push(`    Результат ${shortWorkId(state,"result",result.result_id)} · ${safe(result.result_id)} — ${resultAwaitsAcceptance(state,result)?"ждёт приёмки":result.status==="accepted"?"принят":result.status==="rejected"?"отклонён":"неактуален"}; revision=${result.revision}; digest=${safe(result.digest)}; ${safe(result.evidence_ref)}`);
     if(resultAwaitsAcceptance(state,result)){
      const preview=result.text===undefined?["Текст результата не сохранён (историческая запись)"]:result.text.split(/\r?\n/).filter(line=>line.trim()).slice(0,5);
@@ -85,7 +85,7 @@ async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
  if(!command){const {runWorkScreen}=await import("./tui/work-screen");onTui();await runWorkScreen(service);return;}
  const controller=new AbortController();const cancel=()=>{controller.abort();service.stopOwned();};
  process.on("SIGINT",cancel);process.on("SIGTERM",cancel);
- try {const result=await executeWork(service,command,o,controller.signal);if(result?.error)throw new Error(result.error);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result,service.journalPath):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
+ try {const result=await executeWork(service,command,o,controller.signal);if(result?.error)throw new Error(result.error);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result,service.journalPath,service.ownedRunIds()):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
  finally{process.removeListener("SIGINT",cancel);process.removeListener("SIGTERM",cancel);}
 }
 
