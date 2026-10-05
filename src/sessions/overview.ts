@@ -9,15 +9,10 @@ function short(value: string | null | undefined, max = 72): string {
 }
 const machineName = (value: string) => value === "mac" ? "Мак" : value === "newa" ? "newa" : "неизвестно";
 function group(row: SessionRow): number {
-  switch (row.overviewGroup?.value) {
-    case "working": return 0;
-    case "waiting": return 1;
-    case "submitted": return 2;
-    case "idle": case "stopped": case "unknown": return 3;
-  }
-  if (row.state === "waiting-tim") return 1;
-  if (row.state === "done") return 2;
-  if (["working", "starting", "closing", "stuck"].includes(row.state)) return 0;
+  if (row.overviewGroup?.value === "waiting" || row.state === "waiting-tim") return 1;
+  if (row.activity === "working" || row.overviewGroup?.value === "working" ||
+      (!row.activity && ["working", "starting", "closing", "stuck"].includes(row.state))) return 0;
+  if (row.lastSubmission || row.overviewGroup?.value === "submitted" || row.state === "done") return 2;
   return 3;
 }
 export function humanIdle(lastActivityMs: number | null, nowMs: number): string {
@@ -36,6 +31,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
       : target === 2 ? row.lastSubmission?.text ?? row.task : row.task;
     const idle = humanIdle(row.lastActivityMs, nowMs);
     const notes: string[] = [];
+    if (row.lastSubmission && target !== 2) notes.push(`сдано раньше: ${short(row.lastSubmission.text)}`);
     if (row.overviewGroup && target !== 2) notes.push("оценка по времени файла");
     if (target === 0 && row.possiblyStuck?.value) notes.push("возможно зависла");
     if (target === 3 && (row.overviewGroup?.value === "idle" || (!row.overviewGroup && row.state === "idle"))) notes.push("простаивает");
@@ -48,8 +44,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
   for (const row of [...rows].sort((a, b) => (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
     const target = group(row);
     blocks[target].push(line(row, target));
-    // A previous submission survives while the same session works or waits.
-    if (row.lastSubmission && target !== 2) blocks[2].push(line(row, 2));
+
   }
   const out = [1, 0, 2, 3].flatMap(i => [titles[i], ...(blocks[i].length ? blocks[i] : ["нет"]), ""]);
   for (const machine of machines) {

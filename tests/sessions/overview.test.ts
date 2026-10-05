@@ -15,7 +15,7 @@ test("four blocks show useful estimates while retaining exact uncertainty and a 
   for (const title of ["Работают сейчас", "Ждут решения владельца", "Сданы", "Не отвечают/неизвестно"]) expect(out).toContain(title);
   expect(out).toContain("newa  sample  Проверяет импорт");
   expect(out).toContain("newa  choice  Вопрос: выбрать CSV?");
-  expect(out).toContain("newa  sample  СДАНО: отчёт");
+  expect(out).toContain("сдано раньше: СДАНО: отчёт");
   expect(out).toContain("ход остановлен: лимит времени хода");
   expect(out).toContain("оценка по времени файла");
   expect(out).toContain("без движения 1 мин");
@@ -74,4 +74,15 @@ test("summary counts sessions once and counts only dated submissions in the last
   const old={...row("idle",null,"2026-10-03T11:00:00Z СДАНО: старое"),id:"old"};
   const mac={...row(),id:"mac",machine:"mac" as const,source:"terminal-mac"};
   expect(renderOverview([working,waiting,old,mac],[],NOW).split("\n").at(-1)).toBe("Мак: 1 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
+});
+
+test("each session occupies one block and previous submissions stay on that same line", () => {
+  const inputs=[{...row("running",null,"СДАНО: раньше"),id:"work-one"},
+    {...row("idle","Вопрос: выбор?","СДАНО: раньше"),id:"wait-one"},
+    {...row("timeout",null,"СДАНО: результат"),id:"done-one"}];
+  const out=renderOverview(inputs,[],NOW);
+  for(const r of inputs) expect(out.split("\n").filter(line=>line.includes(r.id))).toHaveLength(1);
+  expect(out.split("\n").find(line=>line.includes("work-one"))).toContain("сдано раньше:");
+  const submitted=out.split("Сданы\n")[1].split("\n\n")[0];
+  expect(submitted).toContain("done-one"); expect(submitted).not.toContain("work-one");
 });
