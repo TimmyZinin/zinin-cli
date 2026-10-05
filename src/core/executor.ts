@@ -103,7 +103,7 @@ export class LocalExecutor {
         const text = outputs.join("\n");
         const d = digest(text);
         const evidence = provider_session ? `verify:local-sha256:${d};engine-session:${provider_session}` : `verify:local-sha256:${d}${this.engine ? "" : ";mode:local-demo"}`;
-        this.cmd(`exec-${taskId}-result`, "result_recorded", { result_id: result_id, task_id: taskId, revision: 1, digest: d, evidence_ref: evidence }, now);
+        this.cmd(`exec-${taskId}-result`, "result_recorded", { result_id: result_id, task_id: taskId, revision: 1, digest: d, evidence_ref: evidence, text }, now);
       }
       if (this.journal.state.tasks[taskId].status === "active") this.cmd(`exec-${taskId}-review`, "task_transitioned", { task_id: taskId, to: "review_ready" }, now);
       return { task_id: taskId, run_id, steps_done: done, result_id, provider_session };

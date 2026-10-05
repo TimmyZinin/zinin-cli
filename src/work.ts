@@ -32,6 +32,9 @@ export function parseWorkArgs(argv:string[]) {
  return {command,options,json};
 }
 const safe=(s:string)=>s.replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g,"").replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,"").replace(/[\x00-\x1f\x7f-\x9f]/g," ");
+export function resultAwaitsAcceptance(state:CoreState,result:CoreState["results"][string]):boolean {
+ return result.status==="recorded"&&state.tasks[result.task_id]?.status==="review_ready"&&!Object.values(state.runs).some(run=>run.task_id===result.task_id&&run.status==="running")&&!Object.values(state.results).some(other=>other.task_id===result.task_id&&other.status!=="rejected"&&other.revision>result.revision);
+}
 export function renderWorkStatus(state:CoreState,journalPath?:string):string {
  const labels:Record<string,string>={draft:"черновик",queued:"в очереди",active:"в работе",review_ready:"ждёт приёмки",finalizing:"сохраняется",done:"готово",blocked:"заблокирована",cancelled:"отменена",running:"работает",succeeded:"завершён",failed:"ошибка",stopped:"остановлен"};
  const out:string[]=[];
@@ -40,12 +43,18 @@ export function renderWorkStatus(state:CoreState,journalPath?:string):string {
   for(const task of Object.values(state.tasks).filter(t=>t.session_id===session.session_id)){
    out.push(`  Задача ${shortWorkId(state,"task",task.task_id)} · ${safe(task.task_id)} — ${labels[task.status]}: ${safe(task.goal)}`);
    for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${shortWorkId(state,"run",run.run_id)} · ${safe(run.run_id)} — ${labels[run.status]}`);
-   for(const result of Object.values(state.results).filter(r=>r.task_id===task.task_id)){out.push(`    Результат ${shortWorkId(state,"result",result.result_id)} · ${safe(result.result_id)} — ${result.status==="recorded"?"ждёт приёмки":result.status==="accepted"?"принят":"отклонён"}; revision=${result.revision}; digest=${safe(result.digest)}; ${safe(result.evidence_ref)}`);
-    if(result.status==="recorded"&&task.status==="review_ready")out.push(`      zinin work accept${journalPath?" --journal "+shellQuote(journalPath):""} --result ${shellQuote(safe(result.result_id))} --revision ${result.revision} --digest ${shellQuote(safe(result.digest))}`);
+   for(const result of Object.values(state.results).filter(r=>r.task_id===task.task_id)){out.push(`    Результат ${shortWorkId(state,"result",result.result_id)} · ${safe(result.result_id)} — ${resultAwaitsAcceptance(state,result)?"ждёт приёмки":result.status==="accepted"?"принят":result.status==="rejected"?"отклонён":"неактуален"}; revision=${result.revision}; digest=${safe(result.digest)}; ${safe(result.evidence_ref)}`);
+    if(resultAwaitsAcceptance(state,result)){
+     const preview=result.text===undefined?["Текст результата не сохранён (историческая запись)"]:result.text.split(/\r?\n/).filter(line=>line.trim()).slice(0,5);
+     out.push(...preview.map(line=>"      │ "+safe(line)));
+     out.push(`      zinin work accept${journalPath?" --journal "+shellQuote(journalPath):""} --result ${shellQuote(safe(result.result_id))} --revision ${result.revision} --digest ${shellQuote(safe(result.digest))}`);
+    }
    }
   }
  }
- return out.join("\n")||"Сессий пока нет. Создайте work session --goal …";
+ if(!out.length)out.push("Сессий пока нет. Создайте work session --goal …");
+ out.push(`ждут приёмки: ${Object.values(state.results).filter(result=>resultAwaitsAcceptance(state,result)).length} · выполняются: ${Object.values(state.runs).filter(run=>run.status==="running").length} · готово: ${Object.values(state.tasks).filter(task=>task.status==="done").length}`);
+ return out.join("\n");
 }
 export async function executeWork(service:WorkCommandService,command:string,o:Record<string,string>,signal?:AbortSignal):Promise<any>{
  o=resolveWorkOptions(service.state(),command,o);

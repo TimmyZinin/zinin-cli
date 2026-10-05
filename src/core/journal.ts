@@ -5,6 +5,7 @@
  * Commands are validated against folded state before anything is written;
  * replay applies the same rules, so recovery cannot resurrect bad history.
  */
+import {createHash} from "node:crypto";
 import { Database } from "bun:sqlite";
 import { existsSync, lstatSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -20,7 +21,7 @@ export interface SessionState { created_seq?:number; session_id: string; agent_i
 export interface TaskState { created_seq?:number; task_id: string; session_id: string; goal: string; criteria: string; status: TaskStatus; version: number }
 export interface StepState { step_id: string; task_id: string; owner: string; required: boolean; status: StepStatus }
 export interface RunState { created_seq?:number; run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
-export interface ResultState { created_seq?:number; result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
+export interface ResultState { created_seq?:number; text?:string; result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
 export interface CoreState {
   seq: number;
   agents: Record<string, AgentState>;
@@ -288,7 +289,8 @@ export class CoreJournal {
         const id = str(p, "result_id");
         if (s.results[id]) throw new JournalError("conflict", `Result ${id} already recorded`);
         need(s.tasks, str(p, "task_id"), "Task");
-        s.results[id] = { created_seq:s.seq+1, result_id: id, task_id: str(p, "task_id"), revision: int(p, "revision"), digest: str(p, "digest"), evidence_ref: str(p, "evidence_ref"), status: "recorded" };
+        if(p.text!==undefined&&(typeof p.text!=="string"||Buffer.byteLength(p.text,"utf8")>256*1024||createHash("sha256").update(p.text).digest("hex")!==str(p,"digest")))throw new JournalError("malformed","Result text must be bounded and match its digest");
+        s.results[id] = { ...(typeof p.text==="string"?{text:p.text}:{}), created_seq:s.seq+1, result_id: id, task_id: str(p, "task_id"), revision: int(p, "revision"), digest: str(p, "digest"), evidence_ref: str(p, "evidence_ref"), status: "recorded" };
         break;
       }
       case "result_decided": {
