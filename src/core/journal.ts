@@ -19,9 +19,9 @@ export type ResultStatus = "recorded" | "accepted" | "rejected";
 export interface AgentState { agent_id: string; role: string; engine: string; status: "active" | "retired" }
 export interface SessionState { created_seq?:number; session_id: string; agent_id: string; service: string; group: string; goal: string; status: "open" | "closed" }
 export interface TaskState { created_seq?:number; task_id: string; session_id: string; goal: string; criteria: string; status: TaskStatus; version: number }
-export interface StepState { step_id: string; task_id: string; owner: string; required: boolean; status: StepStatus }
-export interface RunState { last_event_seq?:number; reconciliation?:{as:"lost"|"finished-unknown";reason:string;seq:number}; created_seq?:number; run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
-export interface ResultState { created_seq?:number; text?:string; result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
+export interface StepState { run_id?:string; step_id: string; task_id: string; owner: string; required: boolean; status: StepStatus }
+export interface RunState { attempt?:number; launch_mode?:"new"; last_event_seq?:number; reconciliation?:{as:"lost"|"finished-unknown";reason:string;seq:number}; created_seq?:number; run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
+export interface ResultState { run_id?:string; created_seq?:number; text?:string; result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
 export interface CoreState {
   seq: number;
   agents: Record<string, AgentState>;
@@ -250,6 +250,7 @@ export class CoreJournal {
         const task = need(s.tasks, str(p, "task_id"), "Task");
         const to = str(p, "to") as TaskStatus;
         if (!taskEdges[task.status].includes(to)) throw new JournalError("conflict", `Task cannot go ${task.status} -> ${to}`);
+        if(to==="review_ready"&&typeof p.run_id==="string"&&s.runs[p.run_id]?.status!=="succeeded")throw new JournalError("conflict","Запуск уже сверен; устаревшее завершение отклонено");
         if (to === "finalizing" && !Object.values(s.results).some(r => r.task_id === task.task_id && r.status === "accepted")) {
           throw new JournalError("conflict", "finalizing requires an accepted result (PRD R06)");
         }
@@ -260,7 +261,7 @@ export class CoreJournal {
         const id = str(p, "step_id");
         if (s.steps[id]) throw new JournalError("conflict", `Step ${id} already defined`);
         need(s.tasks, str(p, "task_id"), "Task");
-        s.steps[id] = { step_id: id, task_id: str(p, "task_id"), owner: str(p, "owner"), required: bool(p, "required"), status: "pending" };
+        s.steps[id] = { ...(typeof p.run_id==="string"?{run_id:p.run_id}:{}), step_id: id, task_id: str(p, "task_id"), owner: str(p, "owner"), required: bool(p, "required"), status: "pending" };
         break;
       }
       case "step_transitioned": {
@@ -280,8 +281,12 @@ export class CoreJournal {
         if (session.session_id !== task.session_id) throw new JournalError("conflict", "Run session must match the task session");
         const running = Object.values(s.runs).some(r => r.task_id === task.task_id && r.status === "running");
         if (running) throw new JournalError("conflict", "One running run per task (single writer, PRD §2)");
+        if(p.attempt!==undefined){
+          const prior=Object.values(s.runs).filter(r=>r.task_id===task.task_id).sort((a,b)=>(a.created_seq??0)-(b.created_seq??0));
+          if(int(p,"attempt")!==prior.length+1||(prior.length&&prior.at(-1)?.status!=="interrupted"))throw new JournalError("conflict","Новая попытка требует сверки и точного следующего номера");
+        }
         const provider = p.provider_session;
-        s.runs[id] = { last_event_seq:s.seq+1, created_seq:s.seq+1, run_id: id, task_id: task.task_id, session_id: session.session_id, provider_session: typeof provider === "string" ? provider : null, status: "running" };
+        s.runs[id] = { ...(typeof p.attempt==="number"?{attempt:p.attempt,launch_mode:"new" as const}:{}), last_event_seq:s.seq+1, created_seq:s.seq+1, run_id: id, task_id: task.task_id, session_id: session.session_id, provider_session: typeof provider === "string" ? provider : null, status: "running" };
         break;
       }
       case "run_finished": {
@@ -302,8 +307,12 @@ export class CoreJournal {
         const id = str(p, "result_id");
         if (s.results[id]) throw new JournalError("conflict", `Result ${id} already recorded`);
         need(s.tasks, str(p, "task_id"), "Task");
+        if(typeof p.run_id==="string"){
+          const run=need(s.runs,p.run_id,"Run");
+          if(run.task_id!==p.task_id||run.status!=="succeeded"||Object.values(s.runs).some(other=>other.task_id===run.task_id&&(other.created_seq??0)>(run.created_seq??0)))throw new JournalError("conflict","Устаревший результат запуска отклонён");
+        }
         if(p.text!==undefined&&(typeof p.text!=="string"||Buffer.byteLength(p.text,"utf8")>256*1024||createHash("sha256").update(p.text).digest("hex")!==str(p,"digest")))throw new JournalError("malformed","Result text must be bounded and match its digest");
-        s.results[id] = { ...(typeof p.text==="string"?{text:p.text}:{}), created_seq:s.seq+1, result_id: id, task_id: str(p, "task_id"), revision: int(p, "revision"), digest: str(p, "digest"), evidence_ref: str(p, "evidence_ref"), status: "recorded" };
+        s.results[id] = { ...(typeof p.run_id==="string"?{run_id:p.run_id}:{}), ...(typeof p.text==="string"?{text:p.text}:{}), created_seq:s.seq+1, result_id: id, task_id: str(p, "task_id"), revision: int(p, "revision"), digest: str(p, "digest"), evidence_ref: str(p, "evidence_ref"), status: "recorded" };
         break;
       }
       case "result_decided": {
@@ -327,5 +336,6 @@ export class CoreJournal {
         break;
       }
     }
+    if(typeof p.run_id==="string"&&s.runs[p.run_id])s.runs[p.run_id].last_event_seq=s.seq+1;
   }
 }

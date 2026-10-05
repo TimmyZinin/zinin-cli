@@ -22,7 +22,7 @@ export const defaultJournal=()=>join(homedir(),".zinin","work","journal");
 export const workPaths=(path=defaultJournal()):WorkPaths=>({journal:resolve(path),leases:resolve(path)+".leases"});
 export function parseWorkArgs(argv:string[]) {
  const options:Record<string,string>={};let command="";let json=false;
- const allowed=new Set(["journal","session","task","run","result","revision","digest","goal","criteria","engine","model","bin","cwd","command-id","id","as","reason","expected-seq"]);
+ const allowed=new Set(["journal","session","task","run","result","revision","digest","goal","criteria","engine","model","bin","cwd","command-id","id","as","reason","expected-seq","attempt"]);
  for(let i=0;i<argv.length;i++){
   if(argv[i]==="--confirm"){options.confirm="true";continue;}
   if(argv[i]==="--json"){json=true;continue;}
@@ -43,7 +43,9 @@ export function renderWorkStatus(state:CoreState,journalPath?:string,ownedRuns:R
   out.push(`Сессия ${shortWorkId(state,"session",session.session_id)} · ${safe(session.session_id)} (${session.status==="open"?"открыта":"закрыта"}): ${safe(session.goal)}`);
   for(const task of Object.values(state.tasks).filter(t=>t.session_id===session.session_id)){
    out.push(`  Задача ${shortWorkId(state,"task",task.task_id)} · ${safe(task.task_id)} — ${labels[task.status]}: ${safe(task.goal)}`);
-   for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${shortWorkId(state,"run",run.run_id)} · ${safe(run.run_id)} — ${labels[run.status]}${run.reconciliation?" (сверено владельцем: "+safe(run.reconciliation.reason)+") · процесс мог остаться жив — проверьте вручную":""}${run.status==="running"?ownedRuns.has(run.run_id)?" · свой процесс":" · владение неизвестно":""}`);
+   for(const run of Object.values(state.runs).filter(r=>r.task_id===task.task_id))out.push(`    Запуск ${shortWorkId(state,"run",run.run_id)} · ${safe(run.run_id)} — ${labels[run.status]}${run.launch_mode==="new"?" · новый запуск, не продолжение":""}${run.reconciliation?" (сверено владельцем: "+safe(run.reconciliation.reason)+") · процесс мог остаться жив — проверьте вручную":""}${run.status==="running"?ownedRuns.has(run.run_id)?" · свой процесс":" · владение неизвестно":""}`);
+   const attempts=Object.values(state.runs).filter(run=>run.task_id===task.task_id);
+   if(attempts.at(-1)?.status==="interrupted")out.push(`    Следующая попытка: --attempt ${attempts.length+1} · новый запуск, не продолжение`);
    for(const result of Object.values(state.results).filter(r=>r.task_id===task.task_id)){out.push(`    Результат ${shortWorkId(state,"result",result.result_id)} · ${safe(result.result_id)} — ${resultAwaitsAcceptance(state,result)?"ждёт приёмки":result.status==="accepted"?"принят":result.status==="rejected"?"отклонён":"неактуален"}; revision=${result.revision}; digest=${safe(result.digest)}; ${safe(result.evidence_ref)}`);
     if(resultAwaitsAcceptance(state,result)){
      const preview=result.text===undefined?["Текст результата не сохранён (историческая запись)"]:result.text.split(/\r?\n/).filter(line=>line.trim()).slice(0,5);
@@ -65,11 +67,12 @@ export async function executeWork(service:WorkCommandService,command:string,o:Re
   case "session": {const id=o.id??`session-${randomUUID()}`;return {session_id:id,...service.session(cmd,id,need("goal"),now)};}
   case "task":{const id=o.id??`task-${randomUUID()}`;return {task_id:id,...service.task(cmd,need("session"),id,need("goal"),need("criteria"),now)};}
   case "run":{
-   const engine=need("engine"),task=need("task");
-   if(engine==="local-demo")return await service.run(task,now,{kind:"local-demo"},{signal});
+   const engine=need("engine"),task=need("task"),attempt=o.attempt===undefined?undefined:Number(o.attempt);
+   if(attempt!==undefined&&(!Number.isSafeInteger(attempt)||attempt<1))throw new WorkUsageError("attempt должна быть положительным целым");
+   if(engine==="local-demo")return await service.run(task,now,{kind:"local-demo"},{signal,attempt});
    if(engine!=="kimi")throw new WorkUsageError("Доступны local-demo и kimi; автоматического переключения нет");
    const model=need("model"),cwd=need("cwd");
-   return await service.run(task,now,{kind:"engine",name:`kimi:${model}`,adapter:new KimiEngine(kimiTransport(o.bin),model)},{cwd,signal});
+   return await service.run(task,now,{kind:"engine",name:`kimi:${model}`,adapter:new KimiEngine(kimiTransport(o.bin),model)},{cwd,signal,attempt});
   }
   case "accept":{const revision=Number(need("revision"));if(!Number.isSafeInteger(revision)||revision<1)throw new WorkUsageError("revision должна быть положительным целым");return service.accept(cmd,need("result"),revision,need("digest"),now);}
   case "reconcile": {

@@ -41,7 +41,7 @@ export class WorkCommandService {
   task(commandId:string, sessionId:string, taskId:string, goal:string, criteria:string, now:string) {
     return this.withJournal(journal=>journal.submit({command_id:commandKey(commandId),type:"task_created",payload:{session_id:sessionId,task_id:taskId,goal,criteria}},now));
   }
-  async run(taskId:string, now:string, selection:EngineSelection, options:{cwd?:string;signal?:AbortSignal}={}) {
+  async run(taskId:string, now:string, selection:EngineSelection, options:{cwd?:string;signal?:AbortSignal;attempt?:number}={}) {
     if(!selection || !["local-demo","engine"].includes(selection.kind)) throw new JournalError("malformed","Explicit engine selection required");
     if(selection.kind==="engine" && (!selection.name.trim() || !selection.adapter)) throw new JournalError("malformed","Engine name and adapter required");
     // No provider selection, fallback, discovery or network operation here.
@@ -49,7 +49,7 @@ export class WorkCommandService {
     const abort=new AbortController(); let runId:string|undefined;
     const cancel=()=>abort.abort(); options.signal?.addEventListener("abort",cancel,{once:true});
     if(options.signal?.aborted) cancel();
-    try {return await executor.runTask(taskId,now,{signal:abort.signal,cwd:options.cwd,onRun:id=>{runId=id;this.owned.set(id,abort);}});}
+    try {return await executor.runTask(taskId,now,{signal:abort.signal,cwd:options.cwd,attempt:options.attempt,onRun:id=>{runId=id;this.owned.set(id,abort);}});}
     finally {if(runId) this.owned.delete(runId);options.signal?.removeEventListener("abort",cancel);executor.close();}
   }
   stop(runId:string) {

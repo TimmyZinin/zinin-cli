@@ -45,7 +45,7 @@ export class LocalExecutor {
     return task ? this.runTask(task.task_id, now) : null;
   }
   /** Explicit target only: no fallback to another queued task or session. */
-  async runTask(taskId: string, now: string, options: {signal?:AbortSignal; cwd?:string; onRun?:(id:string)=>void} = {}): Promise<CycleSummary | null> {
+  async runTask(taskId: string, now: string, options: {attempt?:number;signal?:AbortSignal; cwd?:string; onRun?:(id:string)=>void} = {}): Promise<CycleSummary | null> {
     if(options.signal?.aborted) throw new Error("run cancelled");
     const state = this.journal.refresh();
     const task = state.tasks[taskId];
@@ -54,6 +54,10 @@ export class LocalExecutor {
     if (["review_ready", "finalizing", "done"].includes(task.status)) return null;
     if (!["draft", "queued", "active"].includes(task.status)) throw new JournalError("conflict", `Task is ${task.status}`);
     if (Object.values(state.runs).some(run => run.task_id === taskId && run.status === "running")) throw new JournalError("conflict", "Task already has an active run");
+    const previousRuns=Object.values(state.runs).filter(r=>r.task_id===taskId).sort((a,b)=>(a.created_seq??0)-(b.created_seq??0));
+    const expectedAttempt=previousRuns.length+1;
+    if(options.attempt!==undefined&&options.attempt!==expectedAttempt)throw new JournalError("conflict",`Нужен --attempt ${expectedAttempt}`);
+    if(previousRuns.length&&(previousRuns.at(-1)?.status!=="interrupted"||options.attempt!==expectedAttempt))throw new JournalError("conflict",`Сначала сверьте предыдущий запуск; затем нужен --attempt ${expectedAttempt}`);
     const session = state.sessions[task.session_id];
     if (!session) return null;
     if (task.status === "draft") this.cmd(`exec-${taskId}-queued`, "task_transitioned", { task_id: taskId, to: "queued" }, now);
@@ -65,10 +69,15 @@ export class LocalExecutor {
       if (!Object.values(this.journal.state.runs).some(r => r.run_id === run_id)) {
         const lease = this.leases.grant(run_id, session.session_id, "local-executor", now, 300_000);
         leaseEpoch = lease.epoch;
-        this.cmd(`exec-${taskId}-run-${attempt}`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: this.engineName }, now);
+        this.cmd(`exec-${taskId}-run-${attempt}`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: this.engineName, attempt }, now);
       }
       options.onRun?.(run_id);
-      let steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId).sort((a, b) => a.step_id.localeCompare(b.step_id));
+      let steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId && !s.run_id).sort((a, b) => a.step_id.localeCompare(b.step_id));
+      if(attempt>1){
+        const templates=steps.length?steps:[{step_id:`${taskId}-deliver`,owner:"local-executor",required:true}];
+        for(const step of templates)this.cmd(`exec-${run_id}-${step.step_id}-plan`,"step_defined",{step_id:`${run_id}:${step.step_id}`,task_id:taskId,run_id,owner:step.owner,required:step.required},now);
+        steps=Object.values(this.journal.state.steps).filter(s=>s.run_id===run_id);
+      }
       if (!steps.length) {
         this.cmd(`exec-${taskId}-plan`, "step_defined", { step_id: `${taskId}-deliver`, task_id: taskId, owner: "local-executor", required: true }, now);
         steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId);
@@ -91,6 +100,7 @@ export class LocalExecutor {
             this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: options.signal?.aborted ? "stopped" : "failed" }, now);
             return { task_id: taskId, run_id, steps_done: done, result_id: null, provider_session, error: (error as Error).message };
           }
+          if(this.journal.refresh().runs[run_id]?.status!=="running")throw new JournalError("conflict","Владение запуска сверено; поздний ответ не записан");
           this.cmd(`exec-${taskId}-${step.step_id}-done`, "step_transitioned", { step_id: step.step_id, to: "done" }, now);
           done.push(step.step_id);
         }
@@ -98,14 +108,15 @@ export class LocalExecutor {
       if (this.journal.state.runs[run_id]?.status === "running") this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: "succeeded" }, now);
       let result_id: string | null = null;
       const results = Object.values(this.journal.state.results).filter(r => r.task_id === taskId);
-      if (!results.length) {
-        result_id = `res-${taskId}`;
+      {
+        const revision=Math.max(attempt,...results.map(r=>r.revision+1));
+        result_id = attempt===1?`res-${taskId}`:`res-${taskId}-r${revision}`;
         const text = outputs.join("\n");
         const d = digest(text);
         const evidence = provider_session ? `verify:local-sha256:${d};engine-session:${provider_session}` : `verify:local-sha256:${d}${this.engine ? "" : ";mode:local-demo"}`;
-        this.cmd(`exec-${taskId}-result`, "result_recorded", { result_id: result_id, task_id: taskId, revision: 1, digest: d, evidence_ref: evidence, text }, now);
+        this.cmd(`exec-${taskId}-result-${attempt}`, "result_recorded", { result_id: result_id, task_id: taskId, revision, digest: d, evidence_ref: evidence, text, run_id }, now);
       }
-      if (this.journal.state.tasks[taskId].status === "active") this.cmd(`exec-${taskId}-review`, "task_transitioned", { task_id: taskId, to: "review_ready" }, now);
+      if (this.journal.state.tasks[taskId].status === "active") this.cmd(`exec-${taskId}-review-${attempt}`, "task_transitioned", { task_id: taskId, to: "review_ready", run_id }, now);
       return { task_id: taskId, run_id, steps_done: done, result_id, provider_session };
     } finally {
       if (leaseEpoch) {
