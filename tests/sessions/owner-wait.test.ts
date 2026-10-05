@@ -32,3 +32,32 @@ test("only the last substantive TO entry is an unanswered request; controller no
  expect(row(packet+"\nTurn 000001 stopped: exit=1; inspect tail",null).waitingKind).toBe("receipt");
  expect(row(packet+"\n## 2026-10-05T12:00:00Z\nНовая справочная запись",null).waitingKind).toBeUndefined();
 });
+
+test("anonymized live report tail keeps an idle handoff after the readiness line", async()=>{
+ const report=await Bun.file(new URL("./fixtures/report-handoff-tail.md",import.meta.url)).text();
+ for(const phrase of ["Остановился и жду слова S0", "ожидаю слово S0", "жду квитанцию/слово S0"]) {
+  const fixture=report.replace("Остановился и жду слова S0",phrase);
+  const idle=row(null,fixture);
+  expect(idle.waitingKind).toBe("handoff");
+  expect(idle.overviewGroup?.value).toBe("waiting");
+  expect(idle.decision?.text).toBe("сдано: ЭТАП 4 ГОТОВ (часть newa) · ждёт слова");
+  expect(idle.lastSubmission?.text).toContain("HEAD aaaaa");
+  const out=renderOverview([idle],[],now);
+  expect(out.split("\n")[1]).toContain("сдано: ЭТАП 4 ГОТОВ (часть newa) · ждёт слова");
+  expect(out).not.toContain("сдано раньше:");
+  expect(out).toContain("newa: 0 работают, 1 ждут решения, 0 сданы, 0 простаивают");
+  const running=row(null,fixture,"running");
+  expect(running.overviewGroup?.value).toBe("working");
+  expect(renderOverview([running],[],now)).toContain("newa: 1 работают, 0 ждут решения, 0 сданы, 0 простаивают");
+ }
+});
+
+test("handoff searches exactly five substantive lines and ignores quoted or fenced examples",()=>{
+ const wait="СТАТУС: Остановился и жду слова S0.";
+ const lines=["Проверка номер один", "Проверка номер два", "Проверка номер три", "Проверка номер четыре"];
+ expect(row(null,[wait,...lines].join("\n\n")).waitingKind).toBe("handoff");
+ expect(row(null,[wait,...lines,"Проверка номер пять"].join("\n")).waitingKind).toBeUndefined();
+ expect(row(null,[wait,"> цитата", "```text", "пример", "```",...lines].join("\n")).waitingKind).toBe("handoff");
+ expect(row(null,"> Жду слова S0\n```text\nОжидаю слово S0\n```").waitingKind).toBeUndefined();
+ expect(row(packet,wait+"\nЭТАП 4 ГОТОВ (часть newa)").waitingKind).toBe("receipt");
+});

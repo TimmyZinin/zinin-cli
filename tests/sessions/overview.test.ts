@@ -163,3 +163,27 @@ test("Mac readable names show engine or window number while preserving JSON iden
   expect(renderOverview([{...mac,engine:null}],[],NOW)).toMatch(/Мак\s+окно 501\s/);
   expect(mac.id).toBe("mac-tab-ttys000");
 });
+
+test("unknown-freshness newa questions lead idle rows without becoming owner decisions",()=>{
+  const makeQuestion=(id:string,minutes:number)=>{
+    const status='{"state":"idle"}';
+    return {...addStatusEstimates(parseNewaDir({name:id,metaText:null,statusText:status,
+      toS0Text:"Вопрос: формат?\n\n## Справка\nРешение: подготовить одну JSON-спеку для проверки",
+      reportText:null,taskText:"Длинное описание задачи ".repeat(15),activityMs:NOW-minutes*60_000,nowMs:NOW}),
+      status,NOW,NOW-3600_000,NOW),id};
+  };
+  const newer=makeQuestion("question-new",30), older=makeQuestion("question-old",60);
+  expect(newer.decision?.freshness).toBe("unknown");
+  expect(newer.overviewGroup?.value).toBe("idle");
+  const plain={...row("idle"),id:"recent-idle",lastActivityMs:NOW};
+  const inputs=[plain,{...row("running"),id:"working-between",lastActivityMs:NOW-45*60_000},older,newer];
+  const out=renderOverview(inputs,[],NOW);
+  const idle=out.split("Простаивают\n")[1].split("\n\n")[0];
+  expect(idle.indexOf("question-new")).toBeLessThan(idle.indexOf("question-old"));
+  expect(idle.indexOf("question-old")).toBeLessThan(idle.indexOf("recent-idle"));
+  for(const id of ["question-new","question-old"]) expect(idle.split("\n").find(line=>line.includes(id))).toContain("есть вопрос: Вопрос: формат?");
+  expect(out).toContain("Ждут решения владельца\nнет");
+  expect(out).toContain("newa: 1 работают, 0 ждут решения, 0 сданы, 3 простаивают");
+  expect(inputs[0].id).toBe("recent-idle");
+  expect(newer.decision?.text).toBe("Вопрос: формат?");
+});
