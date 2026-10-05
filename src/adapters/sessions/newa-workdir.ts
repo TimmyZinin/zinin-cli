@@ -155,7 +155,9 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
       lastSubmission = candidate;
     }
   }
-  const task = clip(input.taskText?.split("\n").find(l => l.trim()) ?? null);
+  const taskLine = signalLines(input.taskText, input.nowMs).find(item => !item.heading)?.line;
+  const statusLine = [...reportLines].reverse().find(item => /^СТАТУС:\s*/i.test(item.line))?.line.replace(/^СТАТУС:\s*/i, "");
+  const task = clip((taskLine ?? statusLine)?.replace(/^[*_-]+\s*|[*_]+$/g, "").replace(/\s+/g, " ") ?? null);
   let contextPct: number | null = null;
   const haystack = `${toLines.at(-1)?.line ?? ""}\n${reportLines.at(-1)?.line ?? ""}`;
   const ctx = /context:\s*(\d+)%/i.exec(haystack);

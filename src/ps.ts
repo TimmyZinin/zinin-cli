@@ -18,7 +18,8 @@ import { spawnSync } from "node:child_process";
 import { parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/machine";
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
-import { renderTable, renderJson } from "./sessions/render";
+import { renderJson } from "./sessions/render";
+import { renderOverview } from "./sessions/overview";
 import { enrichRowsWithTranscripts, windowProjectKey, type SlugFacts, type WindowScreen } from "./sessions/enrich";
 import { parsePsConfig } from "./sessions/psconfig";
 
@@ -298,7 +299,7 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
       const { rows, machines, nowMs } = await collect(opts, deps, controller.signal);
       if (controller.signal.aborted) break;
       if (opts.watchSeconds !== null && !opts.json) console.clear();
-      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion()) : renderTable(rows, machines, nowMs));
+      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion()) : renderOverview(rows, machines, nowMs));
       if (opts.watchSeconds === null) break;
       await new Promise<void>(resolve => {
         const finish = () => { clearTimeout(timer); controller.signal.removeEventListener("abort", finish); resolve(); };
