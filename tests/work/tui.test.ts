@@ -38,8 +38,11 @@ if mode=='pending':
  assert b'fixture-pending' in out,out
  p.send_signal(signal.SIGTERM)
 elif mode!='exception': p.send_signal(getattr(signal,mode))
-try: p.wait(timeout=10)
-except subprocess.TimeoutExpired: p.kill();p.wait();raise
+deadline=time.monotonic()+10
+while p.poll() is None and time.monotonic()<deadline:
+ if select.select([master],[],[],.05)[0]: out+=os.read(master,65536)
+if p.poll() is None:
+ p.kill();p.wait();raise subprocess.TimeoutExpired(args,10)
 assert p.returncode == (1 if mode in ('exception','pending') else 0),p.returncode
 while select.select([master],[],[],.05)[0]: out+=os.read(master,65536)
 after=termios.tcgetattr(slave)
