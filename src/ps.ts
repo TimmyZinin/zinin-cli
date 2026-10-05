@@ -9,6 +9,7 @@ import { platform, homedir } from "node:os";
 import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
+import { TERMINAL_TABS_SCRIPT } from "./adapters/sessions/terminal-script";
 import { parseTerminalWindows, parseLaunchDirs } from "./adapters/sessions/terminal-mac";
 import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
 import { collectNewaSnapshot, type SourceSnapshot, type NewaCollectorOptions } from "./sessions/newa-collector";
@@ -93,40 +94,13 @@ async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner,
   let available = false;
   let windowsRaw = "";
   try {
-    // Verified on Mac (S0, 26.09): `tab` inside tell is the Terminal class, so
-    // separators are built from ASCII codes before the tell block.
-    const script = [
-      "set tabChar to (ASCII character 9)",
-      "set recSep to (ASCII character 30)",
-      'tell application "Terminal"',
-      '  set out to ""',
-      "  repeat with w in windows",
-      "    if (count of tabs of w) is 0 then", // phantom window after close
-      "      set out to out & recSep",
-      "    else",
-      '      set out to out & (id of w as text) & tabChar & (name of w) & tabChar',
-      "      try",
-      "        set out to out & (contents of selected tab of w)",
-      "      end try",
-      "      set out to out & tabChar & ((busy of selected tab of w) as text)",
-      "      try", // К4-2: tty when the dictionary exposes it; empty otherwise
-      "        set out to out & tabChar & (tty of selected tab of w)",
-      "      on error",
-      "        set out to out & tabChar",
-      "      end try",
-      "      set out to out & recSep",
-      "    end if",
-      "  end repeat",
-      "  return out",
-      "end tell",
-    ].join("\n");
-    windowsRaw = await run(["osascript", "-e", script], { signal });
+    windowsRaw = await run(["osascript", "-e", TERMINAL_TABS_SCRIPT], { signal });
     available = true;
   } catch (error) {
     warn(`mac windows unavailable: ${(error as Error).message}`);
   }
   const screens = new Map<string, WindowScreen>();
-  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen))) {
+  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen), { tabs: true })) {
     rows.push(row);
   }
   // К4-2: engine-process launch directories by tty (ps + lsof, reads-only).

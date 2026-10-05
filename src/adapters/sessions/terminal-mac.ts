@@ -154,6 +154,7 @@ export function parseLaunchDirs(psText: string, lsofText: string): Map<string, s
 export function parseTerminalWindows(
   text: string,
   onScreen?: (id: string, screen: { statusline: string; cwd: string | null; spinning: boolean; busy: boolean; tty: string | null }) => void,
+  options: { tabs?: boolean } = {},
 ): SessionRow[] {
   const rows: SessionRow[] = [];
   for (const record of text.split(RECORD_SEP)) {
@@ -192,7 +193,7 @@ export function parseTerminalWindows(
     if (status.waiting || /What should .*do instead/i.test(tail)) state = "waiting-tim";
     const interrupted = picked.tail.filter(l => /Interrupted/.test(l)).join(" ");
     const cwd = /(?:^|\s)(Users\/\S+?)\s*[|▸]/.exec(picked.statusline)?.[1] ?? null;
-    const id = `mac-win-${index || rows.length + 1}`;
+    const id = options.tabs ? (tty ? `mac-tab-${tty}` : `mac-tab-${index || rows.length + 1}`) : `mac-win-${index || rows.length + 1}`;
     onScreen?.(id, { statusline: picked.statusline, cwd, spinning: picked.spinning, busy, tty });
     rows.push({
       id,
@@ -200,6 +201,7 @@ export function parseTerminalWindows(
       engine,
       model,
       task,
+      taskSource: task ? "terminal-title" : null,
       state,
       lastActivityMs: null,
       stuckOn: status.stuckOn ?? (interrupted ? clip(interrupted) : null),

@@ -1,0 +1,2 @@
+501-1	synthetic — ◑ Проверяет таблицу — claude --model example — 80×24	Работа	с таблицей
+✻ Working… (1m 0s)	true	/dev/ttys071501-2	synthetic — ○ Проверяет архив — zsh — 80×24	Проверка архива завершена	false	/dev/ttys072502-1	Вкладка 1	Ожидает команду	true	

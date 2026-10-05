@@ -196,3 +196,22 @@ test("К6-3: empty trailing tty field — busy still parses, tty is null", () =>
   expect(seen.get("mac-win-1062")).toEqual({ tty: null, busy: true });
   expect(rows[0].state).toBe("working");
 });
+test("E4 raw Terminal tabs retain nonselected tabs, tty IDs and embedded ASCII 9/30", () => {
+  const raw = readFileSync(join(FIX,"mac-tabs-raw.txt"),"utf8");
+  expect(raw).toContain("/dev/ttys071"); expect(raw).toContain("\x1e");
+  const seen = new Map<string,{tty:string|null;busy:boolean}>();
+  const tabs = parseTerminalWindows(raw,(id,screen)=>seen.set(id,screen),{tabs:true});
+  expect(tabs.map(r=>r.id)).toEqual(["mac-tab-ttys071","mac-tab-ttys072","mac-tab-502-1"]);
+  expect(tabs[1].task).toBe("Проверяет архив"); expect(tabs[1].state).toBe("idle");
+  expect(tabs[2].state).toBe("working"); expect(tabs[0].taskSource).toBe("terminal-title");
+  expect(seen.get(tabs[0].id)?.tty).toBe("ttys071");
+  const moved=raw.replace("501-1","700-3").replace("501-2","700-1");
+  expect(parseTerminalWindows(moved,undefined,{tabs:true}).map(r=>r.id)).toEqual(tabs.map(r=>r.id));
+});
+test("E4 Terminal script collects every tab with literal ASCII separators", async () => {
+  const { TERMINAL_TABS_SCRIPT: script } = await import("../../src/adapters/sessions/terminal-script");
+  expect(script).toContain("repeat with t in tabs of w");
+  expect(script).toContain("contents of t"); expect(script).toContain("busy of t");
+  expect(script).toContain("tty of t"); expect(script).toContain("ASCII character 9");
+  expect(script).toContain("ASCII character 30"); expect(script).not.toContain("contents of selected tab");
+});
