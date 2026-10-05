@@ -69,12 +69,14 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
   if (rows.some(row => row.overviewGroup)) out.push("* Оценка по времени файла: состояния newa; подробности в --json.");
   if (rows.some(row => row.decision?.freshness === "unknown")) out.push("* Точная свежесть вопроса неизвестна; текст вопроса сохранён, подробности в --json.");
   if (hiddenCount) out.push(`ещё ${hiddenCount} старых скрыто — zinin ps --all`);
-  const macLive = rows.filter(row => row.machine === "mac" && (row.liveness === "alive" || row.source === "terminal-mac")).length;
-  const newa = rows.filter(row => row.machine === "newa");
-  const working = newa.filter(row => group(row) === 0).length;
-  const waiting = newa.filter(row => group(row) === 1).length;
-  // Undated and stale evidence cannot substantiate "submitted within a day".
-  const submitted = newa.filter(row => group(row) === 2 && row.lastSubmission?.atMs != null && row.lastSubmission.atMs >= nowMs - 86_400_000 && row.lastSubmission.atMs <= nowMs).length;
-  out.push(`Мак: ${macLive} живых · newa: ${working} работают, ${waiting} ждут решения, ${submitted} сдано за сутки`);
+  const counts = (machine: string) => {
+    const selected = rows.filter(row => row.machine === machine);
+    return [0, 1, 2, 3].map(index => selected.filter(row => group(row) === index).length);
+  };
+  const summary = (machine: string) => {
+    const [working, waiting, submitted, idle] = counts(machine);
+    return `${machineName(machine)}: ${working} работают, ${waiting} ждут решения, ${submitted} сданы, ${idle} простаивают`;
+  };
+  out.push(`${summary("mac")} · ${summary("newa")}`);
   return out.join("\n").trimEnd();
 }

@@ -68,12 +68,12 @@ test("decisions lead the overview and every block sorts newest movement first", 
   expect(rows[0].id).toBe("running-old");
 });
 
-test("summary counts sessions once and counts only dated submissions in the last day", () => {
+test("summary counts visible block rows including undated and old submissions", () => {
   const working=row("running",null,"2026-10-05T11:00:00Z СДАНО: отчёт");
   const waiting={...row("idle","Вопрос: формат?","СДАНО: без даты"),id:"waiting"};
   const old={...row("idle",null,"2026-10-03T11:00:00Z СДАНО: старое"),id:"old"};
   const mac={...row(),id:"mac",machine:"mac" as const,source:"terminal-mac"};
-  expect(renderOverview([working,waiting,old,mac],[],NOW).split("\n").at(-1)).toBe("Мак: 1 живых · newa: 1 работают, 1 ждут решения, 0 сдано за сутки");
+  expect(renderOverview([working,waiting,old,mac],[],NOW).split("\n").at(-1)).toBe("Мак: 1 работают, 0 ждут решения, 0 сданы, 0 простаивают · newa: 1 работают, 1 ждут решения, 1 сданы, 0 простаивают");
 });
 
 test("each session occupies one block and previous submissions stay on that same line", () => {
@@ -97,7 +97,7 @@ test("running wins over old submission groups; empty blocks and footer agree wit
   expect(block("Работают сейчас")).toContain("live-worker");
   expect(block("Сданы")).not.toContain("live-worker");
   for(const title of ["Работают сейчас","Ждут решения владельца","Сданы"]) expect(block(title).split("\n")).toHaveLength(1);
-  expect(out.split("\n").at(-1)).toBe("Мак: 0 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
+  expect(out.split("\n").at(-1)).toBe("Мак: 0 работают, 0 ждут решения, 0 сданы, 0 простаивают · newa: 1 работают, 1 ждут решения, 1 сданы, 0 простаивают");
   const empty=renderOverview([],[],NOW);
   for(const title of ["Работают сейчас","Ждут решения владельца","Сданы","Простаивают"]) expect(empty).toContain(title+"\nнет");
 });
@@ -148,4 +148,11 @@ test("controller stopped-turn notices are neither task descriptions nor owner qu
   const r=parseNewaDir({name:"notice-worker",nowMs:NOW,metaText:null,statusText:'{"state":"failed"}',taskText:null,reportText:null,
     toS0Text:"Turn 000001 stopped: exit=1, reason=Вопрос: проверить?; inspect tail. No automatic restart."});
   expect(r.taskSource).toBe("directory-name"); expect(r.decision).toBeNull();
+});
+
+test("both machine summaries count exactly their four visible blocks", () => {
+  const states=[row("running"),row("idle","Вопрос: какой формат?"),row("idle",null,"СДАНО: без даты"),row("idle")];
+  const inputs=(["mac","newa"] as const).flatMap(machine=>states.map((r,i)=>({...r,machine,id:machine+i})));
+  const out=renderOverview(inputs,[],NOW);
+  for(const label of ["Мак","newa"]) expect(out).toContain(`${label}: 1 работают, 1 ждут решения, 1 сданы, 1 простаивают`);
 });
