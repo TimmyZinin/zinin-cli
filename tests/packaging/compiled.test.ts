@@ -7,7 +7,7 @@ test("compiled CLI and embedded figlet run away from checkout with no PATH or no
  writeFileSync(join(worker,"status.json"),JSON.stringify({state:"running"}));writeFileSync(join(worker,"TASK.md"),"Проверяет синтетическую таблицу");
  const build=await capture([process.execPath,"build","--compile","src/repl.ts","--outfile",binary],{cwd:repo});expect(build.code).toBe(0);expect(build.err).not.toContain("error:");expect(existsSync(join(dir,"node_modules"))).toBe(false);
  const env={PATH:"",HOME:home,ZININ_NO_TELEMETRY:"1",TERM:"xterm-256color"};
- for(const args of [["ps","--help"],["work","--help"],["--banner"]]){const run=await capture([binary,...args],{cwd:"/",env});expect(run.code).toBe(0);expect(run.err).not.toContain("ENOENT");expect(run.out.length).toBeGreaterThan(30);if(args[0]==="--banner")expect(run.out).toContain("██");}
+ for(const args of [["--help"],["ps","--help"],["work","--help"],["--banner"]]){const run=await capture([binary,...args],{cwd:"/",env});expect(run.code).toBe(0);expect(run.err).not.toContain("ENOENT");expect(run.out.length).toBeGreaterThan(30);if(args[0]==="--banner")expect(run.out).toContain("██");}
  const run=await capture([binary,"ps","--sources","newa","--newa-root",root,"--json"],{cwd:"/",env});expect(run.code).toBe(0);expect(run.err).not.toContain("ENOENT");expect(JSON.parse(run.out).sessions[0].id).toBe("synthetic-worker");expect(existsSync(join(home,".zinin"))).toBe(false);
 },120_000);
 
@@ -18,3 +18,9 @@ test("release build embeds git and build date independently of the user's cwd an
  const version=await capture([binary,"--version"],{cwd:"/",env});expect(version.code).toBe(0);expect(version.err).toBe("");expect(version.out.trim().split("\n")).toHaveLength(1);expect(version.out).toContain(expected);
  const state=JSON.parse((await capture([binary,"ps","--sources","newa","--newa-root",root,"--json"],{cwd:"/",env})).out);expect(state.build.git).toBe(expected);expect(Date.parse(state.build.builtAt)).toBeGreaterThanOrEqual(before);expect(state.machines[0].version).toContain(expected);expect(state.machines[0].version).toContain(state.build.builtAt);expect(existsSync(join(dir,".zinin"))).toBe(false);
 },120_000);
+
+test("global help is one page and exits before chat or onboarding",async()=>{
+ const home=mkdtempSync(join(tmpdir(),"zinin-help-"));const run=await capture([process.execPath,join(repo,"src/repl.ts"),"--help"],{cwd:"/",env:{HOME:home,PATH:"",ZININ_NO_TELEMETRY:"1"}});
+ expect(run.code).toBe(0);expect(run.err).toBe("");for(const command of ["zinin ps ","zinin ps show","zinin work ","reconcile","history","export","--version"])expect(run.out).toContain(command);
+ expect(run.out.trim().split("\n").length).toBeLessThanOrEqual(24);expect(existsSync(join(home,".zinin"))).toBe(false);
+});
