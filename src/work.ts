@@ -22,7 +22,7 @@ export const defaultJournal=()=>join(homedir(),".zinin","work","journal");
 export const workPaths=(path=defaultJournal()):WorkPaths=>({journal:resolve(path),leases:resolve(path)+".leases"});
 export function parseWorkArgs(argv:string[]) {
  const options:Record<string,string>={};let command="";let json=false;
- const allowed=new Set(["journal","session","task","run","result","revision","digest","goal","criteria","engine","model","bin","cwd","command-id","id","as","reason","expected-seq","attempt"]);
+ const allowed=new Set(["journal","session","task","run","result","revision","digest","goal","criteria","engine","model","bin","cwd","command-id","id","as","reason","expected-seq","attempt","out"]);
  for(let i=0;i<argv.length;i++){
   if(argv[i]==="--confirm"){options.confirm="true";continue;}
   if(argv[i]==="--json"){json=true;continue;}
@@ -59,6 +59,10 @@ export function renderWorkStatus(state:CoreState,journalPath?:string,ownedRuns:R
  out.push(`ждут приёмки: ${Object.values(state.results).filter(result=>resultAwaitsAcceptance(state,result)).length} · выполняются: ${Object.values(state.runs).filter(run=>run.status==="running").length} · готово: ${Object.values(state.tasks).filter(task=>task.status==="done").length}`);
  return out.join("\n");
 }
+export function renderWorkHistory(events:ReturnType<WorkCommandService["history"]>):string {
+ const names:Record<string,string>={task_created:"Задача создана",task_transitioned:"Состояние задачи",step_defined:"Шаг создан",step_transitioned:"Состояние шага",run_started:"Новый запуск",run_finished:"Завершение запуска",run_reconciled:"Сверка владельца",result_recorded:"Результат записан",result_decided:"Приёмка результата"};
+ return events.map(e=>`#${e.seq} ${e.recorded_at} · ${names[e.type]??e.type} · ${safe(JSON.stringify(e.payload))}`).join("\n")||"Событий нет";
+}
 export async function executeWork(service:WorkCommandService,command:string,o:Record<string,string>,signal?:AbortSignal):Promise<any>{
  o=resolveWorkOptions(service.state(),command,o);
  const need=(key:string)=>{if(!o[key]?.trim())throw new WorkUsageError("Нужен --"+key);return o[key];};
@@ -82,6 +86,8 @@ export async function executeWork(service:WorkCommandService,command:string,o:Re
    const expected=o["expected-seq"]===undefined?preview.expected_seq:Number(o["expected-seq"]);
    return {...service.reconcile(cmd,runId,as,reason,expected,now),...preview,message:`Сверено владельцем: ${reason} · ${preview.warning}`};
   }
+  case "history":return service.history(need("task"));
+  case "export":return service.export(need("out"));
   case "stop":return service.stop(need("run"));
   case "status":return service.state();
   default:throw new WorkUsageError("Неизвестная команда work");
@@ -89,7 +95,7 @@ export async function executeWork(service:WorkCommandService,command:string,o:Re
 }
 async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
  const {command,options:o,json}=parseWorkArgs(argv),paths=workPaths(o.journal);
- if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|status] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]).");return;}
+ if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|reconcile|status|history|export] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]).");return;}
  if(command==="init"){mkdirSync(dirname(paths.journal),{recursive:true});new WorkCommandService(paths,{create:true});console.log(json?JSON.stringify({journal:paths.journal,initialized:true}):"Журнал готов: "+paths.journal);return;}
  if(!command&&(!process.stdin.isTTY||!process.stdout.isTTY))throw new WorkUsageError("TUI требует терминал; используйте work status");
  const service=new WorkCommandService(paths);
@@ -100,7 +106,7 @@ async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
   const addressed=resolveWorkOptions(service.state(),command,o);const preview=await executeWork(service,command,{...addressed,confirm:"false"});
   console.error(safe(preview.message));o["expected-seq"]=String(preview.expected_seq);
  }
- try {const result=await executeWork(service,command,o,controller.signal);if(result?.error)throw new Error(result.error);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result,service.journalPath,service.ownedRunIds()):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
+ try {const result=await executeWork(service,command,o,controller.signal);if(result?.error)throw new Error(result.error);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result,service.journalPath,service.ownedRunIds()):command==="history"?renderWorkHistory(result):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
  finally{process.removeListener("SIGINT",cancel);process.removeListener("SIGTERM",cancel);}
 }
 

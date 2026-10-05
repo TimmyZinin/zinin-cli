@@ -1,6 +1,6 @@
 /** Shared addressed commands for the opt-in CLI and TUI. No automatic run/accept. */
 import {createHash} from "node:crypto";
-import {existsSync} from "node:fs";
+import {existsSync,openSync,writeFileSync,closeSync} from "node:fs";
 import {CoreJournal, JournalError, type CoreState} from "./journal";
 import {LocalExecutor, type EngineLike} from "./executor";
 export interface WorkPaths {journal: string; leases: string}
@@ -22,6 +22,19 @@ export class WorkCommandService {
   get journalPath():string {return this.paths.journal;}
   state():CoreState {return CoreJournal.readOnly(this.paths.journal);}
   events(){return CoreJournal.readEvents(this.paths.journal);}
+  history(taskId:string){
+    const state=this.state();if(!state.tasks[taskId])throw new JournalError("not_found","Задача не найдена");
+    const runs=new Set(Object.values(state.runs).filter(r=>r.task_id===taskId).map(r=>r.run_id));
+    const results=new Set(Object.values(state.results).filter(r=>r.task_id===taskId).map(r=>r.result_id));
+    const steps=new Set(Object.values(state.steps).filter(r=>r.task_id===taskId).map(r=>r.step_id));
+    return this.events().filter(e=>e.payload.task_id===taskId||runs.has(e.payload.run_id as string)||results.has(e.payload.result_id as string)||steps.has(e.payload.step_id as string));
+  }
+  export(out:string){
+    const events=this.events();let fd:number;
+    try{fd=openSync(out,"wx",0o600);}catch{throw new JournalError("conflict","Файл экспорта уже существует или недоступен; укажите новый --out");}
+    try{writeFileSync(fd,events.map(event=>JSON.stringify(event)).join("\n")+(events.length?"\n":""));}finally{closeSync(fd);}
+    return {out,count:events.length,message:`Экспортировано событий: ${events.length}; журнал не изменён`};
+  }
   reconcilePreview(runId:string){
     const state=this.state(),run=state.runs[runId];if(!run)throw new JournalError("not_found","Запуск не найден");
     const event=this.events().filter(e=>e.payload.run_id===runId).at(-1);
