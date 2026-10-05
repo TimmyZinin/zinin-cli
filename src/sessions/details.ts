@@ -3,7 +3,7 @@ import { sessionName } from "./name";
 const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 const text = (v: unknown): v is string => typeof v === "string" && Buffer.byteLength(v) <= 128 * 1024;
 const nullableText = (v: unknown) => v === null || text(v);
-const timestamp = (v: unknown) => v === null || (typeof v === "number" && Number.isFinite(v) && v >= 0);
+const timestamp = (v: unknown) => v === null || (typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 8_640_000_000_000_000);
 /** Only newa details are accepted from SSH. Unknown nested fields are dropped. */
 export function parseRemoteDetails(v: unknown): SessionDetails {
   if (!object(v) || !object(v.task) || !nullableText(v.task.text) || !nullableText(v.task.source) ||

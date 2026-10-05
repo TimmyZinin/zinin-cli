@@ -64,6 +64,16 @@ function signalLines(text: string | null, nowMs: number): SignalLine[] {
   }
   return lines;
 }
+/** Details retain continuation lines in the same entry; summary evidence stays one line. */
+function entryText(lines: SignalLine[], item: SignalLine): string {
+  const start = lines.indexOf(item);
+  const body = [item.line];
+  for (const next of lines.slice(start + 1)) {
+    if (next.heading || next.atMs !== item.atMs || QUESTION.test(next.line) || RESOLVED.test(next.line)) break;
+    body.push(next.line);
+  }
+  return body.join("\n");
+}
 const QUESTION = /(?:^|[\s:,.—–-])(?:вопрос|блокер)(?=[\s:,.!?]|$)|WAITING_S0_RECEIPT|(?:жд(?:у|[ёе]м|[ёе]т|ут)|ожида(?:ю|ем|ет|ется|ют)|требуется|нужна).*?(?:квитанци|решени|ответ|Тима|S0|владельц)|нужен\s+(?:Тим|S0|владелец)/i;
 const RESOLVED = /(?:блокер\s+снят|вопрос\s+(?:реш[ёе]н|закрыт)|(?:решение|ответ|квитанция)\s+(?:S0\s+)?получен[ао]?)(?=[\s.,;:]|$)/i;
 function readJson(text: string | null): Record<string, unknown> | null {
@@ -102,7 +112,7 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
       freshness: item.atMs === null || lastSayMs === null ? "unknown"
         : item.atMs > lastSayMs ? "current" : "stale",
     };
-    fullQuestion = { ...decision, text: item.line };
+    fullQuestion = { ...decision, text: input.includeDetails ? entryText(toLines, item) : item.line };
   }
   const needs = decision?.freshness === "current" ? decision.text : null;
   const DONE_WORDS = new Set(["готово", "готов", "готова", "готовы", "итог", "сдано", "сдача", "done", "finished"]);
@@ -153,14 +163,16 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   let lastSubmission: SessionEvidence | null = null;
   for (const [source, lines] of [["TO-S0.md", toLines], ["REPORT-S0.md", reportLines]] as const) {
     let candidate: SessionEvidence | null = null;
+    let candidateFull: SessionEvidence | null = null;
     for (const item of lines) {
       if (item.heading ? headingMarker(item.line) : markerInSegment(item.line)) {
         candidate = { text: item.line, source, atMs: item.atMs };
+        candidateFull = { ...candidate, text: input.includeDetails ? entryText(lines, item) : item.line };
       }
     }
     // Prefer REPORT for undated cross-file evidence; never invent chronology.
     if (candidate && (!lastSubmission || candidate.atMs === null || lastSubmission.atMs === null || candidate.atMs >= lastSubmission.atMs)) {
-      fullSubmission = candidate;
+      fullSubmission = candidateFull;
       lastSubmission = { ...candidate, text: clip(candidate.text)! };
     }
   }

@@ -72,7 +72,7 @@ test("remote detail decoder rejects malformed fields and strips unknown nested d
  const payload=()=>({sessions:[parsed()],machines:[machine],hidden_count:0});
  const good=payload();(good.sessions[0].details!.task as any).extra="UNTRUSTED";
  expect(JSON.stringify(parseRemoteSnapshot(JSON.stringify(good)))).not.toContain("UNTRUSTED");
- for(const mutate of [(d:any)=>d.reportLines=Array(16).fill("line"),(d:any)=>d.question.text={},(d:any)=>d.task.text="x".repeat(140000),(d:any)=>d.terminal={title:"spoofed"},(d:any)=>d.submission.atMs=-1]) {
+ for(const mutate of [(d:any)=>d.reportLines=Array(16).fill("line"),(d:any)=>d.question.text={},(d:any)=>d.task.text="x".repeat(140000),(d:any)=>d.terminal={title:"spoofed"},(d:any)=>d.submission.atMs=-1,(d:any)=>d.submission.atMs=1e300]) {
   const p=payload();mutate(p.sessions[0].details);expect(()=>parseRemoteSnapshot(JSON.stringify(p))).toThrow();
  }
 });
@@ -92,4 +92,23 @@ test("CLI show validates selectors and conflicts without a live scan",async()=>{
  await expect(psMain(["show","worker","--watch"])).rejects.toThrow("does not support");
  await expect(psMain(["--detail-id",";bad"])).rejects.toThrow("invalid detail id");
  await expect(showSession("\n",opts)).rejects.toThrow("show expects");
+});
+
+test("full question and submission keep continuation lines without borrowing the next entry",()=>{
+ const r=parseNewaDir({name:"example",metaText:null,statusText:null,taskText:null,nowMs:NOW,includeDetails:true,
+ toS0Text:"## 2026-10-05T18:00:00Z Решение\nВопрос: выбрать формат?\n- CSV для таблицы\n- JSON для программы\n## 2026-10-05T19:00:00Z Следующая запись\nОтдельный текст",
+ reportText:"## 2026-10-05T18:30:00Z СДАНО: проверка завершена\nПроверено 20 строк.\nАртефакт: example.txt\n## 2026-10-05T19:30:00Z Продолжение\nНовая работа"});
+ expect(r.details?.question?.text).toContain("- JSON для программы");expect(r.details?.question?.text).not.toContain("Отдельный текст");
+ expect(r.details?.submission?.text).toContain("Артефакт: example.txt");expect(r.details?.submission?.text).not.toContain("Новая работа");
+ expect(r.decision?.text).toBe("Вопрос: выбрать формат?");
+});
+test("CLI show JSON and internal encoded lookup execute against a fixture root",async()=>{
+ const work=root();const dir=worker(work,"cli-example");writeFileSync(join(dir,"TASK.md"),long);
+ const script=`import {psMain} from ${JSON.stringify(join(import.meta.dir,"../../src/ps.ts"))}; await psMain(JSON.parse(process.argv[1]),{host:"newa",newaOptions:{root:process.argv[2]}});`;
+ for(const argv of [["show","cli-example","--json","--sources","newa"],["--json","--sources","newa","--detail-id",Buffer.from("cli-example").toString("base64url")]]) {
+   const child=Bun.spawn([process.execPath,"-e",script,JSON.stringify(argv),work],{stdout:"pipe",stderr:"pipe"});
+   const [out,err,code]=await Promise.all([new Response(child.stdout).text(),new Response(child.stderr).text(),child.exited]);
+   expect(code).toBe(0);expect(err).toBe("");const data=JSON.parse(out);
+   expect(data.sessions).toHaveLength(1);expect(data.sessions[0].details.task.text).toBe(long);
+ }
 });
