@@ -20,6 +20,13 @@ function group(row: SessionRow): number {
   if (["working", "starting", "closing", "stuck"].includes(row.state)) return 0;
   return 3;
 }
+export function humanIdle(lastActivityMs: number | null, nowMs: number): string {
+  if (lastActivityMs === null) return "неизвестно";
+  const minutes = Math.max(0, Math.floor((nowMs - lastActivityMs) / 60_000));
+  if (minutes >= 1440) return `${Math.floor(minutes / 1440)} дн`;
+  if (minutes >= 60) return `${Math.floor(minutes / 60)} ч`;
+  return `${minutes} мин`;
+}
 export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowMs: number, hiddenCount = 0): string {
   const titles = ["Работают сейчас", "Ждут решения владельца", "Сданы", "Не отвечают/неизвестно"];
   const blocks: string[][] = titles.map(() => []);
@@ -27,7 +34,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     const question = row.decision?.text ?? row.needs;
     const description = target === 1 ? question ?? row.task
       : target === 2 ? row.lastSubmission?.text ?? row.task : row.task;
-    const idle = row.lastActivityMs === null ? "неизвестно" : `${Math.max(0, Math.floor((nowMs - row.lastActivityMs) / 60_000))} мин`;
+    const idle = humanIdle(row.lastActivityMs, nowMs);
     const notes: string[] = [];
     if (row.overviewGroup && target !== 2) notes.push("оценка по времени файла");
     if (target === 0 && row.possiblyStuck?.value) notes.push("возможно зависла");

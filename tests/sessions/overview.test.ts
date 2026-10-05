@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { renderOverview } from "../../src/sessions/overview";
+import { renderOverview, humanIdle } from "../../src/sessions/overview";
 import { parseNewaDir } from "../../src/adapters/sessions/newa-workdir";
 import { addStatusEstimates } from "../../src/sessions/estimates";
 const NOW = Date.parse("2026-10-05T12:00:00Z");
@@ -47,4 +47,9 @@ test("description fallbacks preserve priority, dated heading cleanup and source"
   expect(parse(null, "# Исполнитель newa\nТы выполняешь только поручение S0 в текущей рабочей папке.", "Проверяет архив").taskSource).toBe("TO-S0.md");
   expect(parse(null, "# Проект\nПроверяет архив").taskSource).toBe("README.md");
   expect(parse(null)).toMatchObject({task:null, taskSource:null});
+});
+
+test("human idle duration uses minutes, hours and days at exact boundaries", () => {
+  for (const [minutes, label] of [[7,"7 мин"],[59,"59 мин"],[60,"1 ч"],[240,"4 ч"],[1439,"23 ч"],[1440,"1 дн"],[4320,"3 дн"]] as const) expect(humanIdle(NOW - minutes * 60_000,NOW)).toBe(label);
+  expect(humanIdle(null,NOW)).toBe("неизвестно"); expect(humanIdle(NOW+1,NOW)).toBe("0 мин");
 });
