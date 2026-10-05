@@ -23,7 +23,7 @@ export function resolveWorkId(state:CoreState,kind:WorkKind,query:string):string
  return [...matches][0];
 }
 export function resolveWorkOptions(state:CoreState,command:string,options:Record<string,string>):Record<string,string>{
- const key=({task:"session",run:"task",accept:"result",stop:"run"} as const)[command as "task"|"run"|"accept"|"stop"];
+ const key=({task:"session",run:"task",accept:"result",stop:"run",reconcile:"run",history:"task"} as const)[command as "task"|"run"|"accept"|"stop"|"reconcile"|"history"];
  if(!key||!options[key])return {...options};
  return {...options,[key]:resolveWorkId(state,key,options[key])};
 }

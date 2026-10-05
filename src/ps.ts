@@ -171,7 +171,7 @@ const DEFAULT_NEWA_CMD = [
   "/home/agents/work/zinin-harness-e2/runtime/bun-1.3.0/bun",
   "/home/agents/work/zinin-harness-e3/zinin-cli/src/repl.ts", "ps", "--sources", "newa", "--json",
 ];
-function resolveNewaCmd(): string[] {
+export function resolveNewaCmd(): string[] {
   const env = process.env.ZININ_PS_NEWA_CMD;
   if (env) return [...env.split(" ").filter(Boolean), "zinin", "ps", "--sources", "newa", "--json"];
   try {
