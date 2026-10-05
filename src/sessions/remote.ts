@@ -34,6 +34,7 @@ export function parseRemoteSnapshot(raw: string): SourceSnapshot {
       !number(v.lastActivityMs) || !percent(v.contextPct) || !percent(v.weeklyLimitPct) ||
       (v.taskSource !== undefined && !text(v.taskSource)) ||
       (v.liveness !== undefined && !["alive", "stopped", "unknown"].includes(v.liveness as string)) ||
+      (v.waitingKind !== undefined && !["receipt","question","handoff"].includes(v.waitingKind as string)) ||
       (v.activity !== undefined && !activity.has(v.activity as string)) ||
       (v.decision !== undefined && !evidence(v.decision, true)) ||
       (v.lastSubmission !== undefined && !evidence(v.lastSubmission)) ||
@@ -43,7 +44,7 @@ export function parseRemoteSnapshot(raw: string): SourceSnapshot {
       (v.stoppedReason !== undefined && !estimate(v.stoppedReason, text))) throw new Error("invalid remote session");
     ids.add(v.id);
     const copy: Record<string, unknown> = {};
-    for (const key of ["id", "machine", "state", "source", "engine", "model", "task", "taskSource", "stuckOn", "needs", "lastActivityMs", "contextPct", "weeklyLimitPct", "liveness", "activity", "decision", "lastSubmission", "lastSayMs", "overviewGroup", "possiblyStuck", "stoppedReason"]) {
+    for (const key of ["id", "machine", "state", "source", "engine", "model", "task", "taskSource", "stuckOn", "needs", "lastActivityMs", "contextPct", "weeklyLimitPct", "liveness", "activity", "decision", "waitingKind", "lastSubmission", "lastSayMs", "overviewGroup", "possiblyStuck", "stoppedReason"]) {
       if (v[key] !== undefined) copy[key] = v[key];
     }
     for (const key of ["decision", "lastSubmission"]) {

@@ -57,7 +57,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     return [pad(machineName(row.machine), machineWidth), pad(short(sessionName(row), idWidth), idWidth),
       pad(short(detail, descriptionWidth), descriptionWidth), pad(idle, timeWidth)].join("  ").trimEnd();
   };
-  for (const row of [...rows].sort((a, b) => (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
+  for (const row of [...rows].sort((a, b) => (group(a) === 1 && group(b) === 1 ? Number(a.waitingKind === "handoff") - Number(b.waitingKind === "handoff") : 0) || (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
     const target = group(row);
     blocks[target].push(line(row, target));
 

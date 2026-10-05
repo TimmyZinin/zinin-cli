@@ -37,16 +37,17 @@ test("idle question inside the inclusive 20 minute window gets only an estimated
   expect(observed.needs).toBeNull();
   expect(observed.liveness).toBe("unknown");
 });
-test("dated old question cannot be freshened by touching TO-S0; text remains", () => {
+test("unanswered latest question stays waiting without inventing a fresh timestamp", () => {
   const observed = addStatusEstimates(row("2026-10-05T11:39:59Z Вопрос: старый?"), '{"state":"idle"}', NOW, NOW, NOW);
-  expect(observed.overviewGroup?.value).toBe("idle");
+  expect(observed.overviewGroup?.value).toBe("waiting");
+  expect(observed.decision?.atMs).toBe(ago(20) - 1000);
   expect(observed.decision?.text).toBe("Вопрос: старый?");
 });
 test("undated question uses file mtime as an estimate with configurable window", () => {
-  const question = row("Блокер: нужен выбор формата");
+  const question = row("Нужна квитанция S0");
   expect(addStatusEstimates(question, '{"state":"idle"}', NOW, ago(19), NOW).overviewGroup?.value).toBe("waiting");
   expect(addStatusEstimates(question, '{"state":"idle"}', NOW, ago(19), NOW, { questionMinutes: 10 }).overviewGroup?.value).toBe("idle");
-  expect(addStatusEstimates(question, '{"state":"idle"}', NOW, null, NOW).decision?.text).toContain("Блокер");
+  expect(addStatusEstimates(question, '{"state":"idle"}', NOW, null, NOW).decision?.text).toContain("квитанция");
 });
 test("idle submission and idle without submission have distinct estimated groups", () => {
   expect(addStatusEstimates(row(null, "СДАНО: отчёт"), '{"state":"idle"}', NOW, null, NOW).overviewGroup?.value).toBe("submitted");

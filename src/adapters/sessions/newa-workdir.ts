@@ -2,6 +2,7 @@
  * Pure inputs assembled by the live wrapper (texts + explicit observations);
  * never touches the filesystem itself.
  */
+import { ownerWait } from "../../sessions/owner-wait";
 import { CONTROLLER_NOTICE, cleanDescription, meaningfulDescription } from "../../sessions/description";
 import type { SessionRow, SessionActivity, SessionEvidence, DecisionEvidence } from "../../sessions/types";
 
@@ -114,6 +115,16 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     };
     fullQuestion = { ...decision, text: input.includeDetails ? entryText(toLines, item) : item.line };
   }
+  const waiting = ownerWait(input.toS0Text, input.reportText, input.nowMs);
+  if (waiting.answered) { decision = null; fullQuestion = null; }
+  if (waiting.pending) {
+    const {kind, ...evidence} = waiting.pending;
+    evidence.freshness = evidence.atMs === null || lastSayMs === null ? "unknown" : evidence.atMs > lastSayMs ? "current" : "stale";
+    if (kind !== "question" || !decision || decision.atMs !== evidence.atMs) {
+      fullQuestion = evidence;
+      decision = {...evidence, text: clip(evidence.text)!};
+    }
+  }
   const needs = decision?.freshness === "current" ? decision.text : null;
   const DONE_WORDS = new Set(["готово", "готов", "готова", "готовы", "итог", "сдано", "сдача", "done", "finished"]);
   interface Token { word: string; punct: string }
@@ -212,6 +223,7 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
     liveness,
     activity,
     decision,
+    ...(waiting.pending ? {waitingKind: waiting.pending.kind} : {}),
     lastSubmission,
     lastActivityMs,
     stuckOn: null,

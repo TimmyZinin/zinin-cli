@@ -49,6 +49,7 @@ export interface SessionRow {
   liveness?: "alive" | "stopped" | "unknown";
   activity?: SessionActivity;
   decision?: DecisionEvidence | null;
+  waitingKind?: "receipt" | "question" | "handoff";
   lastSubmission?: SessionEvidence | null;
   lastSayMs?: number | null;
   overviewGroup?: StatusEstimate<OverviewGroup>;

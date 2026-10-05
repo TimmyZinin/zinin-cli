@@ -21,7 +21,7 @@ export function addStatusEstimates(row: SessionRow, statusText: string | null,
   let group: OverviewGroup = "unknown";
   if (status.state === "running") group = "working";
   else if (status.state === "failed" || status.state === "timeout") group = "stopped";
-  else if (status.state === "idle") group = questionRecent ? "waiting" : row.lastSubmission ? "submitted" : "idle";
+  else if (status.state === "idle") group = row.waitingKind || questionRecent ? "waiting" : row.lastSubmission ? "submitted" : "idle";
   const estimate = <T>(value: T): StatusEstimate<T> => ({ value, source: "status-mtime", confidence: "estimate", atMs });
   return { ...row,
     overviewGroup: estimate(group),
