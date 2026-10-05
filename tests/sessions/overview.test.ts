@@ -67,3 +67,11 @@ test("decisions lead the overview and every block sorts newest movement first", 
   }
   expect(rows[0].id).toBe("running-old");
 });
+
+test("summary counts sessions once and counts only dated submissions in the last day", () => {
+  const working=row("running",null,"2026-10-05T11:00:00Z СДАНО: отчёт");
+  const waiting={...row("idle","Вопрос: формат?","СДАНО: без даты"),id:"waiting"};
+  const old={...row("idle",null,"2026-10-03T11:00:00Z СДАНО: старое"),id:"old"};
+  const mac={...row(),id:"mac",machine:"mac" as const,source:"terminal-mac"};
+  expect(renderOverview([working,waiting,old,mac],[],NOW).split("\n").at(-1)).toBe("Мак: 1 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
+});

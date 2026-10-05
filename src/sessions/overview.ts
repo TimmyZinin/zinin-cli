@@ -57,5 +57,12 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     for (const warning of machine.warnings ?? []) out.push(`${machineName(machine.machine)}: ${short(warning, 160)}`);
   }
   if (hiddenCount) out.push(`ещё ${hiddenCount} старых скрыто — zinin ps --all`);
+  const macLive = rows.filter(row => row.machine === "mac" && (row.liveness === "alive" || row.source === "terminal-mac")).length;
+  const newa = rows.filter(row => row.machine === "newa");
+  const working = newa.filter(row => group(row) === 0).length;
+  const waiting = newa.filter(row => group(row) === 1).length;
+  // Undated and stale evidence cannot substantiate "submitted within a day".
+  const submitted = newa.filter(row => row.lastSubmission?.atMs != null && row.lastSubmission.atMs >= nowMs - 86_400_000 && row.lastSubmission.atMs <= nowMs).length;
+  out.push(`Мак: ${macLive} живых · newa: ${working} работают, ${waiting} ждут решения, ${submitted} сдано за сутки`);
   return out.join("\n").trimEnd();
 }
