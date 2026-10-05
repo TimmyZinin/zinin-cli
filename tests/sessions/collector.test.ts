@@ -210,3 +210,23 @@ test("remote preserves description provenance and rejects invalid provenance or 
   (p.sessions[0] as any).taskSource={unexpected:true};
   expect(()=>parseRemoteSnapshot(JSON.stringify(p))).toThrow();
 });
+test("portable collector reads through normal paths while rejecting linked roots, workers and files", () => {
+  const work=root(); const a=worker(work,"real");
+  write(a,"REPORT-S0.md","СДАНО: переносимый сбор проверен");
+  symlinkSync(a,join(work,"linked-worker"));
+  const b=worker(work,"linked-files");
+  symlinkSync(join(a,"REPORT-S0.md"),join(b,"REPORT-S0.md"));
+  linkSync(join(a,"meta.json"),join(b,"TASK-hardlink.md"));
+  const result=collectNewaSnapshot({root:work,nowMs:NOW,pathMode:"portable"});
+  expect(result.rows.map(r=>r.id)).toEqual(["linked-files","real"]);
+  expect(result.rows.find(r=>r.id==="real")?.lastSubmission?.text).toContain("переносимый");
+  expect(result.rows.find(r=>r.id==="linked-files")?.lastSubmission).toBeNull();
+  expect(result.machine.warnings?.join(" ")).toContain("single regular file");
+  const parent=root(); symlinkSync(work,join(parent,"root-link"));
+  expect(collectNewaSnapshot({root:join(parent,"root-link"),pathMode:"portable"}).machine.available).toBe(false);
+  // Same shape as macOS /var/folders -> /private/var/folders: only an
+  // ancestor is a symlink, the requested root itself is a real directory.
+  const grand=root(); const actual=join(grand,"actual"); mkdirSync(actual); const nested=join(actual,"work"); mkdirSync(nested); worker(nested,"sample");
+  symlinkSync(actual,join(grand,"ancestor"));
+  expect(collectNewaSnapshot({root:join(grand,"ancestor","work"),nowMs:NOW,pathMode:"portable"}).rows.map(r=>r.id)).toEqual(["sample"]);
+});
