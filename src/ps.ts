@@ -5,6 +5,8 @@
  * transcripts, only files touched within the window, transcripts enrich
  * windows instead of spawning rows.
  */
+import { collectWorkJournal } from "./sessions/work-journal";
+import { defaultJournal } from "./work";
 import { platform, homedir } from "node:os";
 import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { join } from "node:path";
@@ -184,6 +186,7 @@ export interface CollectorDependencies {
   run?: CommandRunner;
   remoteCommand?: string[];
   newaOptions?: NewaCollectorOptions;
+  workJournalPath?: string | null;
   timeoutMs?: number;
   mac?: (nowMs: number, signal: AbortSignal) => Promise<SourceSnapshot>;
   newa?: (nowMs: number, signal: AbortSignal) => Promise<SourceSnapshot>;
@@ -223,7 +226,10 @@ export async function collect(opts: PsOptions, deps: CollectorDependencies = {},
   if ((opts.sources === "mac" || opts.sources === "all") && host !== "newa") sources.push(boundedSource("mac", abort => mac(nowMs, abort), timeoutMs, signal));
   if (opts.sources === "newa" || opts.sources === "all") sources.push(boundedSource("newa", abort => (host === "newa" ? newa : remote)(nowMs, abort), timeoutMs, signal));
   const snapshots = await Promise.all(sources);
-  return { ...filterRecent(applyDerivedStates(mergeRows(snapshots.flatMap(s => s.rows)), nowMs, opts.stuckMinutes), nowMs, opts.all, opts.sinceMs), machines: snapshots.map(s => s.machine), nowMs };
+  const localEnabled=(host==="newa"&&opts.sources!=="mac")||(host==="mac"&&opts.sources!=="newa");
+  const managed=localEnabled&&deps.workJournalPath!==null ? collectWorkJournal(deps.workJournalPath??defaultJournal(),host as "mac"|"newa") : {rows:[],warnings:[]};
+  if(managed.warnings.length){const info=snapshots.find(s=>s.machine.machine===host);if(info)info.machine.warnings=[...(info.machine.warnings??[]),...managed.warnings];}
+  return { ...filterRecent(applyDerivedStates(mergeRows([...snapshots.flatMap(s => s.rows),...managed.rows]), nowMs, opts.stuckMinutes), nowMs, opts.all, opts.sinceMs), machines: snapshots.map(s => s.machine), nowMs };
 }
 /** Resolve against an unfiltered overview, then request details only for the exact worker. */
 export async function showSession(query: string, opts: PsOptions, deps: CollectorDependencies = {}, signal?: AbortSignal): Promise<ShowResult> {

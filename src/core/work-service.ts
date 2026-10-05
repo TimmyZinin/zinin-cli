@@ -19,7 +19,7 @@ export class WorkCommandService {
     const journal=new CoreJournal(this.paths.journal);
     try {return operation(journal);} finally {journal.close();}
   }
-  state():CoreState {return this.withJournal(journal=>structuredClone(journal.state));}
+  state():CoreState {return CoreJournal.readOnly(this.paths.journal);}
   session(commandId:string, sessionId:string, goal:string, now:string) {
     const key=commandKey(commandId);
     return this.withJournal(journal=>{

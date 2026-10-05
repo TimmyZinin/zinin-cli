@@ -6,6 +6,8 @@
  * replay applies the same rules, so recovery cannot resurrect bad history.
  */
 import { Database } from "bun:sqlite";
+import { existsSync, lstatSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
 export type TaskStatus = "draft" | "queued" | "active" | "review_ready" | "finalizing" | "done" | "blocked" | "cancelled";
@@ -148,6 +150,28 @@ export class CoreJournal {
       catch (error) { throw new JournalError("corrupt", `Journal entry ${row.seq} failed replay: ${(error as Error).message}`); }
     }
     return state;
+  }
+  /** Read-only projection for status/ps: never creates tables, files or snapshots. */
+  static readOnly(path:string):CoreState {
+    const probe=Object.create(CoreJournal.prototype) as CoreJournal;
+    const hasWal=existsSync(path+"-wal");
+    if(hasWal) {
+      // Existing WAL readers use SQLite shared-memory locks; do not create sidecars.
+      for(const suffix of ["-wal","-shm"]) {
+        const info=lstatSync(path+suffix);
+        if(!info.isFile()||info.isSymbolicLink()||info.nlink!==1||info.size>32*1024*1024)throw new JournalError("corrupt","Unsafe journal sidecar");
+      }
+    }
+    // SQLITE_OPEN_READONLY | SQLITE_OPEN_URI. Immutable avoids SQLite creating
+    // WAL/SHM beside a closed, checkpointed journal. Detect a concurrent writer.
+    probe.db=hasWal ? new Database(path,{readonly:true,create:false})
+      : new Database(pathToFileURL(path).href+"?mode=ro&immutable=1",0x41);
+    try {
+      probe.db.exec("PRAGMA busy_timeout=1000");
+      const state=probe.db.transaction(()=>probe.recover())();
+      if(!hasWal&&existsSync(path+"-wal"))throw new JournalError("conflict","Journal changed while reading; retry");
+      return state;
+    } finally {probe.db.close();}
   }
   /** Full independent fold, used by tests and recovery checks. */
   static fold(path: string): CoreState {
