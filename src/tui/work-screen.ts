@@ -1,6 +1,6 @@
 /** Foreground work TUI. Commands share the CLI service; Enter previews before execution. */
 import type {WorkCommandService} from "../core/work-service";
-import {executeWork,parseWorkArgs,renderWorkStatus} from "../work";
+import {executeWork,parseWorkArgs,renderWorkStatus,WorkUsageError} from "../work";
 import {KeyParser,type Key} from "./input";
 const plain=(s:string)=>s.replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g,"").replace(/\x1b\[[0-?]*[ -/]*[@-~]/g,"").replace(/[\x00-\x09\x0b-\x1f\x7f-\x9f]/g," ");
 export function splitWorkCommand(text:string):string[]{
@@ -41,7 +41,7 @@ export class WorkScreen {
  }
 }
 export async function runWorkScreen(service:WorkCommandService):Promise<void>{
- if(!process.stdin.isTTY||!process.stdout.isTTY)throw Error("Для TUI нужен терминал; используйте work status --json");
+ if(!process.stdin.isTTY||!process.stdout.isTTY)throw new WorkUsageError("TUI требует терминал; используйте work status");
  let finish!:()=>void;const done=new Promise<void>(resolve=>{finish=resolve;});let failure:unknown;let timer:ReturnType<typeof setInterval>|undefined;
  const app=new WorkScreen(service,s=>process.stdout.write(s),()=>finish());const parser=new KeyParser();
  const guard=(fn:()=>void)=>{try{fn();}catch(error){failure=error;finish();}};

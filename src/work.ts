@@ -67,6 +67,7 @@ async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
  const {command,options:o,json}=parseWorkArgs(argv),paths=workPaths(o.journal);
  if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|status] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]).");return;}
  if(command==="init"){mkdirSync(dirname(paths.journal),{recursive:true});new WorkCommandService(paths,{create:true});console.log(json?JSON.stringify({journal:paths.journal,initialized:true}):"Журнал готов: "+paths.journal);return;}
+ if(!command&&(!process.stdin.isTTY||!process.stdout.isTTY))throw new WorkUsageError("TUI требует терминал; используйте work status");
  const service=new WorkCommandService(paths);
  if(!command){const {runWorkScreen}=await import("./tui/work-screen");onTui();await runWorkScreen(service);return;}
  const controller=new AbortController();const cancel=()=>{controller.abort();service.stopOwned();};

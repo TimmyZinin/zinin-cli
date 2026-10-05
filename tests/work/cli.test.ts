@@ -41,3 +41,11 @@ test("CLI usage and journal rejection produce one Russian line, with stacks only
  const rejected=await cli(journal,"accept","--result","res-t","--revision","1","--digest","wrong");expect(rejected.code).toBe(1);expect(rejected.err.trim().split("\n")).toHaveLength(1);expect(rejected.err).toContain("показана ревизия 1, сейчас 1");expect(rejected.err).toContain("контрольная сумма");expect(rejected.out).toBe("");
  const p=Bun.spawn([process.execPath,entry,"work","session","--journal",journal],{env:{...process.env,ZININ_DEBUG:"1"},stdout:"pipe",stderr:"pipe"});const err=await new Response(p.stderr).text();expect(await p.exited).toBe(2);expect(err).toContain("Нужен --goal");expect(err).toContain(" at ");
 });
+
+test("non-terminal work gives usage guidance without creating a journal or printing source",async()=>{
+ const journal=join(root(),"journal");
+ for(const initialized of [false,true]){
+  if(initialized)await cli(journal,"init");const answer=await cli(journal);
+  expect(answer.code).toBe(2);expect(answer.err).toBe("TUI требует терминал; используйте work status\n");expect(answer.out).toBe("");expect(existsSync(journal)).toBe(initialized);
+ }
+});
