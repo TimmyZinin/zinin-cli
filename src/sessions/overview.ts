@@ -35,13 +35,11 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     const idle = humanIdle(row.lastActivityMs, nowMs);
     const notes: string[] = [];
     if (row.lastSubmission && target !== 2) notes.push(`сдано раньше: ${short(row.lastSubmission.text)}`);
-    if (row.overviewGroup && target !== 2) notes.push("оценка по времени файла");
     if (target === 0 && row.possiblyStuck?.value) notes.push("возможно зависла");
     if (target === 3 && (row.overviewGroup?.value === "idle" || (!row.overviewGroup && row.state === "idle"))) notes.push("простаивает");
-    if (target === 3 && row.overviewGroup?.value === "stopped") notes.push(`ход остановлен: ${short(row.stoppedReason?.value) || "причина не указана"}`);
+    if (target === 3 && row.overviewGroup?.value === "stopped" && row.stoppedReason?.value) notes.push(`ход остановлен: ${short(row.stoppedReason.value)}`);
     if (question && target !== 1) notes.push(`вопрос: ${short(question)}`);
     if (question && row.decision?.freshness === "stale") notes.push("вопрос из прошлого хода");
-    if (question && row.decision?.freshness === "unknown") notes.push("точная свежесть вопроса неизвестна");
     return `${machineName(row.machine)}  ${short(row.id, 64)}  ${short(description) || "задача не указана"}  — без движения ${idle}${notes.length ? " · " + notes.join(" · ") : ""}`;
   };
   for (const row of [...rows].sort((a, b) => (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
@@ -54,6 +52,8 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     if (machine.available === false) out.push(`${machineName(machine.machine)}: источник недоступен`);
     for (const warning of machine.warnings ?? []) out.push(`${machineName(machine.machine)}: ${short(warning, 160)}`);
   }
+  if (rows.some(row => row.overviewGroup)) out.push("* Оценка по времени файла: состояния newa; подробности в --json.");
+  if (rows.some(row => row.decision?.freshness === "unknown")) out.push("* Точная свежесть вопроса неизвестна; текст вопроса сохранён, подробности в --json.");
   if (hiddenCount) out.push(`ещё ${hiddenCount} старых скрыто — zinin ps --all`);
   const macLive = rows.filter(row => row.machine === "mac" && (row.liveness === "alive" || row.source === "terminal-mac")).length;
   const newa = rows.filter(row => row.machine === "newa");

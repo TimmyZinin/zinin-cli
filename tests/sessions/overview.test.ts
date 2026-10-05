@@ -17,7 +17,7 @@ test("four blocks show useful estimates while retaining exact uncertainty and a 
   expect(out).toContain("newa  choice  Вопрос: выбрать CSV?");
   expect(out).toContain("сдано раньше: СДАНО: отчёт");
   expect(out).toContain("ход остановлен: лимит времени хода");
-  expect(out).toContain("оценка по времени файла");
+  expect(out).toContain("Оценка по времени файла");
   expect(out).toContain("без движения 1 мин");
   expect(out).toContain("вопрос: Вопрос: формат?");
   expect(working.decision?.freshness).toBe("unknown");
@@ -108,4 +108,17 @@ test("generic README and placeholder lines cannot masquerade as a task", () => {
   expect(parse("Итог:\n- 2026-10-05: …\n## Кратко").task).toBe("sample-worker (по имени папки)");
   expect(parse("- 2026-10-05: Проверяет выгрузку данных").task).toBe("Проверяет выгрузку данных");
   expect(parse(null,"# sample-worker\nПроверяет выгрузку данных").taskSource).toBe("README.md");
+});
+
+test("uncertainty appears once in footnotes and missing stop reasons add no noise", () => {
+  const inputs=[row("running","Вопрос: какой формат?"),{...row("idle","Вопрос: какой формат?"),id:"waiting"},
+    {...row("timeout"),id:"no-reason",stoppedReason:{value:null,source:"status-mtime" as const,confidence:"estimate" as const,atMs:NOW}}];
+  const out=renderOverview(inputs,[],NOW);
+  expect(out.match(/Оценка по времени файла/g)).toHaveLength(1);
+  expect(out.match(/Точная свежесть вопроса неизвестна/g)).toHaveLength(1);
+  expect(out).not.toContain("причина не указана");
+  expect(out.split("\n").find(line=>line.includes("no-reason"))).not.toContain("ход остановлен");
+  for(const line of out.split("\n").filter(line=>line.startsWith("newa"))) {
+    expect(line).not.toContain("по времени файла"); expect(line).not.toContain("свежесть вопроса неизвестна");
+  }
 });
