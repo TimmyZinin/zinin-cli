@@ -7,7 +7,7 @@
  * No network, no model calls; step output comes from a pure function.
  */
 import { createHash } from "node:crypto";
-import { CoreJournal } from "./journal";
+import { CoreJournal, JournalError } from "./journal";
 import { LeaseRegistry } from "./leases";
 
 export interface EngineLike {
@@ -27,7 +27,7 @@ function digest(text: string): string {
 export class LocalExecutor {
   private journal: CoreJournal;
   private leases: LeaseRegistry;
-  constructor(journalPath: string, leasesPath: string, private engine?: EngineLike) {
+  constructor(journalPath: string, leasesPath: string, private engine?: EngineLike, private engineName = engine ? "kimi-cli" : "local-demo") {
     this.journal = new CoreJournal(journalPath);
     this.leases = new LeaseRegistry(leasesPath);
   }
@@ -39,12 +39,20 @@ export class LocalExecutor {
    * Safe to call repeatedly: command ids are deterministic, leases fence
    * concurrent owners, and each phase checks current state first. */
   async runOnce(now: string): Promise<CycleSummary | null> {
-    const state = this.journal.state;
-    const task = Object.values(state.tasks)
+    const task = Object.values(this.journal.refresh().tasks)
       .filter(t => t.status === "draft" || t.status === "queued" || t.status === "active")
       .sort((a, b) => a.task_id.localeCompare(b.task_id))[0];
-    if (!task) return null;
-    const taskId = task.task_id;
+    return task ? this.runTask(task.task_id, now) : null;
+  }
+  /** Explicit target only: no fallback to another queued task or session. */
+  async runTask(taskId: string, now: string): Promise<CycleSummary | null> {
+    const state = this.journal.refresh();
+    const task = state.tasks[taskId];
+    if (!task) throw new JournalError("not_found", `Task ${taskId} missing`);
+    if (state.sessions[task.session_id]?.status !== "open") throw new JournalError("conflict", "Session is closed");
+    if (["review_ready", "finalizing", "done"].includes(task.status)) return null;
+    if (!["draft", "queued", "active"].includes(task.status)) throw new JournalError("conflict", `Task is ${task.status}`);
+    if (Object.values(state.runs).some(run => run.task_id === taskId && run.status === "running")) throw new JournalError("conflict", "Task already has an active run");
     const session = state.sessions[task.session_id];
     if (!session) return null;
     if (task.status === "draft") this.cmd(`exec-${taskId}-queued`, "task_transitioned", { task_id: taskId, to: "queued" }, now);
@@ -52,12 +60,12 @@ export class LocalExecutor {
     const attempt = Object.values(this.journal.state.runs).filter(r => r.task_id === taskId).length + 1;
     const run_id = `run-${taskId}-${attempt}`;
     let leaseEpoch = 0;
-    if (!Object.values(this.journal.state.runs).some(r => r.run_id === run_id)) {
-      const lease = this.leases.grant(run_id, session.session_id, "local-executor", now, 300_000);
-      leaseEpoch = lease.epoch;
-      this.cmd(`exec-${taskId}-run-${attempt}`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: this.engine ? "kimi-cli" : "local-executor" }, now);
-    }
     try {
+      if (!Object.values(this.journal.state.runs).some(r => r.run_id === run_id)) {
+        const lease = this.leases.grant(run_id, session.session_id, "local-executor", now, 300_000);
+        leaseEpoch = lease.epoch;
+        this.cmd(`exec-${taskId}-run-${attempt}`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: this.engineName }, now);
+      }
       let steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId).sort((a, b) => a.step_id.localeCompare(b.step_id));
       if (!steps.length) {
         this.cmd(`exec-${taskId}-plan`, "step_defined", { step_id: `${taskId}-deliver`, task_id: taskId, owner: "local-executor", required: true }, now);
@@ -69,7 +77,6 @@ export class LocalExecutor {
       for (const step of steps) {
         if (step.status === "pending") this.cmd(`exec-${taskId}-${step.step_id}-work`, "step_transitioned", { step_id: step.step_id, to: "working" }, now);
         if (this.journal.state.steps[step.step_id].status === "working") {
-          done.push(step.step_id);
           try {
             if (this.engine) {
               const produced = await this.engine.run(`Задача: ${task.goal}\nШаг: ${step.step_id}\nВерни краткий итог шага одним абзацем.`, { timeoutMs: 120_000 });
@@ -83,6 +90,7 @@ export class LocalExecutor {
             return { task_id: taskId, run_id, steps_done: done, result_id: null, provider_session, error: (error as Error).message };
           }
           this.cmd(`exec-${taskId}-${step.step_id}-done`, "step_transitioned", { step_id: step.step_id, to: "done" }, now);
+          done.push(step.step_id);
         }
       }
       if (this.journal.state.runs[run_id]?.status === "running") this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: "succeeded" }, now);
@@ -92,7 +100,7 @@ export class LocalExecutor {
         result_id = `res-${taskId}`;
         const text = outputs.join("\n");
         const d = digest(text);
-        const evidence = provider_session ? `verify:local-sha256:${d};engine-session:${provider_session}` : `verify:local-sha256:${d}`;
+        const evidence = provider_session ? `verify:local-sha256:${d};engine-session:${provider_session}` : `verify:local-sha256:${d}${this.engine ? "" : ";mode:local-demo"}`;
         this.cmd(`exec-${taskId}-result`, "result_recorded", { result_id: result_id, task_id: taskId, revision: 1, digest: d, evidence_ref: evidence }, now);
       }
       if (this.journal.state.tasks[taskId].status === "active") this.cmd(`exec-${taskId}-review`, "task_transitioned", { task_id: taskId, to: "review_ready" }, now);

@@ -102,6 +102,7 @@ export class CoreJournal {
     this.state = this.recover();
   }
   close() { this.db.close(); }
+  refresh(): CoreState { this.state = this.recover(); return this.state; }
   /** R08: identical resubmission returns the recorded outcome without new entries;
    * the same command_id with a different payload is a conflict, never applied. */
   submit(command: JournalCommand, recorded_at: string): { duplicate: boolean; seq: number } {
@@ -113,12 +114,13 @@ export class CoreJournal {
     const encoded = canonical(payload);
     this.validate(command.type, payload);
     return this.db.transaction(() => {
-      const old = this.db.query("SELECT seq, payload FROM command_outcomes WHERE command_id=?").get(command.command_id) as { seq: number; payload: string } | null;
+      const old = this.db.query("SELECT o.seq, o.payload, e.type FROM command_outcomes o JOIN journal_entries e ON e.seq=o.seq WHERE o.command_id=?").get(command.command_id) as { seq: number; payload: string; type: string } | null;
       if (old) {
-        if (old.payload !== encoded) throw new JournalError("conflict", "Command ID has different payload");
+        if (old.payload !== encoded || old.type !== command.type) throw new JournalError("conflict", "Command ID has different payload");
+        this.refresh();
         return { duplicate: true, seq: old.seq };
       }
-      const next = structuredClone(this.state);
+      const next = structuredClone(this.refresh());
       this.applyTo(next, command.type, payload);
       next.seq++;
       this.db.query("INSERT INTO journal_entries(type,command_id,payload,recorded_at) VALUES(?,?,?,?)").run(command.type, command.command_id, encoded, at);
@@ -169,7 +171,10 @@ export class CoreJournal {
       case "run_started": str(payload, "run_id"); str(payload, "task_id"); str(payload, "session_id"); break;
       case "run_finished": str(payload, "run_id"); if (!(str(payload, "outcome") in runOutcomes)) throw new JournalError("malformed", "Unknown outcome"); break;
       case "result_recorded": str(payload, "result_id"); str(payload, "task_id"); int(payload, "revision"); str(payload, "digest"); str(payload, "evidence_ref"); break;
-      case "result_decided": str(payload, "result_id"); str(payload, "decision"); str(payload, "decided_by"); break;
+      case "result_decided":
+        str(payload, "result_id"); str(payload, "decision"); str(payload, "decided_by");
+        if (payload.expected_revision !== undefined || payload.expected_digest !== undefined) { int(payload, "expected_revision"); str(payload, "expected_digest"); }
+        break;
     }
     canonical(payload);
   }
@@ -194,7 +199,11 @@ export class CoreJournal {
         s.sessions[id] = { session_id: id, agent_id: str(p, "agent_id"), service: str(p, "service"), group: str(p, "group"), goal: str(p, "goal"), status: "open" };
         break;
       }
-      case "session_closed": need(s.sessions, str(p, "session_id"), "Session").status = "closed"; break;
+      case "session_closed": {
+        const session = need(s.sessions, str(p, "session_id"), "Session");
+        if (p.require_idle === true && Object.values(s.runs).some(run => run.session_id === session.session_id && run.status === "running")) throw new JournalError("conflict", "Session has an active run");
+        session.status = "closed"; break;
+      }
       case "task_created": {
         const id = str(p, "task_id");
         if (s.tasks[id]) throw new JournalError("conflict", `Task ${id} already exists`);
@@ -256,6 +265,14 @@ export class CoreJournal {
       }
       case "result_decided": {
         const result = need(s.results, str(p, "result_id"), "Result");
+        // New addressed commands bind the displayed immutable result. Legacy
+        // journal entries without binding remain replayable unchanged.
+        if (p.expected_revision !== undefined || p.expected_digest !== undefined) {
+          if (int(p, "expected_revision") !== result.revision || str(p, "expected_digest") !== result.digest) throw new JournalError("conflict", "Result revision/digest changed");
+          const task = need(s.tasks, result.task_id, "Task");
+          if (task.status !== "review_ready" || Object.values(s.runs).some(run => run.task_id === task.task_id && run.status === "running")) throw new JournalError("conflict", "Task is not ready for acceptance");
+          if (Object.values(s.results).some(other => other.task_id === result.task_id && other.revision > result.revision && other.status !== "rejected")) throw new JournalError("conflict", "A newer result revision exists");
+        }
         if (result.status !== "recorded") throw new JournalError("conflict", `Result is ${result.status}`);
         const decision = str(p, "decision");
         if (decision !== "accepted" && decision !== "rejected") throw new JournalError("malformed", "Unknown decision");
