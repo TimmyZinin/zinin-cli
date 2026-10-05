@@ -1,3 +1,4 @@
+import { meaningfulDescription } from "./description";
 import type { SessionRow, MachineInfo } from "./types";
 
 /** Plain output never executes escape/control sequences from a source. */
@@ -30,7 +31,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
   const line = (row: SessionRow, target: number) => {
     const question = row.decision?.text ?? row.needs;
     const description = target === 1 ? question ?? row.task
-      : target === 2 ? row.lastSubmission?.text ?? row.task : row.task;
+      : target === 2 ? meaningfulDescription(row.lastSubmission?.text ?? "") ?? row.task : row.task;
     const idle = humanIdle(row.lastActivityMs, nowMs);
     const notes: string[] = [];
     if (row.lastSubmission && target !== 2) notes.push(`сдано раньше: ${short(row.lastSubmission.text)}`);

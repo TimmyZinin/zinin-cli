@@ -2,6 +2,7 @@
  * Pure inputs assembled by the live wrapper (texts + explicit observations);
  * never touches the filesystem itself.
  */
+import { cleanDescription, meaningfulDescription } from "../../sessions/description";
 import type { SessionRow, SessionActivity, SessionEvidence, DecisionEvidence } from "../../sessions/types";
 
 export interface NewaDirInput {
@@ -159,19 +160,19 @@ export function parseNewaDir(input: NewaDirInput): SessionRow {
   }
   // Skip boilerplate instructions; descriptions must identify actual work.
   const useful = (line: string) => !/^(?:[-*_]{3,}|исполнитель(?:\s+newa)?|read AGENTS\.md|communicate only|ты выполняешь только|с Тимом напрямую|вопросы\/блокеры|результаты и доказательства|перед существенным|не передавать в пакет|работай только|не читать auth|не выполнять отправки|никаких Telegram|не включать MCP|не запускать демоны|логи\/история|данные из сети|при недоступности модели|#?\s*REPORT-S0|#?\s*TO-S0)(?=\s|[.,:]|$)/i.test(line);
-  const meaningful = (text: string | null | undefined) => signalLines(text ?? null, input.nowMs).find(item => !item.heading && useful(item.line))?.line;
-  const withoutDate = (line: string) => line.replace(/^\[?\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?(?:Z| UTC)?)?\]?\s*[—–:|-]?\s*/, "");
-  const candidates: [string | undefined, string][] = [
+  const meaningful = (text: string | null | undefined) => signalLines(text ?? null, input.nowMs).filter(item => !item.heading).map(item => meaningfulDescription(item.line)).find(line => line && useful(line)) ?? undefined;
+  const reports = [...reportLines].reverse().map(item => ({...item, line: cleanDescription(item.line)}));
+  const candidates: [string | undefined | null, string][] = [
     [meaningful(input.taskText), input.taskFile ?? "TASK*.md"],
-    [[...reportLines].reverse().find(item => /^СТАТУС:\s*\S/i.test(item.line))?.line.replace(/^СТАТУС:\s*/i, ""), "REPORT-S0.md:status"],
-    [[...reportLines].reverse().filter(item => item.level === 2).map(item => withoutDate(item.line)).find(line => line && useful(line)), "REPORT-S0.md:heading"],
-    [[...reportLines].reverse().find(item => !item.heading && useful(item.line))?.line, "REPORT-S0.md:line"],
-    [meaningful(input.readmeText), "README.md"],
+    [reports.filter(item => /^СТАТУС:/i.test(item.line)).map(item => meaningfulDescription(item.line.replace(/^СТАТУС:\s*/i, ""))).find(line => line && useful(line)), "REPORT-S0.md:status"],
+    [reports.filter(item => item.level === 2).map(item => meaningfulDescription(item.line)).find(line => line && useful(line)), "REPORT-S0.md:heading"],
+    [reports.filter(item => !item.heading).map(item => meaningfulDescription(item.line)).find(line => line && useful(line)), "REPORT-S0.md:line"],
+    [(input.readmeText ?? "").split("\n").some(line => line.includes(input.name)) ? meaningful(input.readmeText) : null, "README.md"],
     [meaningful(input.toS0Text), "TO-S0.md"],
   ];
   const selected = candidates.find(([text]) => text?.trim());
-  const task = clip(selected?.[0]?.replace(/^[*_-]+\s*|[*_]+$/g, "").replace(/\s+/g, " ") ?? null);
-  const taskSource = task ? selected![1] : null;
+  const task = clip(selected?.[0]) ?? `${input.name} (по имени папки)`;
+  const taskSource = selected ? selected[1] : "directory-name";
   let contextPct: number | null = null;
   const haystack = `${toLines.at(-1)?.line ?? ""}\n${reportLines.at(-1)?.line ?? ""}`;
   const ctx = /context:\s*(\d+)%/i.exec(haystack);

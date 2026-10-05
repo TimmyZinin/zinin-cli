@@ -67,8 +67,8 @@ test("broken json files degrade to idle unknown, never throw", () => {
 });
 test("without TASK file description falls back to report content instead of a TO-S0 heading", () => {
   const row = parseNewaDir(base({ taskText: null, toS0Text: "# S0 → newa\n\nвсё в порядке\n" }));
-  expect(row.task).toBe("всё ок");
-  expect(row.taskSource).toBe("REPORT-S0.md:line");
+  expect(row.task).toBe(`${row.id} (по имени папки)`);
+  expect(row.taskSource).toBe("directory-name");
   expect(row.needs).toBeNull();
 });
 test("long lines are clipped to 120 chars", () => {

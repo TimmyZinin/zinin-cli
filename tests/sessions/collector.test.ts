@@ -196,12 +196,12 @@ test("collector skips empty TASK bodies and reports the exact selected file or b
   write(a,"TASK-a.md","# Задание\n```text\nПример\n```\n");
   write(a,"TASK-b.md","# Задание\nПроверяет второе задание");
   write(a,"REPORT-S0.md","СТАТУС: Запасное описание");
-  write(b,"README.md","# Проект\nПроверяет доставку");
+  write(b,"README.md","# Проект readme\nПроверяет доставку");
   symlinkSync(join(b,"README.md"),join(c,"README.md"));
   const result=collectNewaSnapshot({root:work,nowMs:NOW});
   expect(result.rows.find(r=>r.id==="described")).toMatchObject({task:"Проверяет второе задание",taskSource:"TASK-b.md"});
   expect(result.rows.find(r=>r.id==="readme")).toMatchObject({task:"Проверяет доставку",taskSource:"README.md"});
-  expect(result.rows.find(r=>r.id==="linked-readme")?.task).toBeNull();
+  expect(result.rows.find(r=>r.id==="linked-readme")?.taskSource).toBe("directory-name");
 });
 test("remote preserves description provenance and rejects invalid provenance or filtered snapshots", () => {
   const p=payload(); p.sessions[0].taskSource="TASK-example.md";

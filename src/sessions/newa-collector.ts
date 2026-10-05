@@ -106,8 +106,8 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
           const candidate = read(name);
           if (!candidate) continue;
           const description = parseNewaDir({ name: worker.name, taskText: candidate.text, metaText: null,
-            statusText: null, toS0Text: null, reportText: null, nowMs }).task;
-          if (description) { task = candidate; taskFile = name; break; }
+            statusText: null, toS0Text: null, reportText: null, nowMs }).taskSource;
+          if (description !== "directory-name") { task = candidate; taskFile = name; break; }
         }
         const times = [status, to, report, task].flatMap(f => f && f.mtimeMs <= nowMs ? [f.mtimeMs] : []);
         const row = parseNewaDir({ name: worker.name, metaText: meta?.text ?? null, statusText: status?.text ?? null,

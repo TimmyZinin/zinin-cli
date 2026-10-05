@@ -26,7 +26,7 @@ test("idle/missing description, stale running and unavailable source remain read
   const idle = row("idle", null, null, null);
   const old = addStatusEstimates(row(), '{"state":"running"}', NOW - 21 * 60_000, null, NOW);
   const out = renderOverview([idle, old], [{ machine: "mac", memFreeMb: null, diskFreeMb: null, available: false }], NOW);
-  expect(out).toContain("задача не указана"); expect(out).toContain("простаивает");
+  expect(out).toContain("sample (по имени папки)"); expect(out).toContain("простаивает");
   expect(out).toContain("возможно зависла"); expect(out).toContain("Мак: источник недоступен");
 });
 test("task description uses meaningful TASK content then latest report СТАТУС", () => {
@@ -42,11 +42,11 @@ test("description fallbacks preserve priority, dated heading cleanup and source"
   const parse = (reportText: string | null, readmeText: string | null = null, toS0Text: string | null = null) => parseNewaDir({name: "example", nowMs: NOW, statusText: null, metaText: null, taskText: null, reportText, readmeText, toS0Text});
   expect(parse("## 2026-10-05 — Исправление импорта\nПроверки прошли").task).toBe("Исправление импорта");
   expect(parse("## Заголовок\nСТАТУС: Проверяет экспорт").taskSource).toBe("REPORT-S0.md:status");
-  expect(parse("## Заголовок\nХвост").taskSource).toBe("REPORT-S0.md:heading");
+  expect(parse("## Проверяет документы\nХвост").taskSource).toBe("REPORT-S0.md:heading");
   expect(parse("Первая строка\nПоследняя работа").task).toBe("Последняя работа");
   expect(parse(null, "# Исполнитель newa\nТы выполняешь только поручение S0 в текущей рабочей папке.", "Проверяет архив").taskSource).toBe("TO-S0.md");
-  expect(parse(null, "# Проект\nПроверяет архив").taskSource).toBe("README.md");
-  expect(parse(null)).toMatchObject({task:null, taskSource:null});
+  expect(parse(null, "# Проект example\nПроверяет архив").taskSource).toBe("README.md");
+  expect(parse(null)).toMatchObject({task:"example (по имени папки)", taskSource:"directory-name"});
 });
 
 test("human idle duration uses minutes, hours and days at exact boundaries", () => {
@@ -100,4 +100,12 @@ test("running wins over old submission groups; empty blocks and footer agree wit
   expect(out.split("\n").at(-1)).toBe("Мак: 0 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
   const empty=renderOverview([],[],NOW);
   for(const title of ["Работают сейчас","Ждут решения владельца","Сданы","Не отвечают/неизвестно"]) expect(empty).toContain(title+"\nнет");
+});
+
+test("generic README and placeholder lines cannot masquerade as a task", () => {
+  const parse=(reportText:string|null,readmeText:string|null=null)=>parseNewaDir({name:"sample-worker",nowMs:NOW,metaText:null,statusText:null,taskText:null,toS0Text:null,reportText,readmeText});
+  expect(parse(null,"`start NAME - < TASK.md` и `say NAME` передают многострочный текст").taskSource).toBe("directory-name");
+  expect(parse("Итог:\n- 2026-10-05: …\n## Кратко").task).toBe("sample-worker (по имени папки)");
+  expect(parse("- 2026-10-05: Проверяет выгрузку данных").task).toBe("Проверяет выгрузку данных");
+  expect(parse(null,"# sample-worker\nПроверяет выгрузку данных").taskSource).toBe("README.md");
 });
