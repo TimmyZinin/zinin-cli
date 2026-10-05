@@ -5,8 +5,13 @@ import type { SessionRow, MachineInfo } from "./types";
 function short(value: string | null | undefined, max = 72): string {
   const plain = (value ?? "").replace(/\x1b\][^\x07]*(?:\x07|\x1b\\)/g, "")
     .replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "").replace(/[\x00-\x1f\x7f-\x9f]/g, " ").replace(/\s+/g, " ").trim();
-  const chars = Array.from(plain);
-  return chars.length > max ? chars.slice(0, max - 1).join("") + "…" : plain;
+  if (Bun.stringWidth(plain) <= max) return plain;
+  let clipped = "";
+  for (const char of plain) {
+    if (Bun.stringWidth(clipped + char) > max - 1) break;
+    clipped += char;
+  }
+  return clipped + "…";
 }
 const machineName = (value: string) => value === "mac" ? "Мак" : value === "newa" ? "newa" : "неизвестно";
 function group(row: SessionRow): number {
@@ -25,9 +30,16 @@ export function humanIdle(lastActivityMs: number | null, nowMs: number): string 
   if (minutes >= 60) return `${Math.floor(minutes / 60)} ч`;
   return `${minutes} мин`;
 }
-export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowMs: number, hiddenCount = 0): string {
+export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowMs: number, hiddenCount = 0, terminalWidth = process.stdout.columns || 100): string {
   const titles = ["Работают сейчас", "Ждут решения владельца", "Сданы", "Простаивают"];
   const blocks: string[][] = titles.map(() => []);
+  const width = Number.isFinite(terminalWidth) ? Math.max(40, Math.floor(terminalWidth)) : 100;
+  const machineWidth = Math.max(4, ...rows.map(row => Bun.stringWidth(machineName(row.machine))));
+  const idWidth = Math.max(1, Math.min(Math.floor(width * 0.32), 36, Math.max(1, ...rows.map(row => Bun.stringWidth(short(row.id, 64))))));
+  const timeWidth = Math.max(5, ...rows.map(row => Bun.stringWidth(humanIdle(row.lastActivityMs, nowMs))));
+  const descriptionWidth = Math.max(1, width - machineWidth - idWidth - timeWidth - 6);
+  const pad = (value: string, columns: number) => value + " ".repeat(Math.max(0, columns - Bun.stringWidth(value)));
+
   const line = (row: SessionRow, target: number) => {
     const question = row.decision?.text ?? row.needs;
     const description = target === 1 ? question ?? row.task
@@ -40,7 +52,9 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     if (target === 3 && row.overviewGroup?.value === "stopped" && row.stoppedReason?.value) notes.push(`ход остановлен: ${short(row.stoppedReason.value)}`);
     if (question && target !== 1) notes.push(`вопрос: ${short(question)}`);
     if (question && row.decision?.freshness === "stale") notes.push("вопрос из прошлого хода");
-    return `${machineName(row.machine)}  ${short(row.id, 64)}  ${short(description) || "задача не указана"}  — без движения ${idle}${notes.length ? " · " + notes.join(" · ") : ""}`;
+    const detail = `${short(description, 120) || (row.machine === "newa" ? `${short(row.id)} (по имени папки)` : "задача не указана")}${notes.length ? " · " + notes.join(" · ") : ""}`;
+    return [pad(machineName(row.machine), machineWidth), pad(short(row.id, idWidth), idWidth),
+      pad(short(detail, descriptionWidth), descriptionWidth), pad(idle, timeWidth)].join("  ").trimEnd();
   };
   for (const row of [...rows].sort((a, b) => (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
     const target = group(row);

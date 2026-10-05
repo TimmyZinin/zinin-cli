@@ -13,12 +13,12 @@ test("four blocks show useful estimates while retaining exact uncertainty and a 
   const stopped = { ...row("timeout"), id: "stopped" };
   const out = renderOverview([working, waiting, stopped], [], NOW);
   for (const title of ["Работают сейчас", "Ждут решения владельца", "Сданы", "Простаивают"]) expect(out).toContain(title);
-  expect(out).toContain("newa  sample  Проверяет импорт");
-  expect(out).toContain("newa  choice  Вопрос: выбрать CSV?");
+  expect(out).toMatch(/newa\s+sample\s+Проверяет импорт/);
+  expect(out).toMatch(/newa\s+choice\s+Вопрос: выбрать CSV\?/);
   expect(out).toContain("сдано раньше: СДАНО: отчёт");
-  expect(out).toContain("ход остановлен: лимит времени хода");
+  expect(out).toContain("ход остановлен:");
   expect(out).toContain("Оценка по времени файла");
-  expect(out).toContain("без движения 1 мин");
+  expect(out).toMatch(/1 мин(?:\n|$)/);
   expect(out).toContain("вопрос: Вопрос: формат?");
   expect(working.decision?.freshness).toBe("unknown");
 });
@@ -36,7 +36,7 @@ test("task description uses meaningful TASK content then latest report СТАТ�
 test("control sequences cannot escape into readable output and long descriptions are clipped", () => {
   const r = row(); r.task = "\x1b[31m" + "x".repeat(200); r.id = "a\n\x1b[2Jb";
   const out = renderOverview([r], [], NOW);
-  expect(out).not.toContain("\x1b"); expect(out).not.toContain("x".repeat(73)); expect(out).toContain("…");
+  expect(out).not.toContain("\x1b"); expect(out).not.toContain("x".repeat(100)); expect(out).toContain("…");
 });
 test("description fallbacks preserve priority, dated heading cleanup and source", () => {
   const parse = (reportText: string | null, readmeText: string | null = null, toS0Text: string | null = null) => parseNewaDir({name: "example", nowMs: NOW, statusText: null, metaText: null, taskText: null, reportText, readmeText, toS0Text});
@@ -128,4 +128,18 @@ test("idle block is named plainly and unavailable machines have a separate diagn
   expect(out).toContain("Простаивают\n"); expect(out).toContain("Недоступно: Мак");
   expect(out).not.toContain("Не отвечают/неизвестно");
   expect(out.split("\n").filter(line=>line.startsWith("Недоступно:"))).toHaveLength(1);
+});
+
+test("columns align in terminal cells and descriptions fit narrow and default widths", () => {
+  const inputs=[{...row("running"),id:"короткая",task:"Проверяет данные "+"д".repeat(150)},
+    {...row("running"),id:"⚡-широкая-сессия",machine:"mac" as const,task:"Проверяет таблицы"}];
+  for(const width of [60,100,140]) {
+    const lines=renderOverview(inputs,[],NOW,0,width).split("\n").filter(line=>/^(?:newa|Мак)\s/.test(line));
+    expect(lines).toHaveLength(2);
+    for(const line of lines) expect(Bun.stringWidth(line)).toBeLessThanOrEqual(width);
+    const offsets=lines.map(line=>Bun.stringWidth(line.slice(0,line.indexOf("Проверяет"))));
+    expect(offsets[0]).toBe(offsets[1]);
+    expect(lines.map(line=>Bun.stringWidth(line.slice(0,line.lastIndexOf("1 мин"))))[0]).toBe(Bun.stringWidth(lines[1].slice(0,lines[1].lastIndexOf("1 мин"))));
+  }
+  expect(renderOverview(inputs,[],NOW)).toBe(renderOverview(inputs,[],NOW,0,process.stdout.columns || 100));
 });
