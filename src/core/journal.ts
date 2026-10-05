@@ -13,14 +13,14 @@ export type Json = null | boolean | number | string | Json[] | { [key: string]: 
 
 export type TaskStatus = "draft" | "queued" | "active" | "review_ready" | "finalizing" | "done" | "blocked" | "cancelled";
 export type StepStatus = "pending" | "working" | "done" | "failed";
-export type RunStatus = "running" | "succeeded" | "failed" | "stopped";
+export type RunStatus = "running" | "succeeded" | "failed" | "stopped" | "interrupted";
 export type ResultStatus = "recorded" | "accepted" | "rejected";
 
 export interface AgentState { agent_id: string; role: string; engine: string; status: "active" | "retired" }
 export interface SessionState { created_seq?:number; session_id: string; agent_id: string; service: string; group: string; goal: string; status: "open" | "closed" }
 export interface TaskState { created_seq?:number; task_id: string; session_id: string; goal: string; criteria: string; status: TaskStatus; version: number }
 export interface StepState { step_id: string; task_id: string; owner: string; required: boolean; status: StepStatus }
-export interface RunState { created_seq?:number; run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
+export interface RunState { last_event_seq?:number; reconciliation?:{as:"lost"|"finished-unknown";reason:string;seq:number}; created_seq?:number; run_id: string; task_id: string; session_id: string; provider_session: string | null; status: RunStatus }
 export interface ResultState { created_seq?:number; text?:string; result_id: string; task_id: string; revision: number; digest: string; evidence_ref: string; status: ResultStatus }
 export interface CoreState {
   seq: number;
@@ -31,7 +31,7 @@ export interface CoreState {
   runs: Record<string, RunState>;
   results: Record<string, ResultState>;
 }
-export const journalEntryTypes = ["agent_registered", "session_opened", "session_closed", "task_created", "task_transitioned", "step_defined", "step_transitioned", "run_started", "run_finished", "result_recorded", "result_decided"] as const;
+export const journalEntryTypes = ["agent_registered", "session_opened", "session_closed", "task_created", "task_transitioned", "step_defined", "step_transitioned", "run_started", "run_finished", "run_reconciled", "result_recorded", "result_decided"] as const;
 export type JournalEntryType = typeof journalEntryTypes[number];
 export interface JournalCommand { command_id: string; type: JournalEntryType; payload: Json }
 export class JournalError extends Error {
@@ -157,7 +157,11 @@ export class CoreJournal {
     return state;
   }
   /** Read-only projection for status/ps: never creates tables, files or snapshots. */
-  static readOnly(path:string):CoreState {
+  static readOnly(path:string):CoreState {return this.readProjection(path,p=>p.recover());}
+  static readEvents(path:string):{seq:number;type:string;command_id:string;payload:Record<string,Json>;recorded_at:string}[] {
+    return this.readProjection(path,p=>(p.db.query("SELECT seq,type,command_id,payload,recorded_at FROM journal_entries ORDER BY seq").all() as any[]).map(row=>({...row,payload:JSON.parse(row.payload)})));
+  }
+  private static readProjection<T>(path:string,read:(probe:CoreJournal)=>T):T {
     const probe=Object.create(CoreJournal.prototype) as CoreJournal;
     const hasWal=existsSync(path+"-wal");
     if(hasWal) {
@@ -173,7 +177,7 @@ export class CoreJournal {
       : new Database(pathToFileURL(path).href+"?mode=ro&immutable=1",0x41);
     try {
       probe.db.exec("PRAGMA busy_timeout=1000");
-      const state=probe.db.transaction(()=>probe.recover())();
+      const state=probe.db.transaction(()=>read(probe))();
       if(!hasWal&&existsSync(path+"-wal"))throw new JournalError("conflict","Journal changed while reading; retry");
       return state;
     } finally {probe.db.close();}
@@ -198,6 +202,7 @@ export class CoreJournal {
       case "step_defined": str(payload, "step_id"); str(payload, "task_id"); str(payload, "owner"); bool(payload, "required"); break;
       case "step_transitioned": str(payload, "step_id"); if (!stepStatuses.includes(str(payload, "to") as StepStatus)) throw new JournalError("malformed", "Unknown step status"); break;
       case "run_started": str(payload, "run_id"); str(payload, "task_id"); str(payload, "session_id"); break;
+      case "run_reconciled": str(payload,"run_id");str(payload,"as");str(payload,"reason");int(payload,"expected_seq");break;
       case "run_finished": str(payload, "run_id"); if (!(str(payload, "outcome") in runOutcomes)) throw new JournalError("malformed", "Unknown outcome"); break;
       case "result_recorded": str(payload, "result_id"); str(payload, "task_id"); int(payload, "revision"); str(payload, "digest"); str(payload, "evidence_ref"); break;
       case "result_decided":
@@ -276,13 +281,21 @@ export class CoreJournal {
         const running = Object.values(s.runs).some(r => r.task_id === task.task_id && r.status === "running");
         if (running) throw new JournalError("conflict", "One running run per task (single writer, PRD §2)");
         const provider = p.provider_session;
-        s.runs[id] = { created_seq:s.seq+1, run_id: id, task_id: task.task_id, session_id: session.session_id, provider_session: typeof provider === "string" ? provider : null, status: "running" };
+        s.runs[id] = { last_event_seq:s.seq+1, created_seq:s.seq+1, run_id: id, task_id: task.task_id, session_id: session.session_id, provider_session: typeof provider === "string" ? provider : null, status: "running" };
         break;
       }
       case "run_finished": {
         const run = need(s.runs, str(p, "run_id"), "Run");
         if (run.status !== "running") throw new JournalError("conflict", `Run is ${run.status}`);
-        run.status = runOutcomes[str(p, "outcome")];
+        run.status = runOutcomes[str(p, "outcome")];run.last_event_seq=s.seq+1;
+        break;
+      }
+      case "run_reconciled": {
+        const run=need(s.runs,str(p,"run_id"),"Run"),task=need(s.tasks,run.task_id,"Task");
+        if(task.status!=="active"||run.status==="interrupted"||Object.values(s.runs).some(other=>other.task_id===run.task_id&&(other.created_seq??0)>(run.created_seq??0)))throw new JournalError("conflict","Сверять можно только последнюю незавершённую попытку задачи");
+        if(int(p,"expected_seq")!==(run.last_event_seq??run.created_seq))throw new JournalError("conflict","Событие запуска изменилось; повторите предварительный просмотр");
+        const as=str(p,"as");if(!["lost","finished-unknown"].includes(as))throw new JournalError("malformed","Нужен --as lost|finished-unknown");
+        run.reconciliation={as:as as "lost"|"finished-unknown",reason:str(p,"reason"),seq:s.seq+1};run.status="interrupted";run.last_event_seq=s.seq+1;
         break;
       }
       case "result_recorded": {

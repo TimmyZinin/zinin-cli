@@ -22,11 +22,16 @@ export class WorkScreen {
   else if(key.kind==="enter"&&this.draft.trim()){
    try{
     const {command,options}=parseWorkArgs(splitWorkCommand(this.draft.replace(/^\//,"")));
-    if(!["session","task","run","accept","stop","status"].includes(command)||options.journal)throw Error("Используйте session/task/run/accept/stop/status в текущем журнале");
+    if(!["session","task","run","accept","stop","status","reconcile"].includes(command)||options.journal)throw Error("Используйте session/task/run/accept/stop/status в текущем журнале");
     if(this.preview!==this.draft){
      this.addressed=resolveWorkOptions(this.service.state(),command,options);
+     if(command==="reconcile"){
+      const preview=this.service.reconcilePreview(this.addressed.run);
+      this.addressed["expected-seq"]=String(preview.expected_seq);this.addressed.confirm="true";
+      this.message=`Сессия ${preview.session_id} · задача ${preview.task_id}: ${preview.goal} · последнее событие #${preview.last_event.seq} ${preview.last_event.type} · ${preview.warning}. Enter ещё раз — сверить.`;
+     }
      this.preview=this.draft;
-     this.message=`Адресат: ${Object.entries(this.addressed).filter(([key])=>["session","task","result","run","id"].includes(key)).map(([key,value])=>`${key}=${value}`).join("; ")||"текущий журнал / новая сессия"}. Enter ещё раз — выполнить; изменение строки отменяет подтверждение.`;
+     if(command!=="reconcile")this.message=`Адресат: ${Object.entries(this.addressed).filter(([key])=>["session","task","result","run","id"].includes(key)).map(([key,value])=>`${key}=${value}`).join("; ")||"текущий журнал / новая сессия"}. Enter ещё раз — выполнить; изменение строки отменяет подтверждение.`;
     }else{
      this.draft="";this.preview=null;this.message="Команда выполняется";
      let pending:Promise<void>;

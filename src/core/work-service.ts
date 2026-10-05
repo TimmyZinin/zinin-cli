@@ -21,6 +21,16 @@ export class WorkCommandService {
   }
   get journalPath():string {return this.paths.journal;}
   state():CoreState {return CoreJournal.readOnly(this.paths.journal);}
+  events(){return CoreJournal.readEvents(this.paths.journal);}
+  reconcilePreview(runId:string){
+    const state=this.state(),run=state.runs[runId];if(!run)throw new JournalError("not_found","Запуск не найден");
+    const event=this.events().filter(e=>e.payload.run_id===runId).at(-1);
+    if(!event)throw new JournalError("corrupt","Нет события запуска");
+    return {run_id:runId,task_id:run.task_id,session_id:run.session_id,goal:state.tasks[run.task_id].goal,last_event:event,expected_seq:event.seq,warning:"процесс мог остаться жив — проверьте вручную"};
+  }
+  reconcile(commandId:string,runId:string,as:string,reason:string,expectedSeq:number,now:string){
+    return this.withJournal(journal=>journal.submit({command_id:commandKey(commandId),type:"run_reconciled",payload:{run_id:runId,as,reason,expected_seq:expectedSeq}},now));
+  }
   session(commandId:string, sessionId:string, goal:string, now:string) {
     const key=commandKey(commandId);
     return this.withJournal(journal=>{
