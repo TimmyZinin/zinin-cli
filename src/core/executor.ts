@@ -11,7 +11,7 @@ import { CoreJournal, JournalError } from "./journal";
 import { LeaseRegistry } from "./leases";
 
 export interface EngineLike {
-  run(prompt: string, opts?: { timeoutMs?: number; cwd?: string }): Promise<{ text: string; provider_session: string | null }>;
+  run(prompt: string, opts?: { timeoutMs?: number; cwd?: string; signal?: AbortSignal }): Promise<{ text: string; provider_session: string | null }>;
 }
 export interface CycleSummary {
   task_id: string; run_id: string; steps_done: string[]; result_id: string | null;
@@ -45,7 +45,8 @@ export class LocalExecutor {
     return task ? this.runTask(task.task_id, now) : null;
   }
   /** Explicit target only: no fallback to another queued task or session. */
-  async runTask(taskId: string, now: string): Promise<CycleSummary | null> {
+  async runTask(taskId: string, now: string, options: {signal?:AbortSignal; cwd?:string; onRun?:(id:string)=>void} = {}): Promise<CycleSummary | null> {
+    if(options.signal?.aborted) throw new Error("run cancelled");
     const state = this.journal.refresh();
     const task = state.tasks[taskId];
     if (!task) throw new JournalError("not_found", `Task ${taskId} missing`);
@@ -66,6 +67,7 @@ export class LocalExecutor {
         leaseEpoch = lease.epoch;
         this.cmd(`exec-${taskId}-run-${attempt}`, "run_started", { run_id, task_id: taskId, session_id: session.session_id, provider_session: this.engineName }, now);
       }
+      options.onRun?.(run_id);
       let steps = Object.values(this.journal.state.steps).filter(s => s.task_id === taskId).sort((a, b) => a.step_id.localeCompare(b.step_id));
       if (!steps.length) {
         this.cmd(`exec-${taskId}-plan`, "step_defined", { step_id: `${taskId}-deliver`, task_id: taskId, owner: "local-executor", required: true }, now);
@@ -79,14 +81,14 @@ export class LocalExecutor {
         if (this.journal.state.steps[step.step_id].status === "working") {
           try {
             if (this.engine) {
-              const produced = await this.engine.run(`Задача: ${task.goal}\nШаг: ${step.step_id}\nВерни краткий итог шага одним абзацем.`, { timeoutMs: 120_000 });
+              const produced = await this.engine.run(`Задача: ${task.goal}\nШаг: ${step.step_id}\nВерни краткий итог шага одним абзацем.`, { timeoutMs: 120_000, cwd:options.cwd, signal:options.signal });
               provider_session = provider_session ?? produced.provider_session;
               outputs.push(produced.text);
             } else {
               outputs.push(performStep(task.goal, step.step_id));
             }
           } catch (error) {
-            this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: "failed" }, now);
+            this.cmd(`exec-${taskId}-finish-${attempt}`, "run_finished", { run_id, outcome: options.signal?.aborted ? "stopped" : "failed" }, now);
             return { task_id: taskId, run_id, steps_done: done, result_id: null, provider_session, error: (error as Error).message };
           }
           this.cmd(`exec-${taskId}-${step.step_id}-done`, "step_transitioned", { step_id: step.step_id, to: "done" }, now);

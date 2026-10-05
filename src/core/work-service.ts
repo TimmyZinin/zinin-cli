@@ -10,6 +10,7 @@ function commandKey(id:string, phase="request"):string {
   return `work:${createHash("sha256").update(id).digest("hex")}:${phase}`;
 }
 export class WorkCommandService {
+  private owned = new Map<string, AbortController>();
   constructor(private paths: WorkPaths, options: {create?:boolean} = {}) {
     if (!existsSync(paths.journal) && !options.create) throw new JournalError("not_found", "Journal missing; explicit init required");
     if(options.create) this.withJournal(journal => journal.state);
@@ -29,13 +30,25 @@ export class WorkCommandService {
   task(commandId:string, sessionId:string, taskId:string, goal:string, criteria:string, now:string) {
     return this.withJournal(journal=>journal.submit({command_id:commandKey(commandId),type:"task_created",payload:{session_id:sessionId,task_id:taskId,goal,criteria}},now));
   }
-  async run(taskId:string, now:string, selection:EngineSelection) {
+  async run(taskId:string, now:string, selection:EngineSelection, options:{cwd?:string;signal?:AbortSignal}={}) {
     if(!selection || !["local-demo","engine"].includes(selection.kind)) throw new JournalError("malformed","Explicit engine selection required");
     if(selection.kind==="engine" && (!selection.name.trim() || !selection.adapter)) throw new JournalError("malformed","Engine name and adapter required");
     // No provider selection, fallback, discovery or network operation here.
     const executor=new LocalExecutor(this.paths.journal,this.paths.leases,selection.kind==="engine" ? selection.adapter : undefined,selection.kind==="engine" ? selection.name : "local-demo");
-    try {return await executor.runTask(taskId,now);} finally {executor.close();}
+    const abort=new AbortController(); let runId:string|undefined;
+    const cancel=()=>abort.abort(); options.signal?.addEventListener("abort",cancel,{once:true});
+    if(options.signal?.aborted) cancel();
+    try {return await executor.runTask(taskId,now,{signal:abort.signal,cwd:options.cwd,onRun:id=>{runId=id;this.owned.set(id,abort);}});}
+    finally {if(runId) this.owned.delete(runId);options.signal?.removeEventListener("abort",cancel);executor.close();}
   }
+  stop(runId:string) {
+    const owned=this.owned.get(runId);
+    if(owned) {owned.abort();return {run_id:runId,stop_requested:true,message:"Остановка своего запуска запрошена"};}
+    const run=this.state().runs[runId];
+    if(!run) throw new JournalError("not_found","Запуск не найден");
+    return {run_id:runId,stop_requested:false,message:run.status!=="running" ? "Запуск уже завершён; сигнал не отправлен" : "Владение неизвестно, процесс не остановлен"};
+  }
+  stopOwned() {for(const owned of this.owned.values()) owned.abort();}
   accept(commandId:string, resultId:string, revision:number, digest:string, now:string) {
     return this.withJournal(journal=>{
       const receipt=journal.submit({command_id:commandKey(commandId),type:"result_decided",payload:{result_id:resultId,decision:"accepted",decided_by:"user",expected_revision:revision,expected_digest:digest}},now);
