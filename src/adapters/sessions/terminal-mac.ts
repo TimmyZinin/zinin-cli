@@ -154,11 +154,13 @@ export function parseLaunchDirs(psText: string, lsofText: string): Map<string, s
 export function parseTerminalWindows(
   text: string,
   onScreen?: (id: string, screen: { statusline: string; cwd: string | null; spinning: boolean; busy: boolean; tty: string | null }) => void,
+  options: { tabs?: boolean } = {},
 ): SessionRow[] {
   const rows: SessionRow[] = [];
   for (const record of text.split(RECORD_SEP)) {
     const fields = record.replace(/^\n+/, "").split("\t");
     const index = (fields[0] ?? "").trim();
+    if (index === "__TAB_ERROR__") continue;
     const title = (fields[1] ?? "").trim();
     if (!title) continue; // window without tabs (closed) — skip the phantom
     // Trailing metadata fields: busy ("true"/"false") and tty ("ttysNNN").
@@ -192,7 +194,7 @@ export function parseTerminalWindows(
     if (status.waiting || /What should .*do instead/i.test(tail)) state = "waiting-tim";
     const interrupted = picked.tail.filter(l => /Interrupted/.test(l)).join(" ");
     const cwd = /(?:^|\s)(Users\/\S+?)\s*[|▸]/.exec(picked.statusline)?.[1] ?? null;
-    const id = `mac-win-${index || rows.length + 1}`;
+    const id = options.tabs ? (tty ? `mac-tab-${tty}` : `mac-tab-${index || rows.length + 1}`) : `mac-win-${index || rows.length + 1}`;
     onScreen?.(id, { statusline: picked.statusline, cwd, spinning: picked.spinning, busy, tty });
     rows.push({
       id,
@@ -200,6 +202,7 @@ export function parseTerminalWindows(
       engine,
       model,
       task,
+      taskSource: task ? "terminal-title" : null,
       state,
       lastActivityMs: null,
       stuckOn: status.stuckOn ?? (interrupted ? clip(interrupted) : null),
@@ -210,4 +213,12 @@ export function parseTerminalWindows(
     });
   }
   return rows;
+}
+
+/** Error records are diagnostics, never fabricated session rows. */
+export function parseTerminalWarnings(text: string): string[] {
+  return text.split(RECORD_SEP).flatMap(record => {
+    const fields = record.replace(/^\n+/, "").split("\t");
+    return fields[0] === "__TAB_ERROR__" ? [`Terminal ${fields[1] || "unknown"}: ${fields.slice(2).join(" ").slice(0, 512)}`] : [];
+  }).slice(0, 100);
 }

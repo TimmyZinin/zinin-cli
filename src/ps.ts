@@ -1,6 +1,6 @@
-/** E3 live collector — the thin wrapper around the pure adapters.
- * Reads-only: osascript/tmux/ssh/ps/file mtimes. One failing source warns on
- * stderr and never aborts the overview. Mac specifics per S0 live test
+/** E4 live collector — bounded, injectable, independent sources.
+ * Newa reads only allowed top-level worker files; no tmux socket or turns.
+ * Source failures become diagnostics and never discard another source. Mac specifics per S0 live test
  * (docs e3-live-findings 26.09): ASCII-9/30 separators, last 64 KiB of
  * transcripts, only files touched within the window, transcripts enrich
  * windows instead of spawning rows.
@@ -9,18 +9,25 @@ import { platform, homedir } from "node:os";
 import { existsSync, readFileSync, readdirSync, statSync, openSync, readSync, closeSync } from "node:fs";
 import { join } from "node:path";
 import type { SessionRow, MachineInfo } from "./sessions/types";
-import { parseTerminalWindows, parseLaunchDirs } from "./adapters/sessions/terminal-mac";
+import { TERMINAL_TABS_SCRIPT } from "./adapters/sessions/terminal-script";
+import { parseTerminalWindows, parseTerminalWarnings, parseLaunchDirs } from "./adapters/sessions/terminal-mac";
 import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claude-transcript";
-import { parseNewaDir } from "./adapters/sessions/newa-workdir";
-import { parseTmuxSessions } from "./adapters/sessions/tmux";
-import { parseMeminfo, parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/machine";
+import { collectNewaSnapshot, type SourceSnapshot, type NewaCollectorOptions } from "./sessions/newa-collector";
+import { runCommand, type CommandRunner } from "./sessions/command";
+import { parseRemoteSnapshot } from "./sessions/remote";
+import { spawnSync } from "node:child_process";
+import { parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/machine";
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
-import { renderTable, renderJson } from "./sessions/render";
+import { renderJson } from "./sessions/render";
+import { filterRecent, parseSince } from "./sessions/freshness";
+import { renderOverview } from "./sessions/overview";
 import { enrichRowsWithTranscripts, windowProjectKey, type SlugFacts, type WindowScreen } from "./sessions/enrich";
 import { parsePsConfig } from "./sessions/psconfig";
 
 export interface PsOptions {
+  all?: boolean;
+  sinceMs?: number;
   watchSeconds: number | null;
   json: boolean;
   stuckMinutes: number | undefined;
@@ -83,56 +90,30 @@ export function collectTranscriptFacts(root: string, nowMs: number): Map<string,
   }
   return facts;
 }
-async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInfo> {
+async function collectMac(rows: SessionRow[], nowMs: number, run: CommandRunner, signal: AbortSignal): Promise<MachineInfo> {
+  let available = false;
   let windowsRaw = "";
   try {
-    // Verified on Mac (S0, 26.09): `tab` inside tell is the Terminal class, so
-    // separators are built from ASCII codes before the tell block.
-    const script = [
-      "set tabChar to (ASCII character 9)",
-      "set recSep to (ASCII character 30)",
-      'tell application "Terminal"',
-      '  set out to ""',
-      "  repeat with w in windows",
-      "    if (count of tabs of w) is 0 then", // phantom window after close
-      "      set out to out & recSep",
-      "    else",
-      '      set out to out & (id of w as text) & tabChar & (name of w) & tabChar',
-      "      try",
-      "        set out to out & (contents of selected tab of w)",
-      "      end try",
-      "      set out to out & tabChar & ((busy of selected tab of w) as text)",
-      "      try", // К4-2: tty when the dictionary exposes it; empty otherwise
-      "        set out to out & tabChar & (tty of selected tab of w)",
-      "      on error",
-      "        set out to out & tabChar",
-      "      end try",
-      "      set out to out & recSep",
-      "    end if",
-      "  end repeat",
-      "  return out",
-      "end tell",
-    ].join("\n");
-    const proc = Bun.spawn(["osascript", "-e", script], { stdout: "pipe", stderr: "pipe" });
-    windowsRaw = await new Response(proc.stdout).text();
+    windowsRaw = await run(["osascript", "-e", TERMINAL_TABS_SCRIPT], { signal });
+    available = true;
   } catch (error) {
     warn(`mac windows unavailable: ${(error as Error).message}`);
   }
   const screens = new Map<string, WindowScreen>();
-  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen))) {
+  for (const row of parseTerminalWindows(windowsRaw, (id, screen) => screens.set(id, screen), { tabs: true })) {
     rows.push(row);
   }
   // К4-2: engine-process launch directories by tty (ps + lsof, reads-only).
   // The launch dir is the primary window↔transcript key; status-line cwd
   // (already on the screens) is only the fallback.
   try {
-    const psText = Bun.spawnSync(["ps", "-Ao", "pid,tty,args"], { stdout: "pipe" }).stdout.toString();
+    const psText = await run(["ps", "-Ao", "pid,tty,args"], { signal });
     const enginePids = [...psText.matchAll(/^\s*(\d+)\s+(ttys\d+)\s+.*(?:claude|kimi|codex)/gm)].map(m => Number(m[1]));
     let launchDirs = new Map<string, string>();
     if (enginePids.length) {
       const args = ["-a", "-d", "cwd", "-Fn"];
       for (const pid of enginePids) args.push("-p", String(pid));
-      const lsofText = Bun.spawnSync(["lsof", ...args], { stdout: "pipe" }).stdout.toString();
+      const lsofText = await run(["lsof", ...args], { signal });
       launchDirs = parseLaunchDirs(psText, lsofText);
     }
     for (const [id, screen] of screens) {
@@ -155,78 +136,23 @@ async function collectMac(rows: SessionRow[], nowMs: number): Promise<MachineInf
   let mem: number | null = null;
   let disk: number | null = null;
   try {
-    const mp = Bun.spawnSync(["memory_pressure"], { stdout: "pipe" });
-    const pct = parseMemoryPressure(mp.stdout.toString());
+    const mp = await run(["memory_pressure"], { signal });
+    const pct = parseMemoryPressure(mp);
     if (pct !== null) {
-      const total = Bun.spawnSync(["sysctl", "-n", "hw.memsize"], { stdout: "pipe" });
-      const totalMb = Number(total.stdout.toString().trim()) / 1024 / 1024;
+      const total = await run(["sysctl", "-n", "hw.memsize"], { signal });
+      const totalMb = Number(total.trim()) / 1024 / 1024;
       if (Number.isFinite(totalMb) && totalMb > 0) mem = Math.round((totalMb * pct) / 100);
     }
   } catch { /* memory_pressure unavailable — fall through */ }
   if (mem === null) try {
-    const vmStat = Bun.spawnSync(["vm_stat"], { stdout: "pipe" });
-    mem = parseVmStat(vmStat.stdout.toString());
+    const vmStat = await run(["vm_stat"], { signal });
+    mem = parseVmStat(vmStat);
   } catch { /* vm_stat unavailable — nulls are fine */ }
   try {
-    const df = Bun.spawnSync(["df", "-k", "/"], { stdout: "pipe" });
-    disk = parseDf(df.stdout.toString());
+    const df = await run(["df", "-k", "/"], { signal });
+    disk = parseDf(df);
   } catch { /* df unavailable */ }
-  return { machine: "mac", memFreeMb: mem, diskFreeMb: disk, version: codeVersion() };
-}
-function readIfExists(path: string): string | null {
-  try { return readFileSync(path, "utf8"); } catch { return null; }
-}
-async function collectNewa(rows: SessionRow[], nowMs: number): Promise<MachineInfo | null> {
-  const root = "/home/agents/work";
-  if (!existsSync(root)) return null; // honest absence — no mislabeled footer
-  try {
-    for (const name of readdirSync(root)) {
-      const dir = join(root, name);
-      let turnMtimes: number[] = [];
-      let taskText: string | null = null;
-      try {
-        const turns = join(dir, "turns");
-        if (existsSync(turns)) {
-          turnMtimes = readdirSync(turns).map(f => statSync(join(turns, f)).mtimeMs);
-        }
-      } catch { /* turns unreadable — empty activity */ }
-      try {
-        const taskFile = readdirSync(dir).find(f => /^TASK.*\.md$/i.test(f) && !f.startsWith("._"));
-        if (taskFile) taskText = readIfExists(join(dir, taskFile));
-      } catch { /* no task file */ }
-      let hasMarker = false;
-      try {
-        hasMarker = existsSync(join(dir, "meta.json")) || existsSync(join(dir, "status.json")) || turnMtimes.length > 0;
-      } catch { /* unreadable */ }
-      if (!hasMarker) continue;
-      rows.push(parseNewaDir({
-        name,
-        metaText: readIfExists(join(dir, "meta.json")),
-        statusText: readIfExists(join(dir, "status.json")),
-        toS0Text: readIfExists(join(dir, "TO-S0.md")),
-        reportText: readIfExists(join(dir, "REPORT-S0.md")),
-        taskText,
-        turnMtimesMs: turnMtimes,
-        nowMs,
-      }));
-    }
-  } catch (error) {
-    warn(`work root ${root} unavailable: ${(error as Error).message}`);
-  }
-  try {
-    const proc = Bun.spawnSync(["tmux", "-S", "/run/apparat-agents/tmux.sock", "ls"], { stdout: "pipe", stderr: "pipe" });
-    if (proc.exitCode === 0) for (const row of parseTmuxSessions(proc.stdout.toString(), nowMs)) rows.push(row);
-  } catch (error) {
-    warn(`tmux unavailable: ${(error as Error).message}`);
-  }
-  let mem: number | null = null;
-  let disk: number | null = null;
-  try { mem = parseMeminfo(readFileSync("/proc/meminfo", "utf8")); } catch { /* no proc */ }
-  try {
-    const df = Bun.spawnSync(["df", "-k", "/"], { stdout: "pipe" });
-    disk = parseDf(df.stdout.toString());
-  } catch { /* df unavailable */ }
-  return { machine: "newa", memFreeMb: mem, diskFreeMb: disk, version: codeVersion() };
+  return { machine: "mac", memFreeMb: mem, diskFreeMb: disk, version: codeVersion(), available, warnings: parseTerminalWarnings(windowsRaw) };
 }
 /** N-5: from the Mac, newa rows come over the same ssh lock as remote.py get.
  * Default reaches the pinned bun and the deployed checkout on newa by absolute
@@ -247,58 +173,62 @@ function resolveNewaCmd(): string[] {
   } catch { /* no config file — default below */ }
   return DEFAULT_NEWA_CMD;
 }
-async function collectRemoteNewa(rows: SessionRow[], machines: MachineInfo[]): Promise<void> {
-  try {
-    const proc = Bun.spawn(resolveNewaCmd(), { stdout: "pipe", stderr: "pipe" });
-    const [stdout, stderr, code] = [await new Response(proc.stdout).text(), await new Response(proc.stderr).text(), await proc.exited];
-    if (code !== 0) throw new Error(stderr.trim().split("\n").pop() ?? `exit ${code}`);
-    const parsed = JSON.parse(stdout) as { sessions?: SessionRow[]; machines?: MachineInfo[]; version?: string };
-    for (const row of parsed.sessions ?? []) rows.push(row);
-    // К4-1: keep the remote side's code version even when the remote half
-    // predates the machines[].version field (older newa → top-level version).
-    for (const machine of parsed.machines ?? []) {
-      if (machine.machine === "newa" && !machine.version && parsed.version) machine.version = parsed.version;
-      machines.push(machine);
-    }
-  } catch (error) {
-    warn(`newa через ssh недоступна: ${(error as Error).message}`);
-    machines.push({ machine: "newa", memFreeMb: null, diskFreeMb: null });
-  }
+export interface CollectorDependencies {
+  host?: "mac" | "newa" | "unknown";
+  now?: () => number;
+  run?: CommandRunner;
+  remoteCommand?: string[];
+  newaOptions?: NewaCollectorOptions;
+  timeoutMs?: number;
+  mac?: (nowMs: number, signal: AbortSignal) => Promise<SourceSnapshot>;
+  newa?: (nowMs: number, signal: AbortSignal) => Promise<SourceSnapshot>;
+  remote?: (nowMs: number, signal: AbortSignal) => Promise<SourceSnapshot>;
 }
-async function collect(opts: PsOptions): Promise<{ rows: SessionRow[]; machines: MachineInfo[]; nowMs: number }> {
-  const rows: SessionRow[] = [];
-  const machines: MachineInfo[] = [];
-  const host = platform() === "darwin" ? "mac" : existsSync("/home/agents/work") ? "newa" : "unknown";
-  const nowMs = Date.now();
-  // N-5: on the Mac "all" means both tables in one run; on newa the Mac half
-  // is unreachable, so "all" stays local there.
-  const wantMac = (opts.sources === "mac" || opts.sources === "all") && host !== "newa";
-  const wantNewa = opts.sources === "newa" || opts.sources === "all";
-  if (wantMac) machines.push(await collectMac(rows, nowMs));
-  if (wantNewa) {
-    if (host === "newa") {
-      const machine = await collectNewa(rows, nowMs);
-      if (machine) machines.push(machine);
-      else machines.push({ machine: "newa", memFreeMb: null, diskFreeMb: null });
-    } else {
-      await collectRemoteNewa(rows, machines);
-    }
-  }
-  const merged = applyDerivedStates(mergeRows(rows), nowMs, opts.stuckMinutes);
-  return { rows: merged, machines, nowMs };
+async function boundedSource(machine: string, source: (signal: AbortSignal) => Promise<SourceSnapshot>, timeoutMs: number, parent?: AbortSignal): Promise<SourceSnapshot> {
+  const controller = new AbortController();
+  let rejectStop!: (error: Error) => void;
+  const stopped = new Promise<never>((_, reject) => { rejectStop = reject; });
+  const abort = () => { controller.abort(); rejectStop(new Error("source cancelled")); };
+  parent?.addEventListener("abort", abort, { once: true });
+  if (parent?.aborted) abort();
+  const timer = setTimeout(abort, timeoutMs);
+  try { return await Promise.race([Promise.resolve().then(() => { if (controller.signal.aborted) throw new Error("cancelled"); return source(controller.signal); }), stopped]); }
+  catch { return { rows: [], machine: { machine, memFreeMb: null, diskFreeMb: null, available: false, warnings: ["source unavailable or timed out"] } }; }
+  finally { clearTimeout(timer); parent?.removeEventListener("abort", abort); }
+}
+export async function collect(opts: PsOptions, deps: CollectorDependencies = {}, signal?: AbortSignal): Promise<{ rows: SessionRow[]; machines: MachineInfo[]; nowMs: number; hidden_count: number }> {
+  const nowMs = (deps.now ?? Date.now)();
+  const host = deps.host ?? (platform() === "darwin" ? "mac" : existsSync("/home/agents/work") ? "newa" : "unknown");
+  const run = deps.run ?? runCommand;
+  const timeoutMs = deps.timeoutMs ?? 15_000;
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new Error("invalid source timeout");
+  const mac = deps.mac ?? (async (now: number, abort: AbortSignal) => {
+    const rows: SessionRow[] = [];
+    const machine = await collectMac(rows, now, run, abort);
+    return { rows, machine };
+  });
+  const newa = deps.newa ?? (async (now: number, abort: AbortSignal) => {
+    const snapshot = collectNewaSnapshot({ ...deps.newaOptions, nowMs: now, signal: abort });
+    snapshot.machine.version = codeVersion();
+    return snapshot;
+  });
+  const remote = deps.remote ?? (async (_now: number, abort: AbortSignal) =>
+    parseRemoteSnapshot(await run([...(deps.remoteCommand ?? resolveNewaCmd()), "--all"], { signal: abort })));
+  const sources: Promise<SourceSnapshot>[] = [];
+  if ((opts.sources === "mac" || opts.sources === "all") && host !== "newa") sources.push(boundedSource("mac", abort => mac(nowMs, abort), timeoutMs, signal));
+  if (opts.sources === "newa" || opts.sources === "all") sources.push(boundedSource("newa", abort => (host === "newa" ? newa : remote)(nowMs, abort), timeoutMs, signal));
+  const snapshots = await Promise.all(sources);
+  return { ...filterRecent(applyDerivedStates(mergeRows(snapshots.flatMap(s => s.rows)), nowMs, opts.stuckMinutes), nowMs, opts.all, opts.sinceMs), machines: snapshots.map(s => s.machine), nowMs };
 }
 function print(out: string): void {
   process.stdout.write(out + "\n");
 }
-/** K3-3/К4-1: the `--json` payload says which code produced each half
- * (git sha when readable, package version otherwise). `safe.directory=*`
- * because deployed checkouts are often owned by another user — plain
- * `git rev-parse` dies with "detected dubious ownership" there. */
+/** Code version lookup has a bounded foreground git invocation. */
 export function codeVersion(dir = import.meta.dir): string {
   try {
-    const proc = Bun.spawnSync(["git", "-c", "safe.directory=*", "-C", dir, "rev-parse", "--short", "HEAD"], { stdout: "pipe", stderr: "pipe" });
-    const sha = proc.stdout.toString().trim();
-    if (proc.exitCode === 0 && sha) return `git-${sha}`;
+    const proc = spawnSync("git", ["-C", dir, "rev-parse", "--short", "HEAD"], { timeout: 2000, maxBuffer: 4096, encoding: "utf8" });
+    const sha = (proc.stdout ?? "").trim();
+    if (proc.status === 0 && sha) return `git-${sha}`;
   } catch { /* not a git checkout */ }
   try {
     const pkg = JSON.parse(readFileSync(join(dir, "..", "package.json"), "utf8")) as { version?: string };
@@ -306,14 +236,16 @@ export function codeVersion(dir = import.meta.dir): string {
   } catch { /* no package.json */ }
   return "unknown";
 }
-export async function psMain(argv: string[]): Promise<void> {
+export async function psMain(argv: string[], deps: CollectorDependencies = {}): Promise<void> {
   const opts: PsOptions = { watchSeconds: null, json: false, stuckMinutes: undefined, sources: "all" };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--json") opts.json = true;
+    else if (arg === "--all") opts.all = true;
+    else if (arg === "--since") opts.sinceMs = parseSince(argv[++i]);
     else if (arg === "--watch") {
       const next = argv[i + 1];
-      if (next && /^\d+$/.test(next)) { opts.watchSeconds = Number(next); i++; }
+      if (next && /^\d+$/.test(next)) { opts.watchSeconds = Number(next); i++; if (!Number.isSafeInteger(opts.watchSeconds) || opts.watchSeconds < 1 || opts.watchSeconds > 86400) throw new Error("--watch expects 1..86400 seconds"); }
       else opts.watchSeconds = 5;
     }
     else if (arg === "--stuck-minutes") {
@@ -331,22 +263,31 @@ export async function psMain(argv: string[]): Promise<void> {
       print("zinin ps — обзор всех сессий (только чтение)\n" +
         "  --watch [N]        обновлять раз в N секунд (по умолчанию 5)\n" +
         "  --json             машинный вывод\n" +
+        "  --since 24h        период свежести (m/h/d), всегда включает running\n" +
+        "  --all              включить старые сессии\n" +
         "  --stuck-minutes N  порог stuck для всех движков (claude 20, kimi/codex 30)\n" +
         "  --sources mac|newa|all  источники (с Мака newa читается по ssh: ZININ_PS_NEWA_CMD)");
       return;
     }
     else { warn(`unknown argument: ${arg}`); process.exit(2); }
   }
-  const renderOnce = async () => {
-    const { rows, machines, nowMs } = await collect(opts);
-    if (opts.json) print(renderJson(rows, machines, nowMs, codeVersion()));
-    else print(renderTable(rows, machines, nowMs));
-  };
-  if (opts.watchSeconds === null) { await renderOnce(); return; }
-  await renderOnce();
-  const timer = setInterval(() => { console.clear(); void renderOnce(); }, opts.watchSeconds * 1000);
-  await new Promise<void>(resolve => {
-    process.on("SIGINT", () => { clearInterval(timer); resolve(); });
-    process.on("SIGTERM", () => { clearInterval(timer); resolve(); });
-  });
+  const controller = new AbortController();
+  const stop = () => controller.abort();
+  process.on("SIGINT", stop);
+  process.on("SIGTERM", stop);
+  try {
+    do {
+      const { rows, machines, nowMs, hidden_count } = await collect(opts, deps, controller.signal);
+      if (controller.signal.aborted) break;
+      if (opts.watchSeconds !== null && !opts.json) console.clear();
+      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion(), hidden_count) : renderOverview(rows, machines, nowMs, hidden_count));
+      if (opts.watchSeconds === null) break;
+      await new Promise<void>(resolve => {
+        const finish = () => { clearTimeout(timer); controller.signal.removeEventListener("abort", finish); resolve(); };
+        const timer = setTimeout(finish, opts.watchSeconds! * 1000);
+        controller.signal.addEventListener("abort", finish, { once: true });
+        if (controller.signal.aborted) finish();
+      });
+    } while (!controller.signal.aborted);
+  } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }
 }

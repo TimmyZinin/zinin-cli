@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  parseTerminalWindows, parseWindowTitle, parseStatusLine, pickStatusLine,
+  parseTerminalWarnings, parseTerminalWindows, parseWindowTitle, parseStatusLine, pickStatusLine,
   detectEngine, detectEngineFromTitle, modelFromTitle, RECORD_SEP,
 } from "../../src/adapters/sessions/terminal-mac";
 import type { SessionRow } from "../../src/sessions/types";
@@ -195,4 +195,36 @@ test("К6-3: empty trailing tty field — busy still parses, tty is null", () =>
   const rows = parseTerminalWindows(record, (id, screen) => seen.set(id, { tty: screen.tty, busy: screen.busy }));
   expect(seen.get("mac-win-1062")).toEqual({ tty: null, busy: true });
   expect(rows[0].state).toBe("working");
+});
+test("E4 raw Terminal tabs retain nonselected tabs, tty IDs and embedded ASCII 9/30", () => {
+  const raw = readFileSync(join(FIX,"mac-tabs-raw.txt"),"utf8");
+  expect(raw).toContain("/dev/ttys071"); expect(raw).toContain("\x1e");
+  const seen = new Map<string,{tty:string|null;busy:boolean}>();
+  const tabs = parseTerminalWindows(raw,(id,screen)=>seen.set(id,screen),{tabs:true});
+  expect(tabs.map(r=>r.id)).toEqual(["mac-tab-ttys071","mac-tab-ttys072","mac-tab-502-1"]);
+  expect(tabs[1].task).toBe("Проверяет архив"); expect(tabs[1].state).toBe("idle");
+  expect(tabs[2].state).toBe("working"); expect(tabs[0].taskSource).toBe("terminal-title");
+  expect(seen.get(tabs[0].id)?.tty).toBe("ttys071");
+  const moved=raw.replace("501-1","700-3").replace("501-2","700-1");
+  expect(parseTerminalWindows(moved,undefined,{tabs:true}).map(r=>r.id)).toEqual(tabs.map(r=>r.id));
+});
+test("E4 Terminal script collects every tab with literal ASCII separators", async () => {
+  const { TERMINAL_TABS_SCRIPT: script } = await import("../../src/adapters/sessions/terminal-script");
+  expect(script).toContain("repeat with tabIndex from 1 to (count of tabs of w)");
+  expect(script).toContain("set t to tab tabIndex of w");
+  expect(script).not.toMatch(/contents of t(?:\s|"|$)/);
+  expect(script).toContain("set tabScreen to (contents of tab tabIndex of w) as text");
+  expect(script).toContain("on error errorText number errorNumber");
+  expect(script).toContain("__TAB_ERROR__"); expect(script).toContain("busy of t");
+  expect(script).toContain("tty of t"); expect(script).toContain("ASCII character 9");
+  expect(script).toContain("ASCII character 30"); expect(script).not.toContain("contents of selected tab");
+});
+
+test("tab coercion failure is visible as a diagnostic without discarding healthy tabs", () => {
+  const error = "__TAB_ERROR__\t501-2\t-1700: Can't make tab into Unicode text";
+  const raw = readFileSync(join(FIX,"mac-tabs-raw.txt"),"utf8") + error + RECORD_SEP;
+  expect(parseTerminalWindows(raw,undefined,{tabs:true})).toHaveLength(3);
+  expect(parseTerminalWarnings(raw)).toEqual(["Terminal 501-2: -1700: Can't make tab into Unicode text"]);
+  expect(parseTerminalWindows(error,undefined,{tabs:true})).toHaveLength(0);
+  expect(parseTerminalWarnings(error)).toHaveLength(1);
 });

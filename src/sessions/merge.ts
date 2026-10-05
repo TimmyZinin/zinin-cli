@@ -11,7 +11,7 @@ function rank(source: string): number {
 export function mergeRows(rows: SessionRow[]): SessionRow[] {
   const groups = new Map<string, SessionRow[]>();
   for (const row of rows) {
-    const key = row.id.toLowerCase();
+    const key = `${row.machine}:${row.id}`;
     const group = groups.get(key);
     if (group) group.push(row);
     else groups.set(key, [row]);
@@ -35,7 +35,7 @@ export function mergeRows(rows: SessionRow[]): SessionRow[] {
     if (ordered.every(row => row.state === "starting")) state = "starting";
     // Activity: real mtimes beat tmux's synthetic "alive now".
     const timed = ordered.filter(row => row.source !== "tmux" && row.lastActivityMs !== null);
-    const lastActivityMs = timed.length
+    const lastActivityMs = base.activity !== undefined ? base.lastActivityMs : timed.length
       ? Math.max(...timed.map(row => row.lastActivityMs as number))
       : pick("lastActivityMs");
     merged.push({
@@ -46,7 +46,7 @@ export function mergeRows(rows: SessionRow[]): SessionRow[] {
       state,
       lastActivityMs,
       stuckOn: pick("stuckOn"),
-      needs: pick("needs"),
+      needs: base.decision === undefined ? pick("needs") : base.decision?.freshness === "current" ? base.decision.text : null,
       contextPct: pick("contextPct"),
       weeklyLimitPct: pick("weeklyLimitPct"),
       source: Array.from(new Set(ordered.map(row => row.source))).join("+"),

@@ -1,7 +1,8 @@
 /** E3 state derivation: accepted rules v2 (jev-packets/e3-session-overview-v2.json,
  * receipt 26.09: state_rules_v2_ok 0.85, limit_state_warranted 0.89).
  * Every state has an exact proof signal; conflicts resolve by priority:
- * done > closing > limit > waiting-tim > starting > stuck > working > idle.
+ * E3: done > closing > limit > waiting-tim > starting > stuck > working > idle.
+ * E4: activity is independent of lastSubmission; only current decisions wait.
  */
 import type { SessionRow, PsState } from "./types";
 
@@ -22,21 +23,25 @@ export function stuckThresholdMs(engine: string | null, overrideMinutes?: number
   return minutes * 60_000;
 }
 export function deriveState(row: SessionRow, nowMs: number, stuckOverrideMinutes?: number): PsState {
-  // 1 done / 2 closing: terminal lifecycle facts recorded by adapters.
-  if (row.state === "done" || row.state === "closing") return row.state;
+  const state = row.activity === undefined ? row.state : row.activity === "unknown" ? "idle" : row.activity;
+  // Legacy done is preserved only when no independent E4 activity is present.
+  if (state === "done" || state === "closing") return state;
   // 3 limit: alive but pinned against a quota — structural signal only (N-1):
   // the weekly limit percentage, never a stray "403" inside some text.
   if (row.weeklyLimitPct !== null && row.weeklyLimitPct >= WEEKLY_LIMIT_NEAR) return "limit";
   // 4 waiting-tim: a human answer unblocks it.
-  if (row.state === "waiting-tim" || row.needs !== null) return "waiting-tim";
+  const waiting = row.decision === undefined
+    ? state === "waiting-tim" || row.needs !== null
+    : row.decision?.freshness === "current";
+  if (waiting) return "waiting-tim";
   // 5 starting: transient, disappears once the first turns land.
-  if (row.state === "starting") return "starting";
+  if (state === "starting") return "starting";
   // 6 stuck: only a session expected to be working can be stuck; idle silence is normal.
-  if (row.state === "working" && row.lastActivityMs !== null) {
+  if (state === "working" && row.lastActivityMs !== null) {
     if (nowMs - row.lastActivityMs > stuckThresholdMs(row.engine, stuckOverrideMinutes)) return "stuck";
   }
   // 7 working / 8 idle: base observation.
-  return row.state;
+  return state;
 }
 export function applyDerivedStates(rows: SessionRow[], nowMs: number, stuckOverrideMinutes?: number): SessionRow[] {
   return rows.map(row => ({ ...row, state: deriveState(row, nowMs, stuckOverrideMinutes) }));
