@@ -306,10 +306,12 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
   }
   if (opts.show !== undefined && opts.watchSeconds !== null) throw new Error("show does not support --watch");
   const controller = new AbortController();
+  const terminalWatch=opts.watchSeconds!==null&&!opts.json&&!!process.stdout.isTTY;
   const stop = () => controller.abort();
   process.on("SIGINT", stop);
   process.on("SIGTERM", stop);
   try {
+    if(terminalWatch)process.stdout.write("\x1b[?1049h\x1b[?25l");
     if (opts.show !== undefined) {
       const result=await showSession(opts.show,opts,deps,controller.signal);
       print(opts.json ? JSON.stringify({...result,build:BUILD_INFO},null,2) : renderSessionDetails(result));
@@ -318,8 +320,8 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
     do {
       const { rows, machines, nowMs, hidden_count } = await collect(opts, deps, controller.signal);
       if (controller.signal.aborted) break;
-      if (opts.watchSeconds !== null && !opts.json) console.clear();
-      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion(), hidden_count) : renderOverview(rows, machines, nowMs, hidden_count));
+      const frame=opts.json ? renderJson(rows, machines, nowMs, codeVersion(), hidden_count) : renderOverview(rows, machines, nowMs, hidden_count);
+      if(terminalWatch)process.stdout.write("\x1b[H"+frame+"\x1b[J");else print(frame);
       if (opts.watchSeconds === null) break;
       await new Promise<void>(resolve => {
         const finish = () => { clearTimeout(timer); controller.signal.removeEventListener("abort", finish); resolve(); };
@@ -328,5 +330,5 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
         if (controller.signal.aborted) finish();
       });
     } while (!controller.signal.aborted);
-  } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }
+  } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop);if(terminalWatch)process.stdout.write("\x1b[?25h\x1b[?1049l"); }
 }
