@@ -54,7 +54,7 @@ export async function runWorkScreen(service:WorkCommandService):Promise<void>{
   resize();timer=setInterval(()=>guard(()=>app.render()),250);await done;
  }finally{
   if(timer)clearInterval(timer);process.stdin.removeListener("data",data);process.stdout.removeListener("resize",resize);process.removeListener("SIGINT",signal);process.removeListener("SIGTERM",signal);
-  service.stopOwned();try{process.stdin.setRawMode(!!wasRaw);}finally{process.stdin.pause();process.stdout.write("\x1b[?25h\r\n");}
+  service.stopOwned();try{process.stdin.setRawMode(!!wasRaw);}finally{process.stdin.pause();(process.stdin as typeof process.stdin & {unref?:()=>void}).unref?.();process.stdout.write("\x1b[?25h\r\n");}
   await Promise.allSettled([...app.pending]);
  }
  if(failure)throw failure;

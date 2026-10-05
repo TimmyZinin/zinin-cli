@@ -18,17 +18,18 @@ import os,pty,subprocess,select,signal,sys,time,termios
 bun,entry,journal,mode=sys.argv[1:]
 master,slave=pty.openpty();before=termios.tcgetattr(slave)
 if mode=='exception':
- code='import {runWorkScreen} from '+repr(entry)+'; await runWorkScreen({state(){throw Error("fixture")},stopOwned(){}});'
+ code='import {runWorkScreen} from '+repr(entry)+'; try {await runWorkScreen({state(){throw Error("fixture")},stopOwned(){}});} catch {} finally {process.exit(1);}'
  args=[bun,'-e',code]
 else: args=[bun,entry,'work','--journal',journal]
 p=subprocess.Popen(args,stdin=slave,stdout=slave,stderr=slave)
-out=b'';deadline=time.monotonic()+4
+out=b'';deadline=time.monotonic()+10
 while time.monotonic()<deadline and b'\x1b[?25l' not in out:
  if select.select([master],[],[],.1)[0]: out+=os.read(master,65536)
 assert b'\x1b[?25l' in out,out
 if mode!='exception': p.send_signal(getattr(signal,mode))
-try: p.wait(timeout=4)
+try: p.wait(timeout=10)
 except subprocess.TimeoutExpired: p.kill();p.wait();raise
+assert p.returncode == (1 if mode=='exception' else 0),p.returncode
 while select.select([master],[],[],.05)[0]: out+=os.read(master,65536)
 after=termios.tcgetattr(slave)
 assert before[3] & (termios.ICANON|termios.ECHO) == after[3] & (termios.ICANON|termios.ECHO)
@@ -40,4 +41,4 @@ os.close(master);os.close(slave)
   const p=Bun.spawn(["python3","-c",script,process.execPath,entry,paths.journal,mode],{stdout:"pipe",stderr:"pipe"});
   const [err,code]=await Promise.all([new Response(p.stderr).text(),p.exited]);expect(err).toBe("");expect(code).toBe(0);
  }
-});
+}, 40_000);

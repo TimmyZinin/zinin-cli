@@ -57,7 +57,7 @@ export async function workMain(argv:string[]):Promise<void>{
  if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|status] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]).");return;}
  if(command==="init"){mkdirSync(dirname(paths.journal),{recursive:true});new WorkCommandService(paths,{create:true});console.log(json?JSON.stringify({journal:paths.journal,initialized:true}):"Журнал готов: "+paths.journal);return;}
  const service=new WorkCommandService(paths);
- if(!command){const {runWorkScreen}=await import("./tui/work-screen");await runWorkScreen(service);return;}
+ if(!command){const {runWorkScreen}=await import("./tui/work-screen");let code=0;try {await runWorkScreen(service);}catch(error){code=1;console.error(error);}finally{process.exit(code);}}
  const controller=new AbortController();const cancel=()=>{controller.abort();service.stopOwned();};
  process.on("SIGINT",cancel);process.on("SIGTERM",cancel);
  try {const result=await executeWork(service,command,o,controller.signal);console.log(json?JSON.stringify(result):command==="status"?renderWorkStatus(result):result?.message??JSON.stringify(result,null,2));if(result?.error)process.exitCode=1;}
