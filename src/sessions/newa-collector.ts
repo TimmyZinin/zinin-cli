@@ -75,7 +75,13 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
         let task: ReturnType<typeof read> = null;
         let taskFile: string | undefined;
         if (taskNames.length > 16) note(`${worker.name}: task file limit reached`);
-        for (const name of taskNames.slice(0, 16)) { task = read(name); if (task?.text.trim()) { taskFile = name; break; } }
+        for (const name of taskNames.slice(0, 16)) {
+          const candidate = read(name);
+          if (!candidate) continue;
+          const description = parseNewaDir({ name: worker.name, taskText: candidate.text, metaText: null,
+            statusText: null, toS0Text: null, reportText: null, nowMs }).task;
+          if (description) { task = candidate; taskFile = name; break; }
+        }
         const times = [status, to, report, task].flatMap(f => f && f.mtimeMs <= nowMs ? [f.mtimeMs] : []);
         const row = parseNewaDir({ name: worker.name, metaText: meta?.text ?? null, statusText: status?.text ?? null,
           toS0Text: to?.text ?? null, reportText: report?.text ?? null, taskText: task?.text ?? null, taskFile, readmeText: read("README.md")?.text ?? null,

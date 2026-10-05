@@ -191,3 +191,22 @@ test("remote decoder drops unknown nested evidence fields", () => {
   (p.sessions[0].decision as any).untrusted = { text: "untrusted-extra" };
   expect(JSON.stringify(parseRemoteSnapshot(JSON.stringify(p)))).not.toContain("untrusted-extra");
 });
+test("collector skips empty TASK bodies and reports the exact selected file or bounded README fallback", () => {
+  const work = root(); const a=worker(work,"described"), b=worker(work,"readme"), c=worker(work,"linked-readme");
+  write(a,"TASK-a.md","# Задание\n```text\nПример\n```\n");
+  write(a,"TASK-b.md","# Задание\nПроверяет второе задание");
+  write(a,"REPORT-S0.md","СТАТУС: Запасное описание");
+  write(b,"README.md","# Проект\nПроверяет доставку");
+  symlinkSync(join(b,"README.md"),join(c,"README.md"));
+  const result=collectNewaSnapshot({root:work,nowMs:NOW});
+  expect(result.rows.find(r=>r.id==="described")).toMatchObject({task:"Проверяет второе задание",taskSource:"TASK-b.md"});
+  expect(result.rows.find(r=>r.id==="readme")).toMatchObject({task:"Проверяет доставку",taskSource:"README.md"});
+  expect(result.rows.find(r=>r.id==="linked-readme")?.task).toBeNull();
+});
+test("remote preserves description provenance and rejects invalid provenance or filtered snapshots", () => {
+  const p=payload(); p.sessions[0].taskSource="TASK-example.md";
+  expect(parseRemoteSnapshot(JSON.stringify(p)).rows[0].taskSource).toBe("TASK-example.md");
+  expect(()=>parseRemoteSnapshot(JSON.stringify({...p,hidden_count:1}))).toThrow();
+  (p.sessions[0] as any).taskSource={unexpected:true};
+  expect(()=>parseRemoteSnapshot(JSON.stringify(p))).toThrow();
+});
