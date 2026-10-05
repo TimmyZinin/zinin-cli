@@ -12,7 +12,7 @@ test("four blocks show useful estimates while retaining exact uncertainty and a 
   const waiting = { ...row("idle", "Вопрос: выбрать CSV?"), id: "choice" };
   const stopped = { ...row("timeout"), id: "stopped" };
   const out = renderOverview([working, waiting, stopped], [], NOW);
-  for (const title of ["Работают сейчас", "Ждут решения владельца", "Сданы", "Не отвечают/неизвестно"]) expect(out).toContain(title);
+  for (const title of ["Работают сейчас", "Ждут решения владельца", "Сданы", "Простаивают"]) expect(out).toContain(title);
   expect(out).toContain("newa  sample  Проверяет импорт");
   expect(out).toContain("newa  choice  Вопрос: выбрать CSV?");
   expect(out).toContain("сдано раньше: СДАНО: отчёт");
@@ -27,7 +27,7 @@ test("idle/missing description, stale running and unavailable source remain read
   const old = addStatusEstimates(row(), '{"state":"running"}', NOW - 21 * 60_000, null, NOW);
   const out = renderOverview([idle, old], [{ machine: "mac", memFreeMb: null, diskFreeMb: null, available: false }], NOW);
   expect(out).toContain("sample (по имени папки)"); expect(out).toContain("простаивает");
-  expect(out).toContain("возможно зависла"); expect(out).toContain("Мак: источник недоступен");
+  expect(out).toContain("возможно зависла"); expect(out).toContain("Недоступно: Мак");
 });
 test("task description uses meaningful TASK content then latest report СТАТУС", () => {
   expect(row("idle", null, "СТАТУС: Проверяет таблицу", "# Задание\n\nИсправляет импорт").task).toBe("Исправляет импорт");
@@ -99,7 +99,7 @@ test("running wins over old submission groups; empty blocks and footer agree wit
   for(const title of ["Работают сейчас","Ждут решения владельца","Сданы"]) expect(block(title).split("\n")).toHaveLength(1);
   expect(out.split("\n").at(-1)).toBe("Мак: 0 живых · newa: 1 работают, 1 ждут решения, 1 сдано за сутки");
   const empty=renderOverview([],[],NOW);
-  for(const title of ["Работают сейчас","Ждут решения владельца","Сданы","Не отвечают/неизвестно"]) expect(empty).toContain(title+"\nнет");
+  for(const title of ["Работают сейчас","Ждут решения владельца","Сданы","Простаивают"]) expect(empty).toContain(title+"\nнет");
 });
 
 test("generic README and placeholder lines cannot masquerade as a task", () => {
@@ -121,4 +121,11 @@ test("uncertainty appears once in footnotes and missing stop reasons add no nois
   for(const line of out.split("\n").filter(line=>line.startsWith("newa"))) {
     expect(line).not.toContain("по времени файла"); expect(line).not.toContain("свежесть вопроса неизвестна");
   }
+});
+
+test("idle block is named plainly and unavailable machines have a separate diagnostic", () => {
+  const out=renderOverview([row("idle")],[{machine:"mac",memFreeMb:null,diskFreeMb:null,available:false}],NOW);
+  expect(out).toContain("Простаивают\n"); expect(out).toContain("Недоступно: Мак");
+  expect(out).not.toContain("Не отвечают/неизвестно");
+  expect(out.split("\n").filter(line=>line.startsWith("Недоступно:"))).toHaveLength(1);
 });

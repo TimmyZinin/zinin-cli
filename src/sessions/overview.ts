@@ -26,7 +26,7 @@ export function humanIdle(lastActivityMs: number | null, nowMs: number): string 
   return `${minutes} мин`;
 }
 export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowMs: number, hiddenCount = 0): string {
-  const titles = ["Работают сейчас", "Ждут решения владельца", "Сданы", "Не отвечают/неизвестно"];
+  const titles = ["Работают сейчас", "Ждут решения владельца", "Сданы", "Простаивают"];
   const blocks: string[][] = titles.map(() => []);
   const line = (row: SessionRow, target: number) => {
     const question = row.decision?.text ?? row.needs;
@@ -49,7 +49,7 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
   }
   const out = [1, 0, 2, 3].flatMap(i => [titles[i], ...(blocks[i].length ? blocks[i] : ["нет"]), ""]);
   for (const machine of machines) {
-    if (machine.available === false) out.push(`${machineName(machine.machine)}: источник недоступен`);
+    if (machine.available === false) out.push(`Недоступно: ${machineName(machine.machine)}`);
     for (const warning of machine.warnings ?? []) out.push(`${machineName(machine.machine)}: ${short(warning, 160)}`);
   }
   if (rows.some(row => row.overviewGroup)) out.push("* Оценка по времени файла: состояния newa; подробности в --json.");
