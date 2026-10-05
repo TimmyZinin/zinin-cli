@@ -100,7 +100,7 @@ async function workMainUnchecked(argv:string[],onTui:()=>void):Promise<void>{
   const {remoteWorkStatus}=await import("./work-remote");const state=await remoteWorkStatus(o.journal);
   console.log(json?JSON.stringify(state):"newa · удалённый журнал, только чтение\n"+renderWorkStatus(state,undefined,new Set(),true));return;
  }
- if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|reconcile|status|history|export] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]).");return;}
+ if(command==="help"){console.log("zinin work [init|session|task|run|accept|stop|reconcile|status|history|export] [--journal FILE] [--json]\nБез подкоманды — TUI. init создаёт журнал. Адреса: --session/--task/--result/--run ID. run требует --engine local-demo|kimi (kimi: --model MODEL --cwd DIR [--bin FILE]); после сверки --attempt N. reconcile --run ID --as lost|finished-unknown --reason TEXT [--confirm]. history --task ID; export --out FILE.jsonl; status --remote newa (только чтение).");return;}
  if(command==="init"){mkdirSync(dirname(paths.journal),{recursive:true});new WorkCommandService(paths,{create:true});console.log(json?JSON.stringify({journal:paths.journal,initialized:true}):"Журнал готов: "+paths.journal);return;}
  if(!command&&(!process.stdin.isTTY||!process.stdout.isTTY))throw new WorkUsageError("TUI требует терминал; используйте work status");
  const service=new WorkCommandService(paths);

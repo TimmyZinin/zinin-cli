@@ -22,7 +22,7 @@ export class WorkScreen {
   else if(key.kind==="enter"&&this.draft.trim()){
    try{
     const {command,options}=parseWorkArgs(splitWorkCommand(this.draft.replace(/^\//,"")));
-    if(!["session","task","run","accept","stop","status","reconcile","history"].includes(command)||options.journal||options.remote)throw Error("Используйте session/task/run/accept/stop/status в текущем журнале");
+    if(!["session","task","run","accept","stop","status","reconcile","history"].includes(command)||options.journal||options.remote)throw Error("Используйте session/task/run/accept/stop/reconcile/status/history в текущем журнале");
     if(this.preview!==this.draft){
      this.addressed=resolveWorkOptions(this.service.state(),command,options);
      if(command==="reconcile"){
@@ -44,7 +44,7 @@ export class WorkScreen {
  }
  render(){
   const tree=renderWorkStatus(this.service.state(),this.service.journalPath,this.service.ownedRunIds()).split("\n");
-  const rows=["ZININ work — явные адресные команды; Ctrl-C/Ctrl-D: выход",...tree.slice(0,Math.max(1,this.height-7)),"",plain(this.message),`> ${plain(this.draft)}`,"session / task / run / accept / stop / status; Enter: сначала адресат, затем выполнение"];
+  const rows=["ZININ work — явные адресные команды; Ctrl-C/Ctrl-D: выход",...tree.slice(0,Math.max(1,this.height-7)),"",plain(this.message),`> ${plain(this.draft)}`,"session / task / run / accept / stop / reconcile / status / history; Enter: сначала адресат, затем выполнение"];
   this.write("\x1b[H\x1b[2J"+rows.map(line=>{let out="";for(const c of plain(line)){if(Bun.stringWidth(out+c)>this.width-1)break;out+=c;}return out;}).join("\r\n"));
  }
 }
