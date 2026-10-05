@@ -40,9 +40,14 @@ export function collectNewaSnapshot(options: NewaCollectorOptions = {}): SourceS
   };
   let rootFd: number;
   try {
-    if (lstatSync(requestedRoot).isSymbolicLink()) throw new Error("symlink root");
+    const requested = lstatSync(requestedRoot);
+    if (!requested.isDirectory() || requested.isSymbolicLink()) throw new Error("invalid root");
     root = realpathSync(requestedRoot);
     rootFd = openDir(root);
+    if (!same(requested, fstatSync(rootFd))) {
+      closeSync(rootFd);
+      throw new Error("root changed during canonicalization");
+    }
   } catch { return { rows, machine: { ...machine, available: false, warnings: ["work root unavailable"] } }; }
   try {
     verifyDir(rootFd, root);
