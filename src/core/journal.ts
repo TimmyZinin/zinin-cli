@@ -145,6 +145,14 @@ export class CoreJournal {
   private recover(): CoreState {
     const snap = this.db.query("SELECT seq, state FROM journal_snapshots ORDER BY seq DESC LIMIT 1").get() as { seq: number; state: string } | null;
     const state: CoreState = snap ? JSON.parse(snap.state) : emptyState();
+    // Older derived snapshots lack per-run event metadata. Reconstruct it
+    // from immutable events before applying a reconciliation in the tail.
+    if(snap){
+      for(const row of this.db.query("SELECT seq,type,payload FROM journal_entries WHERE seq<=? ORDER BY seq").all(snap.seq) as {seq:number;type:string;payload:string}[]){
+        const payload=JSON.parse(row.payload),run=typeof payload.run_id==="string"?state.runs[payload.run_id]:undefined;
+        if(run){run.last_event_seq=row.seq;if(row.type==="run_started")run.created_seq=row.seq;}
+      }
+    }
     const rows = this.db.query("SELECT seq, type, payload FROM journal_entries WHERE seq>? ORDER BY seq").all(snap?.seq ?? 0) as { seq: number; type: JournalEntryType; payload: string }[];
     for (const row of rows) {
       try { this.applyTo(state, row.type, JSON.parse(row.payload)); state.seq = row.seq; }

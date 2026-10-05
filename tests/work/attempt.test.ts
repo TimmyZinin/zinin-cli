@@ -15,3 +15,11 @@ test("late completion of a reconciled owner cannot publish over a fresh attempt"
  finish({text:"late",provider_session:null});await expect(pending).rejects.toThrow("поздний ответ");expect(Object.keys(service.state().results)).toHaveLength(0);
  const fresh=await service.run("task-one",now,{kind:"local-demo"},{attempt:3});expect(service.state().results[fresh!.result_id!].revision).toBe(3);
 });
+test("fault after durable run finish and result but before review preserves old evidence on a new attempt",async()=>{
+ const {paths,service}=fixture();const journal=new CoreJournal(paths.journal);
+ journal.submit({command_id:"finish-before-crash",type:"run_finished",payload:{run_id:"run-task-one-1",outcome:"succeeded"}},now);
+ journal.submit({command_id:"result-before-crash",type:"result_recorded",payload:{result_id:"result-before-crash",task_id:"task-one",run_id:"run-task-one-1",revision:1,digest:"legacy-digest",evidence_ref:"fixture"}},now);journal.snapshot(now);journal.close();
+ const p=service.reconcilePreview("run-task-one-1");service.reconcile("recover",p.run_id,"finished-unknown","crash before review",p.expected_seq,now);
+ expect(service.stop(p.run_id).message).toContain("процесс мог остаться жив");
+ const result=await service.run("task-one",now,{kind:"local-demo"},{attempt:2});expect(service.state().results["result-before-crash"].digest).toBe("legacy-digest");expect(service.state().results[result!.result_id!].revision).toBe(2);expect(CoreJournal.fold(paths.journal)).toEqual(service.state());
+});

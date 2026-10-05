@@ -70,6 +70,7 @@ export class WorkCommandService {
     if(owned) {owned.abort();return {run_id:runId,stop_requested:true,message:"Остановка своего запуска запрошена"};}
     const run=this.state().runs[runId];
     if(!run) throw new JournalError("not_found","Запуск не найден");
+    if(run.reconciliation)return {run_id:runId,stop_requested:false,message:"Запуск сверен; процесс мог остаться жив — проверьте вручную; сигнал не отправлен"};
     return {run_id:runId,stop_requested:false,message:run.status!=="running" ? "Запуск уже завершён; сигнал не отправлен" : "Владение неизвестно, процесс не остановлен"};
   }
   ownedRunIds():ReadonlySet<string> {return new Set(this.owned.keys());}
