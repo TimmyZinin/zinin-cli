@@ -24,6 +24,9 @@ function group(row: SessionRow): number {
   if (row.lastSubmission || row.overviewGroup?.value === "submitted" || row.state === "done") return 2;
   return 3;
 }
+function idleQuestion(row: SessionRow): boolean {
+  return row.machine === "newa" && group(row) === 3 && row.decision?.freshness === "unknown" && !!row.decision.text;
+}
 export function humanIdle(lastActivityMs: number | null, nowMs: number): string {
   if (lastActivityMs === null) return "неизвестно";
   const minutes = Math.max(0, Math.floor((nowMs - lastActivityMs) / 60_000));
@@ -43,21 +46,26 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
 
   const line = (row: SessionRow, target: number) => {
     const question = row.decision?.text ?? row.needs;
-    const description = target === 1 ? question ?? row.task
+    const hasIdleQuestion = idleQuestion(row);
+    const description = hasIdleQuestion ? `есть вопрос: ${question}` : target === 1 ? question ?? row.task
       : target === 2 ? meaningfulDescription(row.lastSubmission?.text ?? "") ?? row.task : row.task;
     const idle = humanIdle(row.lastActivityMs, nowMs);
     const notes: string[] = [];
-    if (row.lastSubmission && target !== 2) notes.push(`сдано раньше: ${short(row.lastSubmission.text)}`);
+    if (row.lastSubmission && target !== 2 && !(target === 1 && row.waitingKind === "handoff" && question?.startsWith("сдано:"))) notes.push(`сдано раньше: ${short(row.lastSubmission.text)}`);
     if (target === 0 && row.possiblyStuck?.value) notes.push("возможно зависла");
     if (target === 3 && (row.overviewGroup?.value === "idle" || (!row.overviewGroup && row.state === "idle"))) notes.push("простаивает");
     if (target === 3 && row.overviewGroup?.value === "stopped" && row.stoppedReason?.value) notes.push(`ход остановлен: ${short(row.stoppedReason.value)}`);
-    if (question && target !== 1) notes.push(`вопрос: ${short(question)}`);
+    if (question && target !== 1 && !hasIdleQuestion) notes.push(`вопрос: ${short(question)}`);
     if (question && row.decision?.freshness === "stale") notes.push("вопрос из прошлого хода");
     const detail = `${short(description, 120) || (row.machine === "newa" ? `${short(row.id)} (по имени папки)` : "задача не указана")}${notes.length ? " · " + notes.join(" · ") : ""}`;
     return [pad(machineName(row.machine), machineWidth), pad(short(sessionName(row), idWidth), idWidth),
       pad(short(detail, descriptionWidth), descriptionWidth), pad(idle, timeWidth)].join("  ").trimEnd();
   };
-  for (const row of [...rows].sort((a, b) => (group(a) === 1 && group(b) === 1 ? Number(a.waitingKind === "handoff") - Number(b.waitingKind === "handoff") : 0) || (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id))) {
+  const sorted = [...rows].sort((a, b) => group(a) - group(b)
+    || (group(a) === 1 ? Number(a.waitingKind === "handoff") - Number(b.waitingKind === "handoff") : 0)
+    || (group(a) === 3 ? Number(idleQuestion(b)) - Number(idleQuestion(a)) : 0)
+    || (b.lastActivityMs ?? -1) - (a.lastActivityMs ?? -1) || a.id.localeCompare(b.id));
+  for (const row of sorted) {
     const target = group(row);
     blocks[target].push(line(row, target));
 

@@ -1,4 +1,5 @@
 /** E3 rendering: plain aligned table (no required colors) and --json output. */
+import {BUILD_INFO} from "../build-info";
 import type { SessionRow, MachineInfo } from "./types";
 
 /** N-9: emoji (⚡ etc.) occupy two terminal cells; pad by display width. */
@@ -50,5 +51,5 @@ export function renderTable(rows: SessionRow[], machines: MachineInfo[], nowMs: 
   return out.join("\n");
 }
 export function renderJson(rows: SessionRow[], machines: MachineInfo[], nowMs: number, version?: string, hidden_count = 0): string {
-  return JSON.stringify({ generatedAt: new Date(nowMs).toISOString(), ...(version ? { version } : {}), sessions: rows, machines, hidden_count }, null, 2);
+  return JSON.stringify({ build:BUILD_INFO, generatedAt: new Date(nowMs).toISOString(), ...(version ? { version } : {}), sessions: rows, machines, hidden_count }, null, 2);
 }

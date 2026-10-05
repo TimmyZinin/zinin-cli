@@ -21,6 +21,79 @@ irm https://zinin.ai/install.ps1 | iex
 zinin
 ```
 
+## Установка на Мак и на newa
+
+Для этой версии собирайте бинарь из выбранного git checkout на каждой целевой
+машине. Нужен **Bun 1.3.11 или новее**; для тестов PTY — Python 3. Сборка на
+Apple Silicon даёт macOS arm64, на newa — Linux x64. Intel-Мак требует отдельной
+сборки и живой проверки; его готовность здесь не заявляется. У локального
+Bun 1.3.0 на newa обнаружен ENOEXEC после compile; этот вариант не используется.
+
+```sh
+bun --version
+git status --short
+bun install --frozen-lockfile --ignore-scripts
+bun test
+bun run build
+./dist/zinin --version
+./dist/zinin --banner
+mkdir -p "$HOME/.local/bin"
+install -m 755 dist/zinin "$HOME/.local/bin/zinin"
+"$HOME/.local/bin/zinin" --help
+```
+
+Добавьте `$HOME/.local/bin` в PATH вашей оболочки, если он там отсутствует.
+Для нестандартного выходного пути: `bun run scripts/build.ts --outfile /absolute/zinin`.
+Скрипт вызывает `bun build --compile src/repl.ts` с define для git-хеша,
+UTC-даты сборки и признака незакоммиченных изменений. `.git` нужен только
+на машине сборки. В установленном бинаре нет runtime-вызова git для версии,
+а figlet-шрифт включён как строковый модуль: node_modules/.flf рядом не нужны.
+Прямой compile без defines годится для smoke; его версия помечена `unbuilt`,
+такой бинарь не используйте вместо версионированной сборки.
+
+На Маке задайте `~/.zinin/ps.json` со стабильным абсолютным путём к бинарю
+на newa (ниже домашний каталог пользователя agents; при необходимости замените):
+
+```json
+{
+  "newaCmd": [
+    "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=6", "newa",
+    "/home/agents/.local/bin/zinin", "ps", "--sources", "newa", "--json"
+  ]
+}
+```
+
+Каталог `~/.zinin` для этого файла создаётся владельцем. Пример не указывает
+на временные checkout воркеров. SSH-доступ/host newa настраиваются отдельно;
+программа не создаёт ключи и доступы. `work status --remote newa` использует
+тот же канал. Переменная `ZININ_PS_NEWA_CMD`, если задана, имеет приоритет над
+ps.json — проверьте её при неожиданном выборе remote-команды.
+
+```sh
+zinin --version
+zinin ps --json
+zinin work status --remote newa --json
+```
+
+В JSON обзора `build.git`, `build.builtAt`, `build.dirty` относятся к локальному
+бинарю; `machines[].version` содержит git и дату сборки каждой доступной стороны.
+Сравнивайте прежде всего git-хеш: даты независимых сборок одного коммита могут
+отличаться. `+dirty` означает сборку с изменённым checkout, `unbuilt` — запуск
+исходника или compile без defines. При несовпадении хешей соберите обе стороны
+из одного чистого коммита, установите бинарии по указанным путям и повторите
+проверку. `null`/отсутствующая remote-версия — источник недоступен или слишком
+старый, совпадение не доказано; сначала исправьте SSH/путь/remote-версию.
+
+Проверка без SSH и без живых сессий: `zinin ps --sources newa --newa-root /absolute/fixtures --json`.
+Этот параметр читает локальный синтетический каталог по тем же ограничениям
+collector; для обычного обзора его не указывайте. `ps --watch` использует
+отдельный экран терминала, заменяет кадр целиком и возвращает экран/курсор
+по Ctrl-C. В `--json --watch` выдаются последовательные JSON-снимки без ANSI.
+
+`install.sh` этим этапом не изменён; опубликованные установочные бинарии здесь
+не обновлялись. Исправление пути шрифта из issue #1 проверено Linux standalone
+smoke, а живой Intel-Мак и выпуск остаются отдельной проверкой S0.
+
 ## Команды
 
 | Команда | Что делает |

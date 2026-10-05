@@ -1,4 +1,6 @@
 const figlet = require('figlet');
+const ansiShadow = require('figlet/importable-fonts/ANSI Shadow.js').default;
+figlet.parseFont('ANSI Shadow', ansiShadow);
 const gradient = require('gradient-string');
 
 // Фирменная палитра сайта timzinin.com
@@ -14,26 +16,10 @@ const dim = (s) => `\x1b[2m${s}\x1b[0m`;
 const MASCOT = c(RED, '[◉‿◉]');           // путешествующий знак бренда
 const TIER = process.env.ZININ_TIER || 'FREE';
 
-// Статический логотип (ANSI Shadow, шрифт "ZININ"). Вшит в код, потому что
-// bun --compile НЕ кладёт .flf-файлы figlet в бинарь → на Linux/Windows
-// figlet.textSync падает с ENOENT по пути сборочной машины. Фоллбэк гарантирует
-// запуск на любой ОС; на dev-машине с node_modules используется живой figlet.
-const STATIC_LOGO = [
-  '███████╗██╗███╗   ██╗██╗███╗   ██╗',
-  '╚══███╔╝██║████╗  ██║██║████╗  ██║',
-  '  ███╔╝ ██║██╔██╗ ██║██║██╔██╗ ██║',
-  ' ███╔╝  ██║██║╚██╗██║██║██║╚██╗██║',
-  '███████╗██║██║ ╚████║██║██║ ╚████║',
-  '╚══════╝╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝',
-].join('\n');
-
+// The font is bundled as a JS string; rendering never reads a .flf file.
+function renderLogo() { return figlet.textSync('ZININ', { font: 'ANSI Shadow' }); }
 function splash() {
-  let logo;
-  try {
-    logo = figlet.textSync('ZININ', { font: 'ANSI Shadow' });
-  } catch {
-    logo = STATIC_LOGO;   // скомпилированный бинарь без .flf → статика
-  }
+  const logo = renderLogo();
   console.log('');
   console.log(redGrad.multiline(logo));
   console.log('  ' + MASCOT + '  ' + c(GOLD,'AI-инженер в твоём терминале') + dim('  ·  zinin.ai'));
@@ -45,4 +31,4 @@ function splash() {
   console.log('');
 }
 if (require.main === module) splash();
-module.exports = { splash, MASCOT, RED, REDDARK, GOLD, CYAN };
+module.exports = { renderLogo, splash, MASCOT, RED, REDDARK, GOLD, CYAN };

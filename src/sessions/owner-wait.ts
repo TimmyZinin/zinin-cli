@@ -36,7 +36,15 @@ export function ownerWait(to: string | null, report: string | null, nowMs: numbe
   const request=latest && (latest.packet || question) ? latest : null;
   const answered=!!request && request.atMs!==null && [...toEntries,...reports].some(entry=>entry.atMs!==null && entry.atMs>request.atMs! && entry.lines.some(line=>REPLY.test(line)));
   if(request && !answered) return {answered:false,pending:{kind:request.packet ? "receipt":"question",text:request.packet ? `ждёт квитанцию ${request.packet}` : cleanDescription(question!),source:"TO-S0.md",atMs:request.atMs,freshness:"unknown"}};
-  const lastReport=reports.at(-1), tail=lastReport?.lines.at(-1)??"";
-  if(/(?:ожидаю|жду)\s+(?:следующ(?:его|ее)\s+)?слов[ао]\s+S0/i.test(tail)) return {answered,pending:{kind:"handoff",text:"сдано, ждёт слова",source:"REPORT-S0.md",atMs:lastReport!.atMs,freshness:"unknown"}};
+  // Readiness/status lines may follow the handoff sentence. Ignore quoted and
+  // fenced examples (entries already filters them), and bound stale history.
+  const tail = reports.flatMap(entry => entry.lines.map(line => ({line, atMs:entry.atMs}))).slice(-5);
+  const handoff = [...tail].reverse().find(({line}) => /(?:ожидаю|жду)\s+(?:следующ(?:его|ее)\s+)?(?:квитанцию\s*\/\s*)?слов[ао]\s+S0/i.test(line));
+  if (handoff) {
+    const readiness = [...tail].reverse().map(({line}) => cleanDescription(line))
+      .find(line => /^ЭТАП\s+\d+\s+ГОТОВ(?=\s|$)/i.test(line));
+    const title = readiness?.split(/\s+[—–-]\s+(?:HEAD|тесты)(?=\s|$)/i)[0].replace(/[.。]+$/, "");
+    return {answered,pending:{kind:"handoff",text:title ? `сдано: ${title} · ждёт слова` : "сдано, ждёт слова",source:"REPORT-S0.md",atMs:handoff.atMs,freshness:"unknown"}};
+  }
   return {pending:null,answered};
 }

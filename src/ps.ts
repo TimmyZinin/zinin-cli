@@ -17,7 +17,7 @@ import { parseTranscriptTail, cwdToProjectSlug } from "./adapters/sessions/claud
 import { collectNewaSnapshot, type SourceSnapshot, type NewaCollectorOptions } from "./sessions/newa-collector";
 import { runCommand, type CommandRunner } from "./sessions/command";
 import { parseRemoteSnapshot } from "./sessions/remote";
-import { spawnSync } from "node:child_process";
+import {buildVersion,BUILD_INFO} from "./build-info";
 import { parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/machine";
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
@@ -250,19 +250,8 @@ export async function showSession(query: string, opts: PsOptions, deps: Collecto
 function print(out: string): void {
   process.stdout.write(out + "\n");
 }
-/** Code version lookup has a bounded foreground git invocation. */
-export function codeVersion(dir = import.meta.dir): string {
-  try {
-    const proc = spawnSync("git", ["-C", dir, "rev-parse", "--short", "HEAD"], { timeout: 2000, maxBuffer: 4096, encoding: "utf8" });
-    const sha = (proc.stdout ?? "").trim();
-    if (proc.status === 0 && sha) return `git-${sha}`;
-  } catch { /* not a git checkout */ }
-  try {
-    const pkg = JSON.parse(readFileSync(join(dir, "..", "package.json"), "utf8")) as { version?: string };
-    if (pkg.version) return `v${pkg.version}`;
-  } catch { /* no package.json */ }
-  return "unknown";
-}
+/** Installed binaries use embedded metadata and never inspect the caller's .git. */
+export function codeVersion(_dir?:string):string {return buildVersion();}
 export async function psMain(argv: string[], deps: CollectorDependencies = {}): Promise<void> {
   const opts: PsOptions = { watchSeconds: null, json: false, stuckMinutes: undefined, sources: "all" };
   for (let i = 0; i < argv.length; i++) {
@@ -278,6 +267,10 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
       if (!encoded || !/^[A-Za-z0-9_-]+$/.test(encoded) || encoded.length>1400) throw new Error("invalid detail id");
       opts.detailId=Buffer.from(encoded,"base64url").toString("utf8");
       opts.all=true;
+    }
+    else if(arg==="--newa-root"){
+      const root=argv[++i];if(!root||root.startsWith("--"))throw new Error("--newa-root expects a local directory");
+      deps={...deps,host:"newa",newaOptions:{...deps.newaOptions,root}};
     }
     else if (arg === "--all") opts.all = true;
     else if (arg === "--since") opts.sinceMs = parseSince(argv[++i]);
@@ -304,6 +297,7 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
         "  --json             машинный вывод\n" +
         "  --since 24h        период свежести (m/h/d), всегда включает running\n" +
         "  --all              включить старые сессии\n" +
+        "  --newa-root DIR     читать локальный каталог newa (для offline-проверки)\n" +
         "  --stuck-minutes N  порог stuck для всех движков (claude 20, kimi/codex 30)\n" +
         "  --sources mac|newa|all  источники (с Мака newa читается по ssh: ZININ_PS_NEWA_CMD)");
       return;
@@ -312,20 +306,22 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
   }
   if (opts.show !== undefined && opts.watchSeconds !== null) throw new Error("show does not support --watch");
   const controller = new AbortController();
+  const terminalWatch=opts.watchSeconds!==null&&!opts.json&&!!process.stdout.isTTY;
   const stop = () => controller.abort();
   process.on("SIGINT", stop);
   process.on("SIGTERM", stop);
   try {
+    if(terminalWatch)process.stdout.write("\x1b[?1049h\x1b[?25l");
     if (opts.show !== undefined) {
       const result=await showSession(opts.show,opts,deps,controller.signal);
-      print(opts.json ? JSON.stringify(result,null,2) : renderSessionDetails(result));
+      print(opts.json ? JSON.stringify({...result,build:BUILD_INFO},null,2) : renderSessionDetails(result));
       return;
     }
     do {
       const { rows, machines, nowMs, hidden_count } = await collect(opts, deps, controller.signal);
       if (controller.signal.aborted) break;
-      if (opts.watchSeconds !== null && !opts.json) console.clear();
-      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion(), hidden_count) : renderOverview(rows, machines, nowMs, hidden_count));
+      const frame=opts.json ? renderJson(rows, machines, nowMs, codeVersion(), hidden_count) : renderOverview(rows, machines, nowMs, hidden_count);
+      if(terminalWatch)process.stdout.write("\x1b[H"+frame+"\x1b[J");else print(frame);
       if (opts.watchSeconds === null) break;
       await new Promise<void>(resolve => {
         const finish = () => { clearTimeout(timer); controller.signal.removeEventListener("abort", finish); resolve(); };
@@ -334,5 +330,5 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
         if (controller.signal.aborted) finish();
       });
     } while (!controller.signal.aborted);
-  } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop); }
+  } finally { process.removeListener("SIGINT", stop); process.removeListener("SIGTERM", stop);if(terminalWatch)process.stdout.write("\x1b[?25h\x1b[?1049l"); }
 }
