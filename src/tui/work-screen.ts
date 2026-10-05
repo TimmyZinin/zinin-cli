@@ -58,7 +58,13 @@ export async function runWorkScreen(service:WorkCommandService):Promise<void>{
  }finally{
   if(timer)clearInterval(timer);process.stdin.removeListener("data",data);process.stdout.removeListener("resize",resize);process.removeListener("SIGINT",signal);process.removeListener("SIGTERM",signal);
   service.stopOwned();try{process.stdin.setRawMode(!!wasRaw);}finally{process.stdin.pause();(process.stdin as typeof process.stdin & {unref?:()=>void}).unref?.();process.stdout.write("\x1b[?25h\r\n");}
-  await Promise.allSettled([...app.pending]);
+  // An adapter may ignore abort or hold a pipe open. Restore the terminal
+  // first, then bound cleanup; an unfinished durable run stays unknown.
+  let shutdownTimer:ReturnType<typeof setTimeout>|undefined;
+  try {
+   await Promise.race([Promise.allSettled([...app.pending]),new Promise<void>(resolve=>{shutdownTimer=setTimeout(()=>{failure??=Error("Завершение запуска не подтверждено; перечитайте work status");resolve();},2000);})]);
+  } finally {if(shutdownTimer)clearTimeout(shutdownTimer);}
+
  }
  if(failure)throw failure;
 }
