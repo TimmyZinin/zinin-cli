@@ -22,6 +22,9 @@ export function parseRemoteSnapshot(raw: string): SourceSnapshot {
   const parsed: unknown = JSON.parse(raw);
   if (!object(parsed) || !Array.isArray(parsed.sessions) || parsed.sessions.length > 2048 || !Array.isArray(parsed.machines) || parsed.machines.length !== 1) throw new Error("invalid remote snapshot");
   if (parsed.version !== undefined && !str(parsed.version, 128)) throw new Error("invalid remote version");
+  // The caller requests --all; silently accepting a partial remote list would
+  // make local --all and --since impossible to honour.
+  if (parsed.hidden_count !== undefined && parsed.hidden_count !== 0) throw new Error("remote snapshot must include all sessions");
   const ids = new Set<string>();
   const rows: SessionRow[] = [];
   for (const v of parsed.sessions) {

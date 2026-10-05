@@ -19,11 +19,14 @@ import { parseDf, parseVmStat, parseMemoryPressure } from "./adapters/sessions/m
 import { mergeRows } from "./sessions/merge";
 import { applyDerivedStates } from "./sessions/state";
 import { renderJson } from "./sessions/render";
+import { filterRecent, parseSince } from "./sessions/freshness";
 import { renderOverview } from "./sessions/overview";
 import { enrichRowsWithTranscripts, windowProjectKey, type SlugFacts, type WindowScreen } from "./sessions/enrich";
 import { parsePsConfig } from "./sessions/psconfig";
 
 export interface PsOptions {
+  all?: boolean;
+  sinceMs?: number;
   watchSeconds: number | null;
   json: boolean;
   stuckMinutes: number | undefined;
@@ -219,7 +222,7 @@ async function boundedSource(machine: string, source: (signal: AbortSignal) => P
   catch { return { rows: [], machine: { machine, memFreeMb: null, diskFreeMb: null, available: false, warnings: ["source unavailable or timed out"] } }; }
   finally { clearTimeout(timer); parent?.removeEventListener("abort", abort); }
 }
-export async function collect(opts: PsOptions, deps: CollectorDependencies = {}, signal?: AbortSignal): Promise<{ rows: SessionRow[]; machines: MachineInfo[]; nowMs: number }> {
+export async function collect(opts: PsOptions, deps: CollectorDependencies = {}, signal?: AbortSignal): Promise<{ rows: SessionRow[]; machines: MachineInfo[]; nowMs: number; hidden_count: number }> {
   const nowMs = (deps.now ?? Date.now)();
   const host = deps.host ?? (platform() === "darwin" ? "mac" : existsSync("/home/agents/work") ? "newa" : "unknown");
   const run = deps.run ?? runCommand;
@@ -236,12 +239,12 @@ export async function collect(opts: PsOptions, deps: CollectorDependencies = {},
     return snapshot;
   });
   const remote = deps.remote ?? (async (_now: number, abort: AbortSignal) =>
-    parseRemoteSnapshot(await run(deps.remoteCommand ?? resolveNewaCmd(), { signal: abort })));
+    parseRemoteSnapshot(await run([...(deps.remoteCommand ?? resolveNewaCmd()), "--all"], { signal: abort })));
   const sources: Promise<SourceSnapshot>[] = [];
   if ((opts.sources === "mac" || opts.sources === "all") && host !== "newa") sources.push(boundedSource("mac", abort => mac(nowMs, abort), timeoutMs, signal));
   if (opts.sources === "newa" || opts.sources === "all") sources.push(boundedSource("newa", abort => (host === "newa" ? newa : remote)(nowMs, abort), timeoutMs, signal));
   const snapshots = await Promise.all(sources);
-  return { rows: applyDerivedStates(mergeRows(snapshots.flatMap(s => s.rows)), nowMs, opts.stuckMinutes), machines: snapshots.map(s => s.machine), nowMs };
+  return { ...filterRecent(applyDerivedStates(mergeRows(snapshots.flatMap(s => s.rows)), nowMs, opts.stuckMinutes), nowMs, opts.all, opts.sinceMs), machines: snapshots.map(s => s.machine), nowMs };
 }
 function print(out: string): void {
   process.stdout.write(out + "\n");
@@ -264,6 +267,8 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === "--json") opts.json = true;
+    else if (arg === "--all") opts.all = true;
+    else if (arg === "--since") opts.sinceMs = parseSince(argv[++i]);
     else if (arg === "--watch") {
       const next = argv[i + 1];
       if (next && /^\d+$/.test(next)) { opts.watchSeconds = Number(next); i++; if (!Number.isSafeInteger(opts.watchSeconds) || opts.watchSeconds < 1 || opts.watchSeconds > 86400) throw new Error("--watch expects 1..86400 seconds"); }
@@ -284,6 +289,8 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
       print("zinin ps — обзор всех сессий (только чтение)\n" +
         "  --watch [N]        обновлять раз в N секунд (по умолчанию 5)\n" +
         "  --json             машинный вывод\n" +
+        "  --since 24h        период свежести (m/h/d), всегда включает running\n" +
+        "  --all              включить старые сессии\n" +
         "  --stuck-minutes N  порог stuck для всех движков (claude 20, kimi/codex 30)\n" +
         "  --sources mac|newa|all  источники (с Мака newa читается по ssh: ZININ_PS_NEWA_CMD)");
       return;
@@ -296,10 +303,10 @@ export async function psMain(argv: string[], deps: CollectorDependencies = {}): 
   process.on("SIGTERM", stop);
   try {
     do {
-      const { rows, machines, nowMs } = await collect(opts, deps, controller.signal);
+      const { rows, machines, nowMs, hidden_count } = await collect(opts, deps, controller.signal);
       if (controller.signal.aborted) break;
       if (opts.watchSeconds !== null && !opts.json) console.clear();
-      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion()) : renderOverview(rows, machines, nowMs));
+      print(opts.json ? renderJson(rows, machines, nowMs, codeVersion(), hidden_count) : renderOverview(rows, machines, nowMs, hidden_count));
       if (opts.watchSeconds === null) break;
       await new Promise<void>(resolve => {
         const finish = () => { clearTimeout(timer); controller.signal.removeEventListener("abort", finish); resolve(); };

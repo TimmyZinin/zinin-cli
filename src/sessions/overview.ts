@@ -20,7 +20,7 @@ function group(row: SessionRow): number {
   if (["working", "starting", "closing", "stuck"].includes(row.state)) return 0;
   return 3;
 }
-export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowMs: number): string {
+export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowMs: number, hiddenCount = 0): string {
   const titles = ["Работают сейчас", "Ждут решения владельца", "Сданы", "Не отвечают/неизвестно"];
   const blocks: string[][] = titles.map(() => []);
   const line = (row: SessionRow, target: number) => {
@@ -49,5 +49,6 @@ export function renderOverview(rows: SessionRow[], machines: MachineInfo[], nowM
     if (machine.available === false) out.push(`${machineName(machine.machine)}: источник недоступен`);
     for (const warning of machine.warnings ?? []) out.push(`${machineName(machine.machine)}: ${short(warning, 160)}`);
   }
+  if (hiddenCount) out.push(`ещё ${hiddenCount} старых скрыто — zinin ps --all`);
   return out.join("\n").trimEnd();
 }

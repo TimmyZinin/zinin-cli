@@ -14,7 +14,7 @@ const ago = (minutes: number) => NOW - minutes * 60_000;
 const root = () => mkdtempSync(join(tmpdir(), "zinin-e4-collector-"));
 const row = (toS0Text: string | null = null, reportText: string | null = null) => parseNewaDir({
   name: "sample", statusText: '{"state":"idle"}', metaText: null,
-  taskText: "Проверяет таблицу", toS0Text, reportText, nowMs: NOW,
+  taskText: "Проверяет таблицу", toS0Text, reportText, activityMs: NOW - 60_000, nowMs: NOW,
 });
 const opts: PsOptions = { sources: "all", json: true, watchSeconds: null, stuckMinutes: undefined };
 function write(dir: string, name: string, text: string, minutes = 1) {
