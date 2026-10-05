@@ -33,3 +33,11 @@ test("stop cancels only an owned foreground child and records stopped rather tha
  const run=Object.values(service.state().runs)[0];expect(service.stop(run.run_id).stop_requested).toBe(true);
  const result=await pending;expect(result?.error).toContain("cancelled");expect(service.state().runs[run.run_id].status).toBe("stopped");expect(Object.keys(service.state().results)).toHaveLength(0);
 });
+
+test("CLI usage and journal rejection produce one Russian line, with stacks only in debug",async()=>{
+ const journal=join(root(),"journal");await cli(journal,"init");
+ const missing=await cli(journal,"session");expect(missing.code).toBe(2);expect(missing.err).toBe("Нужен --goal\n");expect(missing.out).toBe("");
+ await cli(journal,"session","--id","s","--goal","goal");await cli(journal,"task","--id","t","--session","s","--goal","goal","--criteria","criteria");await cli(journal,"run","--task","t","--engine","local-demo");
+ const rejected=await cli(journal,"accept","--result","res-t","--revision","1","--digest","wrong");expect(rejected.code).toBe(1);expect(rejected.err.trim().split("\n")).toHaveLength(1);expect(rejected.err).toContain("показана ревизия 1, сейчас 1");expect(rejected.err).toContain("контрольная сумма");expect(rejected.out).toBe("");
+ const p=Bun.spawn([process.execPath,entry,"work","session","--journal",journal],{env:{...process.env,ZININ_DEBUG:"1"},stdout:"pipe",stderr:"pipe"});const err=await new Response(p.stderr).text();expect(await p.exited).toBe(2);expect(err).toContain("Нужен --goal");expect(err).toContain(" at ");
+});

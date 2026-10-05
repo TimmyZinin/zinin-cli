@@ -34,7 +34,7 @@ export const journalEntryTypes = ["agent_registered", "session_opened", "session
 export type JournalEntryType = typeof journalEntryTypes[number];
 export interface JournalCommand { command_id: string; type: JournalEntryType; payload: Json }
 export class JournalError extends Error {
-  constructor(public readonly code: "conflict" | "not_found" | "malformed" | "corrupt", message: string) {
+  constructor(public readonly code: "conflict" | "not_found" | "malformed" | "corrupt", message: string, public readonly details?: {expectedRevision:number; actualRevision:number; digestChanged?:boolean}) {
     super(message);
   }
 }
@@ -292,10 +292,10 @@ export class CoreJournal {
         // New addressed commands bind the displayed immutable result. Legacy
         // journal entries without binding remain replayable unchanged.
         if (p.expected_revision !== undefined || p.expected_digest !== undefined) {
-          if (int(p, "expected_revision") !== result.revision || str(p, "expected_digest") !== result.digest) throw new JournalError("conflict", "Result revision/digest changed");
+          if (int(p, "expected_revision") !== result.revision || str(p, "expected_digest") !== result.digest) throw new JournalError("conflict", "Result revision/digest changed", {expectedRevision:int(p,"expected_revision"),actualRevision:result.revision,digestChanged:p.expected_digest!==result.digest});
           const task = need(s.tasks, result.task_id, "Task");
           if (task.status !== "review_ready" || Object.values(s.runs).some(run => run.task_id === task.task_id && run.status === "running")) throw new JournalError("conflict", "Task is not ready for acceptance");
-          if (Object.values(s.results).some(other => other.task_id === result.task_id && other.revision > result.revision && other.status !== "rejected")) throw new JournalError("conflict", "A newer result revision exists");
+          if (Object.values(s.results).some(other => other.task_id === result.task_id && other.revision > result.revision && other.status !== "rejected")) throw new JournalError("conflict", "A newer result revision exists", {expectedRevision:int(p,"expected_revision"),actualRevision:Math.max(...Object.values(s.results).filter(r=>r.task_id===result.task_id&&r.status!=="rejected").map(r=>r.revision))});
         }
         if (result.status !== "recorded") throw new JournalError("conflict", `Result is ${result.status}`);
         const decision = str(p, "decision");
