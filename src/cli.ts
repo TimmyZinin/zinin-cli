@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 /** Local Zinin OS entrypoint. The legacy assistant remains at `zinin repl`. */
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { codeVersion } from "./ps.ts";
 
 export function version(): string {
@@ -47,6 +49,22 @@ export async function main(args: string[]): Promise<number> {
     const snapshot = await collectLive();
     process.stdout.write(rest.includes("--json") ? JSON.stringify(snapshot) + "\n" : renderLive(snapshot));
     return 0;
+  }
+  if (command === "report") {
+    if (rest.length > 1 || (rest.length === 1 && rest[0] !== "--tick")) {
+      process.stderr.write("zinin report: допустим только --tick\n");
+      return 2;
+    }
+    const script = join(process.env.APPARAT_HOME || join(homedir(), "apparat"), "bin/report.py");
+    try {
+      const child = Bun.spawnSync(["python3", script, rest[0] || "--full"], { stdout: "pipe", stderr: "pipe" });
+      process.stdout.write(child.stdout);
+      process.stderr.write(child.stderr);
+      return child.exitCode ?? 1;
+    } catch (error) {
+      process.stderr.write(`источник report.py недоступен: ${(error as Error).message}\n`);
+      return 1;
+    }
   }
   process.stderr.write(`zinin: неизвестная команда ${command}. См. zinin --help\n`);
   return 2;
