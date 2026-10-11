@@ -79,9 +79,26 @@ function launchCwdFromTitle(title: string): string | null {
   return match[1].startsWith("~/") ? join(homedir(), match[1].slice(2)) : match[1];
 }
 
-export function displayTitle(name: string, custom: string | null): string {
+export function displayTitle(name: string, custom: string | null, owner: string | null = null): string {
   const fallback = name.split(" — caffeinate")[0].replace(/^[^—]+ — /, "");
-  return (custom?.trim() || fallback.trim()).replace(/\s*\|\s*(?:Working|Ready|Waiting|idle)\b.*$/i, "").trim();
+  return (owner?.trim() || custom?.trim() || fallback.trim()).replace(/\s*\|\s*(?:Working|Ready|Waiting|idle)\b.*$/i, "").trim();
+}
+
+function ownerLabels(): Map<string, string> {
+  const byWindow = new Map<string, Set<string>>();
+  try {
+    for (const name of readdirSync(join(APPARAT, "state")).filter(name => name.endsWith(".json"))) {
+      let data: any;
+      try { data = JSON.parse(readFileSync(join(APPARAT, "state", name), "utf8")); } catch { continue; }
+      const window = data.owner?.window;
+      const session = data.owner?.session;
+      if (!window || typeof session !== "string" || !session.trim()) continue;
+      const key = String(window);
+      if (!byWindow.has(key)) byWindow.set(key, new Set());
+      byWindow.get(key)!.add(session.trim());
+    }
+  } catch { return new Map(); }
+  return new Map([...byWindow].filter(([, names]) => names.size === 1).map(([id, names]) => [id, [...names][0]]));
 }
 
 export function observedState(harness: string | null, title: string, spinning: boolean, busy: boolean): TerminalSession["state"] {
@@ -103,6 +120,7 @@ async function terminalSessions(): Promise<{ rows: TerminalSession[]; errors: st
   const errors = raw.split(RECORD_SEP).filter(record => record.startsWith("@error:"))
     .map(record => `Terminal окно ${record.slice(7)}`);
   const customById = new Map<string, string>();
+  const owners = ownerLabels();
   const normalized = raw.split(RECORD_SEP).map(record => {
     const fields = record.split("\t");
     if (fields.length < 6) return record;
@@ -131,7 +149,7 @@ async function terminalSessions(): Promise<{ rows: TerminalSession[]; errors: st
     const cwd = (meta?.tty ? dirs.get(meta.tty) : null) ?? launchCwdFromTitle(title) ??
       (meta?.cwd ? "/" + meta.cwd.replace(/^\//, "") : null);
     const custom = customById.get(row.id) ?? null;
-    const label = displayTitle(title, custom);
+    const label = displayTitle(title, custom, owners.get(row.id.replace(/^mac-win-/, "")) ?? null);
     const state = observedState(row.engine, custom || title, !!meta?.spinning, !!meta?.busy);
     return { id: row.id.replace(/^mac-win-/, ""), title: label,
       cwd, harness: row.engine, state, minutesSilent: null, tty: meta?.tty ?? null };

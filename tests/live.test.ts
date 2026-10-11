@@ -8,6 +8,10 @@ test("Terminal custom title wins; Codex status suffix is removed", () => {
     .toBe("Свяжись с S0 через канал");
 });
 
+test("board owner name wins over a Codex window title", () => {
+  expect(displayTitle("Codex | Working", "Свяжись с S0", "S9")).toBe("S9");
+});
+
 test("Claude title, busy flag and a single spinner frame do not prove Working", () => {
   expect(observedState("claude", "◐ Служба ноль S0", false, true)).toBeNull();
   expect(observedState("claude", "◐ Служба ноль S0", true, true)).toBeNull();

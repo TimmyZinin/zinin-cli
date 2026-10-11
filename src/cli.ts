@@ -17,6 +17,10 @@ export function help(): string {
   zinin board [направление]  Доска аппарата
   zinin say TYPE REF TEXT  Сообщить S0 через шину
   zinin watch             Живой экран (выход: q)
+  zinin launch task.md [--cwd DIR] [--engine codex|claude]  Новое окно
+  zinin word ИМЯ|UUID "текст"  Слово потоку Codex
+  zinin close ОКНО        Завершить Codex в tty и закрыть окно
+  zinin tim               Брифинг Тима из доски и плана дня
   zinin repl              Старый AI-харнес
   zinin --version         Версия текущего checkout
 `;
@@ -39,6 +43,46 @@ export async function main(args: string[]): Promise<number> {
     }
     await import("./repl.ts");
     return 0;
+  }
+  if (command === "launch") {
+    const task = rest[0];
+    let cwd: string | undefined;
+    let engine: "codex" | "claude" | undefined;
+    for (let i = 1; i < rest.length; i++) {
+      if (rest[i] === "--cwd" && rest[i + 1]) cwd = rest[++i];
+      else if (rest[i] === "--engine" && ["codex", "claude"].includes(rest[i + 1])) engine = rest[++i] as typeof engine;
+      else { process.stderr.write("usage: zinin launch task.md [--cwd DIR] [--engine codex|claude]\n"); return 2; }
+    }
+    if (!task || task.startsWith("-")) { process.stderr.write("usage: zinin launch task.md [--cwd DIR] [--engine codex|claude]\n"); return 2; }
+    try {
+      const result = await (await import("./launch.ts")).launch({ task, cwd, engine });
+      process.stdout.write(`окно ${result.window}, thread ${result.thread || "ожидается"}\n`);
+      if (!result.thread) { process.stderr.write(`первая строка с UUID не пришла; владелец окна записан в ${result.statePath}. Повторно окно не открывайте.\n`); return 1; }
+      return 0;
+    } catch (error) { process.stderr.write(`zinin launch: ${(error as Error).message}\n`); return 1; }
+  }
+  if (command === "word") {
+    if (rest.length !== 2 || !rest[0] || !rest[1]) {
+      process.stderr.write('usage: zinin word ИМЯ|UUID "текст"\n'); return 2;
+    }
+    try {
+      const thread = (await import("./word.ts")).queueWord(rest[0], rest[1]);
+      process.stdout.write(`слово в очереди: thread ${thread}\n`);
+      return 0;
+    } catch (error) { process.stderr.write(`zinin word: ${(error as Error).message}\n`); return 1; }
+  }
+  if (command === "close") {
+    if (rest.length !== 1 || !/^\d+$/.test(rest[0])) { process.stderr.write("usage: zinin close ОКНО\n"); return 2; }
+    try {
+      const result = await (await import("./close.ts")).closeWindow(Number(rest[0]));
+      process.stdout.write(`окно ${result.window} закрыто${result.ghost ? " (Terminal хранит пустой id)" : ""}; остановлены PID: ${result.stopped.join(", ") || "нет"}\n`);
+      return 0;
+    } catch (error) { process.stderr.write(`zinin close: ${(error as Error).message}\n`); return 1; }
+  }
+  if (command === "tim") {
+    if (rest.length) { process.stderr.write("zinin tim: лишние аргументы\n"); return 2; }
+    try { process.stdout.write((await import("./tim.ts")).renderTim()); return 0; }
+    catch (error) { process.stderr.write(`zinin tim: ${(error as Error).message}\n`); return 1; }
   }
   if (command === "ps") {
     if (rest.some(arg => arg !== "--json")) {
