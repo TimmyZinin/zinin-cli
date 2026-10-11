@@ -1,47 +1,41 @@
 #!/bin/sh
-# ZININ CLI — установщик одной командой. Mac / Linux. Без Node, без Homebrew.
-#   curl -fsSL https://zinin.ai/install | sh
-set -e
+# Install the current local checkout of Zinin OS on this Mac.
+set -eu
 
-REPO="TimmyZinin/zinin-cli"
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 DEST="$HOME/.local/bin"
 BIN="$DEST/zinin"
+BUILD="$ROOT/dist/zinin.js"
 
-OS=$(uname -s); ARCH=$(uname -m)
-case "$OS" in
-  Darwin) T="darwin" ;;
-  Linux)  T="linux" ;;
-  *) echo "ZININ: ОС $OS пока не поддержана. Напиши @timzinin."; exit 1 ;;
-esac
-case "$ARCH" in
-  arm64|aarch64) A="arm64" ;;
-  x86_64|amd64)  A="x64" ;;
-  *) echo "ZININ: архитектура $ARCH не поддержана."; exit 1 ;;
-esac
-
-URL="https://github.com/$REPO/releases/latest/download/zinin-$T-$A"
-
-printf '\n  Ставлю ZININ (%s-%s)…\n' "$T" "$A"
-mkdir -p "$DEST"
-if command -v curl >/dev/null 2>&1; then
-  curl -fsSL "$URL" -o "$BIN"
-else
-  wget -qO "$BIN" "$URL"
+if ! command -v bun >/dev/null 2>&1; then
+  echo 'zinin: нужен установленный Bun' >&2
+  exit 127
 fi
-chmod +x "$BIN"
-
-# гарантируем, что ~/.local/bin в PATH
-case ":$PATH:" in
-  *":$DEST:"*) PATH_OK=1 ;;
-  *) PATH_OK=0 ;;
-esac
-if [ "$PATH_OK" = "0" ]; then
-  for rc in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.profile"; do
-    [ -f "$rc" ] && ! grep -q '.local/bin' "$rc" 2>/dev/null && \
-      printf '\nexport PATH="%s:$PATH"\n' "$DEST" >> "$rc"
-  done
-  echo "  Добавил ~/.local/bin в PATH (новый терминал подхватит)."
+if ! command -v git >/dev/null 2>&1; then
+  echo 'zinin: нужен git для проверки версии checkout' >&2
+  exit 127
 fi
 
-printf '\n  Готово. Запусти: \033[1mzinin\033[0m\n'
-printf '  (если «команда не найдена» — открой новый терминал)\n\n'
+mkdir -p "$DEST" "$ROOT/dist"
+bun build "$ROOT/src/cli.ts" --target bun --outfile "$BUILD"
+chmod +x "$BUILD"
+
+# Preserve the previous regular binary once; replacing a link needs no copy.
+if [ -e "$BIN" ] && [ ! -L "$BIN" ]; then
+  BACKUP="$BIN.legacy-$(date '+%Y%m%d-%H%M%S')-$$"
+  mv "$BIN" "$BACKUP"
+  echo "Старый бинарь сохранён: $BACKUP"
+fi
+
+TMP="$DEST/.zinin-new-$$"
+trap 'rm -f "$TMP"' EXIT HUP INT TERM
+ln -s "$BUILD" "$TMP"
+mv -f "$TMP" "$BIN"
+
+EXPECTED=$(git -C "$ROOT" rev-parse --short HEAD)
+ACTUAL=$($BIN --version)
+if [ "$ACTUAL" != "$EXPECTED" ]; then
+  echo "zinin: версия установки $ACTUAL не совпала с checkout $EXPECTED" >&2
+  exit 1
+fi
+echo "Установлено: $BIN → $BUILD ($ACTUAL)"
