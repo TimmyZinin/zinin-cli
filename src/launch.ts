@@ -78,12 +78,21 @@ export function parseWindowTtys(raw: string): Map<number, string> {
 
 function windowTtys(): Map<number, string> { return parseWindowTtys(appleScript(WINDOWS_SCRIPT, [])); }
 
+async function stableWindowTtys(): Promise<Map<number, string>> {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    try { return windowTtys(); }
+    catch (error) { lastError = error as Error; await Bun.sleep(500); }
+  }
+  throw lastError || new Error("Terminal: список окон недоступен");
+}
+
 async function openWindow(commandPath: string): Promise<{ window: number; tty: string }> {
-  const before = windowTtys();
+  const before = await stableWindowTtys();
   const child = Bun.spawnSync(["osascript", "-e", OPEN_SCRIPT, commandPath], { stdout: "pipe", stderr: "pipe" });
   const openError = new TextDecoder().decode(child.stderr).trim();
   for (let attempt = 0; attempt < 10; attempt++) {
-    const candidates = [...windowTtys()].filter(([id, tty]) => !before.has(id) && tty);
+    const candidates = [...await stableWindowTtys()].filter(([id, tty]) => !before.has(id) && tty);
     if (candidates.length > 1) throw new Error(`Terminal открыл несколько новых окон: ${candidates.map(([id]) => id).join(", ")}; ничего не повторяйте`);
     if (candidates.length === 1) return { window: candidates[0][0], tty: candidates[0][1] };
     await Bun.sleep(500);
@@ -141,7 +150,20 @@ export async function launch(options: LaunchOptions): Promise<LaunchResult> {
   const path = statePath(ref);
   try {
     const old = JSON.parse(readFileSync(path, "utf8"));
-    if (old.owner?.window) throw new Error(`ref ${ref} уже закреплён за окном ${old.owner.window}`);
+    if (old.owner?.window) {
+      const owner = old.owner;
+      const window = Number(owner.window);
+      const commandPath = String(owner.command || "");
+      const token = basename(dirname(commandPath)).match(new RegExp(`^${ref}-([0-9a-f]{16})$`))?.[1];
+      if (!token || !commandPath.startsWith(LAUNCH_DIR + "/") || owner.cwd !== cwd || owner.engine !== engine)
+        throw new Error(`ref ${ref} уже закреплён за окном ${window}`);
+      const actualTty = (await stableWindowTtys()).get(window);
+      if (!actualTty || actualTty !== owner.tty) throw new Error(`окно ${window} уже не активно; повторный запуск запрещён до сверки owner`);
+      const thread = UUID.test(String(owner.thread || "")) ? owner.thread :
+        await awaitAnnouncement(ref, token, Date.parse(old.updated_at || "") - 5000);
+      if (thread && thread !== owner.thread) updateOwner(ref, { thread });
+      return { window, thread: thread || null, ref, statePath: path, commandPath };
+    }
   } catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
   const token = randomBytes(8).toString("hex");
   const launchId = `${ref}-${token}`;
@@ -164,8 +186,10 @@ export async function launch(options: LaunchOptions): Promise<LaunchResult> {
   const { window, tty } = await openWindow(commandPath);
   updateOwner(ref, { session: ref.toUpperCase(), thread: "", window, tty, engine, cwd, command: commandPath });
   for (let i = 0; i < 10; i++) {
-    const trust = appleScript(TRUST_SCRIPT, [String(window)]);
-    if (trust === "trust:1") break;
+    try {
+      const trust = appleScript(TRUST_SCRIPT, [String(window)]);
+      if (trust === "trust:1") break;
+    } catch { /* Terminal can reject a tab reference while the new tab initializes. */ }
     await Bun.sleep(500);
   }
   const thread = await awaitAnnouncement(ref, token, started);
