@@ -75,7 +75,7 @@ export async function main(args: string[]): Promise<number> {
     if (rest.length !== 1 || !/^\d+$/.test(rest[0])) { process.stderr.write("usage: zinin close ОКНО\n"); return 2; }
     try {
       const result = await (await import("./close.ts")).closeWindow(Number(rest[0]));
-      process.stdout.write(`окно ${result.window} закрыто; остановлены PID: ${result.stopped.join(", ") || "нет"}\n`);
+      process.stdout.write(`окно ${result.window} закрыто${result.ghost ? " (Terminal хранит пустой id)" : ""}; остановлены PID: ${result.stopped.join(", ") || "нет"}\n`);
       return 0;
     } catch (error) { process.stderr.write(`zinin close: ${(error as Error).message}\n`); return 1; }
   }

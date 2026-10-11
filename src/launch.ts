@@ -50,11 +50,13 @@ const OPEN_SCRIPT = `on run argv
     set createdTTY to tty of createdTab
     if createdTTY is "" then error "terminal_tty_unknown"
     repeat with w in windows
-      repeat with t in tabs of w
-        if tty of t is createdTTY then
-          return ((id of w as text) & (ASCII character 9) & createdTTY)
-        end if
-      end repeat
+      try
+        repeat with t in tabs of w
+          if tty of t is createdTTY then
+            return ((id of w as text) & (ASCII character 9) & createdTTY)
+          end if
+        end repeat
+      end try
     end repeat
     error "terminal_window_unknown"
   end tell
