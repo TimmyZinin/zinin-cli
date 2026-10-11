@@ -83,6 +83,30 @@ export async function main(args: string[]): Promise<number> {
       return 1;
     }
   }
+  if (command === "say") {
+    let sender = process.env.ZININ_SESSION || process.env.APPARAT_SESSION || "";
+    const positional: string[] = [];
+    for (let i = 0; i < rest.length; i++) {
+      if (rest[i] === "--from") sender = rest[++i] || "";
+      else positional.push(rest[i]);
+    }
+    const [type, ref, message] = positional;
+    if (!/^[A-Z][A-Z0-9_-]*$/.test(sender) || !["start", "tick", "question", "ready", "done"].includes(type) ||
+        !ref || !message || positional.length !== 3) {
+      process.stderr.write('usage: ZININ_SESSION=ZOS zinin say TYPE REF "текст" (или --from ZOS)\n');
+      return 2;
+    }
+    const script = join(process.env.APPARAT_HOME || join(homedir(), "apparat"), "bin/say.sh");
+    try {
+      const child = Bun.spawnSync([script, sender, type, ref, message], { stdout: "pipe", stderr: "pipe" });
+      process.stdout.write(child.stdout);
+      process.stderr.write(child.stderr);
+      return child.exitCode ?? 1;
+    } catch (error) {
+      process.stderr.write(`источник say.sh недоступен: ${(error as Error).message}\n`);
+      return 1;
+    }
+  }
   process.stderr.write(`zinin: неизвестная команда ${command}. См. zinin --help\n`);
   return 2;
 }
