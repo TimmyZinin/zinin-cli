@@ -43,24 +43,53 @@ function appleScript(script: string, args: string[]): string {
 }
 
 const OPEN_SCRIPT = `on run argv
-  set commandPath to item 1 of argv
   tell application "Terminal"
     launch
-    set createdTab to do script (quoted form of commandPath)
-    set createdTTY to tty of createdTab
-    if createdTTY is "" then error "terminal_tty_unknown"
-    repeat with w in windows
-      try
-        repeat with t in tabs of w
-          if tty of t is createdTTY then
-            return ((id of w as text) & (ASCII character 9) & createdTTY)
-          end if
-        end repeat
-      end try
-    end repeat
-    error "terminal_window_unknown"
+    do script (quoted form of item 1 of argv)
   end tell
 end run`;
+
+const WINDOWS_SCRIPT = `set tabChar to (ASCII character 9)
+set recSep to (ASCII character 30)
+tell application "Terminal"
+  set out to ""
+  repeat with w in windows
+    try
+      set winId to id of w as text
+      set ttyText to ""
+      try
+        set ttyText to tty of selected tab of w
+      end try
+      set out to out & winId & tabChar & ttyText & recSep
+    end try
+  end repeat
+  return out
+end tell`;
+
+export function parseWindowTtys(raw: string): Map<number, string> {
+  const rows = new Map<number, string>();
+  for (const record of raw.split(String.fromCharCode(30))) {
+    const [idText, tty] = record.split("\t");
+    const id = Number(idText);
+    if (Number.isSafeInteger(id) && id > 0) rows.set(id, /^\/dev\/ttys/.test(tty || "") ? tty : "");
+  }
+  return rows;
+}
+
+function windowTtys(): Map<number, string> { return parseWindowTtys(appleScript(WINDOWS_SCRIPT, [])); }
+
+async function openWindow(commandPath: string): Promise<{ window: number; tty: string }> {
+  const before = windowTtys();
+  const child = Bun.spawnSync(["osascript", "-e", OPEN_SCRIPT, commandPath], { stdout: "pipe", stderr: "pipe" });
+  const openError = new TextDecoder().decode(child.stderr).trim();
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const candidates = [...windowTtys()].filter(([id, tty]) => !before.has(id) && tty);
+    if (candidates.length > 1) throw new Error(`Terminal открыл несколько новых окон: ${candidates.map(([id]) => id).join(", ")}; ничего не повторяйте`);
+    if (candidates.length === 1) return { window: candidates[0][0], tty: candidates[0][1] };
+    await Bun.sleep(500);
+  }
+  throw new Error(`новое окно Terminal не подтверждено: ${openError || `osascript код ${child.exitCode}`}; не повторяйте запуск без проверки`);
+}
 
 const TRUST_SCRIPT = `on run argv
   set windowID to (item 1 of argv) as integer
@@ -132,10 +161,8 @@ export async function launch(options: LaunchOptions): Promise<LaunchResult> {
   chmodSync(commandPath, 0o700);
   if (!isAbsolute(commandPath)) throw new Error("внутренняя ошибка: .command не абсолютный");
   const started = Date.now();
-  const opened = appleScript(OPEN_SCRIPT, [commandPath]).split("\t");
-  const window = Number(opened[0]);
-  if (!Number.isInteger(window) || window < 1 || !/^\/dev\/tty/.test(opened[1] || "")) throw new Error("Terminal открыл окно без подтверждённого id/tty");
-  updateOwner(ref, { session: ref.toUpperCase(), thread: "", window, tty: opened[1], engine, cwd, command: commandPath });
+  const { window, tty } = await openWindow(commandPath);
+  updateOwner(ref, { session: ref.toUpperCase(), thread: "", window, tty, engine, cwd, command: commandPath });
   for (let i = 0; i < 10; i++) {
     const trust = appleScript(TRUST_SCRIPT, [String(window)]);
     if (trust === "trust:1") break;
