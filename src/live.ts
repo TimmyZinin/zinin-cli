@@ -13,7 +13,7 @@ const SIX_HOURS = 6 * 60 * 60 * 1000;
 
 export interface TerminalSession {
   id: string; title: string; cwd: string | null; harness: string | null;
-  state: "Working" | "Ready" | "idle" | "unknown";
+  state: "Working" | "Ready" | "idle" | null;
   minutesSilent: number | null; tty: string | null;
 }
 export interface CodexThread {
@@ -51,6 +51,12 @@ tell application "Terminal"
       set winId to id of w as text
       try
         set titleText to name of w
+        try
+          set customText to custom title of selected tab of w
+          if customText is missing value then set customText to ""
+        on error
+          set customText to ""
+        end try
         set screenText to contents of selected tab of w
         set busyText to (busy of selected tab of w) as text
         try
@@ -58,7 +64,7 @@ tell application "Terminal"
         on error
           set ttyText to ""
         end try
-        set out to out & winId & tabChar & titleText & tabChar & screenText & tabChar & busyText & tabChar & ttyText & recSep
+        set out to out & winId & tabChar & titleText & tabChar & customText & tabChar & screenText & tabChar & busyText & tabChar & ttyText & recSep
       on error e
         set out to out & "@error:" & winId & ":" & e & recSep
       end try
@@ -73,14 +79,40 @@ function launchCwdFromTitle(title: string): string | null {
   return match[1].startsWith("~/") ? join(homedir(), match[1].slice(2)) : match[1];
 }
 
+export function displayTitle(name: string, custom: string | null): string {
+  const fallback = name.split(" — caffeinate")[0].replace(/^[^—]+ — /, "");
+  return (custom?.trim() || fallback.trim()).replace(/\s*\|\s*(?:Working|Ready|Waiting|idle)\b.*$/i, "").trim();
+}
+
+export function observedState(harness: string | null, title: string, spinning: boolean, busy: boolean): TerminalSession["state"] {
+  // Claude's ◐ title, Terminal busy flag and a visible spinner can persist
+  // without a second sample proving movement.
+  if (harness === "claude") return null;
+  if (spinning) return "Working";
+  if (harness === "codex" || harness === "kimi") {
+    if (/\|\s*(?:Ready|Waiting)\b/i.test(title)) return "Ready";
+    if (/\|\s*Working\b/i.test(title)) return "Working";
+    if (/\|\s*idle\b/i.test(title)) return "idle";
+    return null;
+  }
+  return busy ? null : "idle";
+}
+
 async function terminalSessions(): Promise<{ rows: TerminalSession[]; errors: string[] }> {
   const raw = await run(["osascript", "-e", TERMINAL_SCRIPT], 7000);
   const errors = raw.split(RECORD_SEP).filter(record => record.startsWith("@error:"))
     .map(record => `Terminal окно ${record.slice(7)}`);
-  const metadata = new Map<string, { tty: string | null; cwd: string | null; spinning: boolean }>();
-  const parsed = parseTerminalWindows(raw, (id, data) => metadata.set(id, data));
+  const customById = new Map<string, string>();
+  const normalized = raw.split(RECORD_SEP).map(record => {
+    const fields = record.split("\t");
+    if (fields.length < 6) return record;
+    customById.set(`mac-win-${fields[0].trim()}`, fields[2]);
+    return [fields[0], fields[1], ...fields.slice(3)].join("\t");
+  }).join(RECORD_SEP);
+  const metadata = new Map<string, { tty: string | null; cwd: string | null; spinning: boolean; busy: boolean }>();
+  const parsed = parseTerminalWindows(normalized, (id, data) => metadata.set(id, data));
   const titleById = new Map<string, string>();
-  for (const record of raw.split(RECORD_SEP)) {
+  for (const record of normalized.split(RECORD_SEP)) {
     const [id, title] = record.split("\t", 3);
     if (id && title) titleById.set(`mac-win-${id.trim()}`, title);
   }
@@ -98,11 +130,9 @@ async function terminalSessions(): Promise<{ rows: TerminalSession[]; errors: st
     const meta = metadata.get(row.id);
     const cwd = (meta?.tty ? dirs.get(meta.tty) : null) ?? launchCwdFromTitle(title) ??
       (meta?.cwd ? "/" + meta.cwd.replace(/^\//, "") : null);
-    const label = title.split(" — ").slice(0, 2).join(" — ").trim() || title.slice(0, 100);
-    let state: TerminalSession["state"] = "unknown";
-    if (/\|\s*Ready\b/i.test(title)) state = "Ready";
-    else if (/\|\s*Working\b/i.test(title) || meta?.spinning || row.state === "working") state = "Working";
-    else if (row.state === "idle") state = "idle";
+    const custom = customById.get(row.id) ?? null;
+    const label = displayTitle(title, custom);
+    const state = observedState(row.engine, custom || title, !!meta?.spinning, !!meta?.busy);
     return { id: row.id.replace(/^mac-win-/, ""), title: label,
       cwd, harness: row.engine, state, minutesSilent: null, tty: meta?.tty ?? null };
   });
