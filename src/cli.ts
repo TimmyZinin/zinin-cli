@@ -39,8 +39,13 @@ export async function main(args: string[]): Promise<number> {
     return 0;
   }
   if (command === "ps") {
-    const { psMain } = await import("./ps.ts");
-    await psMain(rest);
+    if (rest.some(arg => arg !== "--json")) {
+      process.stderr.write("zinin ps: допустим только --json\n");
+      return 2;
+    }
+    const { collectLive, renderLive } = await import("./live.ts");
+    const snapshot = await collectLive();
+    process.stdout.write(rest.includes("--json") ? JSON.stringify(snapshot) + "\n" : renderLive(snapshot));
     return 0;
   }
   process.stderr.write(`zinin: неизвестная команда ${command}. См. zinin --help\n`);
