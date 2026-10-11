@@ -19,6 +19,22 @@ export function isTerminalClosed(exists: string, tabs: string): boolean {
   return exists === "false" || (exists === "true" && tabs === "0");
 }
 
+const TERMINATE_SHEET = `on run argv
+  set windowID to (item 1 of argv) as integer
+  tell application "Terminal"
+    set index of window id windowID to 1
+    set targetName to name of window id windowID
+    if id of front window is not windowID then error "wrong_front_window"
+  end tell
+  tell application "System Events" to tell process "Terminal"
+    if name of front window is not targetName then error "wrong_ui_window"
+    if count of sheets of front window is 0 then return "no-sheet"
+    if not (exists button "Terminate" of sheet 1 of front window) then error "terminate_button_missing"
+    click button "Terminate" of sheet 1 of front window
+    return "terminated"
+  end tell
+end run`;
+
 export function parseTtyProcesses(text: string, tty: string): TtyProcess[] {
   return text.split("\n").flatMap(line => {
     const match = /^\s*(\d+)\s+(\S+)\s+(.+?)\s*$/.exec(line);
@@ -73,8 +89,13 @@ export async function closeWindow(window: number): Promise<{ window: number; tty
     if (currentProcess(item.pid, tty, item.name)) process.kill(item.pid, "SIGKILL");
   }
   run(["osascript", "-e", `tell application "Terminal" to close window id ${window} saving no`]);
-  const exists = run(["osascript", "-e", `tell application "Terminal" to get exists window id ${window}`]);
-  const tabs = exists === "true" ? run(["osascript", "-e", `tell application "Terminal" to get count of tabs of window id ${window}`]) : "0";
+  let exists = run(["osascript", "-e", `tell application "Terminal" to get exists window id ${window}`]);
+  let tabs = exists === "true" ? run(["osascript", "-e", `tell application "Terminal" to get count of tabs of window id ${window}`]) : "0";
+  if (exists === "true" && tabs !== "0") {
+    run(["osascript", "-e", TERMINATE_SHEET, String(window)]);
+    exists = run(["osascript", "-e", `tell application "Terminal" to get exists window id ${window}`]);
+    tabs = exists === "true" ? run(["osascript", "-e", `tell application "Terminal" to get count of tabs of window id ${window}`]) : "0";
+  }
   if (!isTerminalClosed(exists, tabs)) throw new Error(`Terminal сообщил close, но у окна ${window} осталось ${tabs} вкладок`);
   clearOwners(window);
   return { window, tty: ttyPath, stopped, ghost: exists === "true" };
