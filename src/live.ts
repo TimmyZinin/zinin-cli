@@ -8,13 +8,14 @@ import { parseTerminalWindows, parseLaunchDirs, RECORD_SEP } from "./adapters/se
 import { version } from "./cli.ts";
 
 const APPARAT = process.env.APPARAT_HOME || join(homedir(), "apparat");
+const STATE_DIR = process.env.ZININ_STATE_DIR || join(APPARAT, "state");
 const SOCKET = process.env.ZININ_CODEX_SOCKET || join(homedir(), ".codex/app-server-control/app-server-control.sock");
 const SIX_HOURS = 6 * 60 * 60 * 1000;
 
 export interface TerminalSession {
   id: string; title: string; cwd: string | null; harness: string | null;
   state: "Working" | "Ready" | "idle" | null;
-  minutesSilent: number | null; tty: string | null;
+  minutesSilent: number | null; tty: string | null; source?: "Terminal" | "ps-tty";
 }
 export interface CodexThread {
   uuid: string; cwd: string | null; status: string; minutesSilent: number | null;
@@ -87,9 +88,9 @@ export function displayTitle(name: string, custom: string | null, owner: string 
 function ownerLabels(): Map<string, string> {
   const byWindow = new Map<string, Set<string>>();
   try {
-    for (const name of readdirSync(join(APPARAT, "state")).filter(name => name.endsWith(".json"))) {
+    for (const name of readdirSync(STATE_DIR).filter(name => name.endsWith(".json"))) {
       let data: any;
-      try { data = JSON.parse(readFileSync(join(APPARAT, "state", name), "utf8")); } catch { continue; }
+      try { data = JSON.parse(readFileSync(join(STATE_DIR, name), "utf8")); } catch { continue; }
       const window = data.owner?.window;
       const session = data.owner?.session;
       if (!window || typeof session !== "string" || !session.trim()) continue;
@@ -152,9 +153,27 @@ async function terminalSessions(): Promise<{ rows: TerminalSession[]; errors: st
     const label = displayTitle(title, custom, owners.get(row.id.replace(/^mac-win-/, "")) ?? null);
     const state = observedState(row.engine, custom || title, !!meta?.spinning, !!meta?.busy);
     return { id: row.id.replace(/^mac-win-/, ""), title: label,
-      cwd, harness: row.engine, state, minutesSilent: null, tty: meta?.tty ?? null };
+      cwd, harness: row.engine, state, minutesSilent: null, tty: meta?.tty ?? null, source: "Terminal" as const };
   });
   return { rows, errors };
+}
+
+export function parseTtyFallback(psText: string): TerminalSession[] {
+  const rows = new Map<string, TerminalSession>();
+  for (const line of psText.split("\n")) {
+    const match = /^\s*(\d+)\s+(ttys\d+)\s+(.+?)\s*$/.exec(line);
+    if (!match) continue;
+    const harness = match[3].split("/").pop();
+    if (harness !== "codex" && harness !== "claude" && harness !== "kimi") continue;
+    if (rows.has(match[2])) continue;
+    rows.set(match[2], { id: `tty:${match[2]}`, title: `PID ${match[1]} · заголовок неизвестен`,
+      cwd: null, harness, state: null, minutesSilent: null, tty: `/dev/${match[2]}`, source: "ps-tty" });
+  }
+  return [...rows.values()];
+}
+
+async function ttyFallback(): Promise<TerminalSession[]> {
+  return parseTtyFallback(await run(["ps", "-Ao", "pid=,tty=,comm="], 5000));
 }
 
 class WebSocketReader {
@@ -230,9 +249,16 @@ async function codexThreads(nowMs: number): Promise<CodexThread[]> {
     };
     await rpc(1, "initialize", { clientInfo: { name: "zinin_os", version: "1.0" }, capabilities: { experimentalApi: true } });
     sendFrame(socket, { method: "initialized", params: {} });
-    const result = await rpc(2, "thread/list", { limit: 100 });
-    if (!Array.isArray(result?.data)) throw new Error("неверный ответ thread/list");
-    return result.data.filter((row: any) => row?.status?.type === "active").map((row: any) => ({
+    const rows: any[] = [];
+    let cursor: string | undefined;
+    for (let page = 0; page < 5; page++) {
+      const result = await rpc(2 + page, "thread/list", { limit: 20, ...(cursor ? { cursor } : {}) });
+      if (!Array.isArray(result?.data)) throw new Error("неверный ответ thread/list");
+      rows.push(...result.data);
+      if (typeof result.nextCursor !== "string" || !result.nextCursor || result.nextCursor === cursor) break;
+      cursor = result.nextCursor;
+    }
+    return rows.filter((row: any) => row?.status?.type === "active").map((row: any) => ({
       uuid: String(row.id), cwd: typeof row.cwd === "string" ? row.cwd : null,
       status: row.status.type, minutesSilent: typeof row.updatedAt === "number" ?
         Math.max(0, Math.floor((nowMs - row.updatedAt * 1000) / 60000)) : null,
@@ -272,7 +298,11 @@ export async function collectLive(): Promise<LiveSnapshot> {
     snapshot.terminal = terminal.value.rows;
     snapshot.unavailable.push(...terminal.value.errors);
   }
-  else snapshot.unavailable.push(`Terminal: ${(terminal.reason as Error).message}`);
+  else {
+    snapshot.unavailable.push(`Terminal: ${(terminal.reason as Error).message}`);
+    try { snapshot.terminal = await ttyFallback(); }
+    catch (error) { snapshot.unavailable.push(`ps tty: ${(error as Error).message}`); }
+  }
   if (threads.status === "fulfilled") snapshot.threads = threads.value;
   else snapshot.unavailable.push(`Codex app-server: ${(threads.reason as Error).message}`);
   try { snapshot.bus = busSessions(nowMs); }
@@ -297,15 +327,17 @@ function table(headers: string[], rows: (string | number | null)[][]): string {
 }
 
 export function renderLive(snapshot: LiveSnapshot): string {
-  const lines = [`Zinin OS ${snapshot.version} · ${snapshot.generatedAt}`, "", "Окна Terminal",
-    table(["id", "заголовок", "cwd", "харнесс", "состояние", "тишина, мин"],
+  const fallback = snapshot.terminal.some(row => row.source === "ps-tty");
+  const lines = [`Zinin OS ${snapshot.version} · ${snapshot.generatedAt}`, "",
+    `${fallback ? "Процессы на tty (Terminal недоступен)" : "Окна Terminal"} · ${snapshot.terminal.length}`,
+    table(["id/tty", "заголовок", "cwd", "харнесс", "состояние", "тишина, мин"],
       snapshot.terminal.map(row => [row.id, row.title, row.cwd, row.harness, row.state, row.minutesSilent])),
-    "", "Потоки Codex",
+    "", `Потоки Codex · ${snapshot.threads.length}`,
     table(["UUID", "cwd", "status", "тишина, мин"],
       snapshot.threads.map(row => [row.uuid, row.cwd, row.status, row.minutesSilent])),
-    "", "Шина · последние 6 ч",
+    "", `Шина · последние 6 ч · ${snapshot.bus.length} отправителей`,
     table(["сессия", "тип", "последний тик", "последнее событие", "ref"],
       snapshot.bus.map(row => [row.session, row.lastType, row.lastTick, row.lastAt, row.ref]))];
-  for (const error of snapshot.unavailable) lines.push(`источник ${error.startsWith("Terminal:") ? "Terminal" : error.startsWith("Codex") ? "Codex app-server" : "шина"} недоступен: ${error.split(": ").slice(1).join(": ")}`);
+  for (const error of snapshot.unavailable) lines.push(`источник ${error.startsWith("Terminal:") ? "Terminal" : error.startsWith("Codex") ? "Codex app-server" : error.startsWith("ps tty:") ? "ps tty" : "шина"} недоступен: ${error.split(": ").slice(1).join(": ")}`);
   return lines.join("\n") + "\n";
 }

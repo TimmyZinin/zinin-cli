@@ -7,7 +7,7 @@ import { mkdirSync, readFileSync, realpathSync, statSync, writeFileSync, renameS
 const UUID = /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i;
 const APPARAT = process.env.APPARAT_HOME || join(homedir(), "apparat");
 const LAUNCH_DIR = join(APPARAT, "runs/zinin-launch");
-const STATE_DIR = join(APPARAT, "state");
+const STATE_DIR = process.env.ZININ_STATE_DIR || join(APPARAT, "state");
 
 export interface LaunchOptions { task: string; cwd?: string; engine?: "codex" | "claude"; }
 export interface LaunchResult { window: number; thread: string | null; ref: string; statePath: string; commandPath: string; }
@@ -22,6 +22,7 @@ export function taskRef(path: string): string {
 function statePath(ref: string): string { return join(STATE_DIR, `${ref}.json`); }
 
 function updateOwner(ref: string, owner: Record<string, unknown>): string {
+  mkdirSync(STATE_DIR, { recursive: true, mode: 0o700 });
   const path = statePath(ref);
   let data: Record<string, any> = {};
   try { data = JSON.parse(readFileSync(path, "utf8")); }

@@ -4,6 +4,7 @@ import { basename, join } from "node:path";
 import { readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 
 const APPARAT = process.env.APPARAT_HOME || join(homedir(), "apparat");
+const STATE_DIR = process.env.ZININ_STATE_DIR || join(APPARAT, "state");
 const ENGINES = new Set(["codex", "claude", "caffeinate"]);
 
 function run(argv: string[]): string {
@@ -53,7 +54,7 @@ function currentProcess(pid: number, tty: string, name: string): boolean {
 }
 
 function clearOwners(window: number): void {
-  const stateDir = join(APPARAT, "state");
+  const stateDir = STATE_DIR;
   for (const name of readdirSync(stateDir).filter(name => name.endsWith(".json"))) {
     const path = join(stateDir, name);
     let data: any;
