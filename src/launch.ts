@@ -52,7 +52,7 @@ const OPEN_SCRIPT = `on run argv
     repeat with w in windows
       repeat with t in tabs of w
         if tty of t is createdTTY then
-          return ((id of w as text) & tab & createdTTY)
+          return ((id of w as text) & (ASCII character 9) & createdTTY)
         end if
       end repeat
     end repeat
