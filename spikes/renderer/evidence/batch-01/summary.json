@@ -1,0 +1,1013 @@
+{
+  "fixture_sha256": "00f47a7b76431cb0bd7c93370d8e7f0729b7129a101056d5eceee098e3730dcd",
+  "scope": "batch Update/View, not terminal loop",
+  "cases": [
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 80,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 47.60761605575681,
+      "render_ms": 17.620837,
+      "bytes": 10442,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-3-80x24-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 80,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 17.38221407867968,
+      "render_ms": 1.866,
+      "bytes": 12283,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-3-80x24-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 80,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 57.82114481553435,
+      "render_ms": 12.601039999999998,
+      "bytes": 148065,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-3-80x24-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 80,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 21.14584995433688,
+      "render_ms": 5.504,
+      "bytes": 199637,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-3-80x24-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 100,
+      "height": 30,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 68.36989289149642,
+      "render_ms": 22.467119999999998,
+      "bytes": 12809,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-3-100x30-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 100,
+      "height": 30,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 11.117604095488787,
+      "render_ms": 1.22,
+      "bytes": 15480,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-3-100x30-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 100,
+      "height": 30,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 71.1770139168948,
+      "render_ms": 16.199696000000003,
+      "bytes": 148065,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-3-100x30-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 100,
+      "height": 30,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 20.84655500948429,
+      "render_ms": 5.705,
+      "bytes": 199637,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-3-100x30-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 120,
+      "height": 36,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 44.6276820730418,
+      "render_ms": 8.072921000000004,
+      "bytes": 15166,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-3-120x36-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 120,
+      "height": 36,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 11.330856941640377,
+      "render_ms": 1.123,
+      "bytes": 18679,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-3-120x36-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 120,
+      "height": 36,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 51.56165990047157,
+      "render_ms": 8.068354,
+      "bytes": 148055,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-3-120x36-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 120,
+      "height": 36,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 17.315632896497846,
+      "render_ms": 5.785,
+      "bytes": 199637,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-3-120x36-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 79,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 31.594154192134738,
+      "render_ms": 7.944284999999999,
+      "bytes": 10457,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-3-79x24-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 79,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "3",
+        "screen"
+      ],
+      "wall_ms": 10.661158012226224,
+      "render_ms": 0.957,
+      "bytes": 12290,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-3-79x24-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 3,
+      "width": 79,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 36.96776903234422,
+      "render_ms": 7.562284000000002,
+      "bytes": 148064,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-3-79x24-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 3,
+      "width": 79,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "3",
+        "plain"
+      ],
+      "wall_ms": 17.01244106516242,
+      "render_ms": 6.025,
+      "bytes": 199637,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-3-79x24-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 80,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 34.30246305651963,
+      "render_ms": 7.505639000000002,
+      "bytes": 9370,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-7-80x24-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 80,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 9.757024003192782,
+      "render_ms": 0.692,
+      "bytes": 10483,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-7-80x24-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 80,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 42.88195609115064,
+      "render_ms": 12.610002999999999,
+      "bytes": 149001,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-7-80x24-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 80,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "80",
+        "24",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 29.292232124134898,
+      "render_ms": 10.568,
+      "bytes": 200574,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-7-80x24-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 100,
+      "height": 30,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 90.8007740508765,
+      "render_ms": 27.286351000000003,
+      "bytes": 11729,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-7-100x30-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 100,
+      "height": 30,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 48.86465799063444,
+      "render_ms": 3.294,
+      "bytes": 13681,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-7-100x30-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 100,
+      "height": 30,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 105.65191600471735,
+      "render_ms": 24.618532000000002,
+      "bytes": 149001,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-7-100x30-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 100,
+      "height": 30,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "100",
+        "30",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 25.941025000065565,
+      "render_ms": 6.886,
+      "bytes": 200573,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-7-100x30-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 120,
+      "height": 36,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 56.22803000733256,
+      "render_ms": 14.553761000000002,
+      "bytes": 14087,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-7-120x36-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 120,
+      "height": 36,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 16.203180188313127,
+      "render_ms": 1.502,
+      "bytes": 16879,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-7-120x36-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 120,
+      "height": 36,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 40.60633294284344,
+      "render_ms": 8.645663000000003,
+      "bytes": 149000,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-7-120x36-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 120,
+      "height": 36,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "120",
+        "36",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 76.19509194046259,
+      "render_ms": 49.84,
+      "bytes": 200573,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-7-120x36-plain.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 79,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 106.95910104550421,
+      "render_ms": 41.41427199999999,
+      "bytes": 9377,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "ts-7-79x24-screen.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 79,
+      "height": 24,
+      "mode": "screen",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "7",
+        "screen"
+      ],
+      "wall_ms": 17.963296035304666,
+      "render_ms": 1.275,
+      "bytes": 10490,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true
+      },
+      "evidence": "go-7-79x24-screen.json"
+    },
+    {
+      "candidate": "ts",
+      "count": 7,
+      "width": 79,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/bun-1.3.0/bun",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/ts.ts",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 175.12436001561582,
+      "render_ms": 41.936825999999996,
+      "bytes": 149001,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "ts-7-79x24-plain.json"
+    },
+    {
+      "candidate": "go",
+      "count": 7,
+      "width": 79,
+      "height": 24,
+      "mode": "plain",
+      "command": [
+        "/home/agents/work/zinin-harness-2/runtime/renderer-go",
+        "/home/agents/work/zinin-harness-2/zinin-cli/spikes/renderer/fixture.json",
+        "79",
+        "24",
+        "7",
+        "plain"
+      ],
+      "wall_ms": 66.37131702154875,
+      "render_ms": 10.27,
+      "bytes": 200573,
+      "checks": {
+        "TUI1_zone_order": true,
+        "TUI1_fields": true,
+        "TUI1_bounds_codepoints_only": true,
+        "TUI2_draft_roundtrip": true,
+        "TUI1_selection_coherence": true,
+        "TUI3_anchor_resize": true,
+        "TUI3_explicit_live": true,
+        "TUI3_no_controls_in_frames": true,
+        "TUI3_full_selected_transcript": true,
+        "TUI3_OSC_payload_removed": true,
+        "TUI3_committed_order": true
+      },
+      "evidence": "go-7-79x24-plain.json"
+    }
+  ],
+  "parity_cases": 16,
+  "versions": {
+    "bun": "1.3.0 (b0a6feca)",
+    "go": "1.24.2 linux/amd64",
+    "bubbletea": "1.3.4"
+  },
+  "limits": [
+    "No terminal loop/FPS/input latency/PTY measurement",
+    "No slash routes or key handling",
+    "Codepoint clipping is not wcwidth/grapheme geometry",
+    "No horizontal navigation below 80",
+    "No canonical mascot/palette/IME/screen-reader proof",
+    "Fixture events in memory; archive/cache budgets not implemented",
+    "Timing is one sample/case with different startup overhead, not winner evidence"
+  ]
+}

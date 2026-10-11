@@ -1,0 +1,387 @@
+[
+  {
+    "candidate": "ts",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "draft_roundtrip": true,
+      "restored_on_selection": true,
+      "home": true,
+      "page_down": true,
+      "page_up": true,
+      "jump_live": true,
+      "tool_open": true,
+      "tool_back": true,
+      "tool_visible": true,
+      "resize": true,
+      "no_stderr_errors": true
+    },
+    "final": {
+      "selected": "r2",
+      "drafts": {
+        "t1/r1": "draft1!",
+        "t2/r2": "draft2"
+      },
+      "frames": 20,
+      "width": 80,
+      "height": 24,
+      "notices": [
+        "back to composer",
+        "back to composer",
+        "back to composer",
+        "back to history"
+      ],
+      "state": "working",
+      "focus": "tool",
+      "tool": "e2",
+      "navigation": [
+        {
+          "key": "tab",
+          "focus": "agents",
+          "selected": "r1",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft1"
+        },
+        {
+          "key": "2",
+          "focus": "agents",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": ""
+        },
+        {
+          "key": "esc",
+          "focus": "composer",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": ""
+        },
+        {
+          "key": "tab",
+          "focus": "agents",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "1",
+          "focus": "agents",
+          "selected": "r1",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft1"
+        },
+        {
+          "key": "esc",
+          "focus": "composer",
+          "selected": "r1",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft1"
+        },
+        {
+          "key": "tab",
+          "focus": "agents",
+          "selected": "r1",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft1!"
+        },
+        {
+          "key": "2",
+          "focus": "agents",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "esc",
+          "focus": "composer",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "tab",
+          "focus": "agents",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "tab",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "home",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": 0,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "enter",
+          "focus": "tool",
+          "selected": "r2",
+          "anchor": 0,
+          "tool": "e2",
+          "draft": "draft2"
+        },
+        {
+          "key": "esc",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": 0,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "pgdown",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": 4,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "pgup",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": 0,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "end",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": -1,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "home",
+          "focus": "history",
+          "selected": "r2",
+          "anchor": 0,
+          "tool": "",
+          "draft": "draft2"
+        },
+        {
+          "key": "enter",
+          "focus": "tool",
+          "selected": "r2",
+          "anchor": 0,
+          "tool": "e2",
+          "draft": "draft2"
+        }
+      ]
+    },
+    "bytes": 19871,
+    "duration": 5.418425051029772
+  },
+  {
+    "candidate": "go",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "draft_roundtrip": true,
+      "restored_on_selection": true,
+      "home": true,
+      "page_down": true,
+      "page_up": true,
+      "jump_live": true,
+      "tool_open": true,
+      "tool_back": true,
+      "tool_visible": true,
+      "resize": true,
+      "no_stderr_errors": true
+    },
+    "final": {
+      "drafts": {
+        "t1/r1": "draft1!",
+        "t2/r2": "draft2"
+      },
+      "focus": "tool",
+      "height": 24,
+      "navigation": [
+        {
+          "anchor": -1,
+          "draft": "draft1",
+          "focus": "agents",
+          "key": "tab",
+          "selected": "r1",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "",
+          "focus": "agents",
+          "key": "2",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "",
+          "focus": "composer",
+          "key": "esc",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft2",
+          "focus": "agents",
+          "key": "tab",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft1",
+          "focus": "agents",
+          "key": "1",
+          "selected": "r1",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft1",
+          "focus": "composer",
+          "key": "esc",
+          "selected": "r1",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft1!",
+          "focus": "agents",
+          "key": "tab",
+          "selected": "r1",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft2",
+          "focus": "agents",
+          "key": "2",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft2",
+          "focus": "composer",
+          "key": "esc",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft2",
+          "focus": "agents",
+          "key": "tab",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "tab",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": 0,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "home",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": 0,
+          "draft": "draft2",
+          "focus": "tool",
+          "key": "enter",
+          "selected": "r2",
+          "tool": "e2"
+        },
+        {
+          "anchor": 0,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "esc",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": 4,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "pgdown",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": 0,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "pgup",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": -1,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "end",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": 0,
+          "draft": "draft2",
+          "focus": "history",
+          "key": "home",
+          "selected": "r2",
+          "tool": ""
+        },
+        {
+          "anchor": 0,
+          "draft": "draft2",
+          "focus": "tool",
+          "key": "enter",
+          "selected": "r2",
+          "tool": "e2"
+        }
+      ],
+      "notices": [
+        "back to composer",
+        "back to composer",
+        "back to composer",
+        "back to history"
+      ],
+      "selected": "r2",
+      "state": "working",
+      "tool": "e2",
+      "width": 80
+    },
+    "bytes": 11758,
+    "duration": 5.054833004949614
+  }
+]

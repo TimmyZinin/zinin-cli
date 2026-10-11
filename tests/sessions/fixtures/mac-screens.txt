@@ -1,0 +1,26 @@
+63	user — ✳ Harness spec gap — caffeinate ◂ claude --dangerously-skip-permissions — 202×57	
+⏺ Работаю над спецификацией…
+
+  ⊙ supervisor-01 Задача: сверка разделов · done 8:02 PM
+
+Users/user/zinin-cli | git:main ✓ | fable 5.1 37% ▓▓▓░░░░░░░ 369k/1M | 5h:53% (15m) | 7d:14% (8h5m)
+874	user — ◑ Weekly digest — caffeinate ◂ claude --dangerously-skip-permissions Orchestrator — if you hit a limit, send the task to Kimi/remote when context runs low — 80×24	
+⏺ Ищу по базе…
+
+✻ Whisking… (11m 26s · ↓ 67.1k tokens ↑ 12.1k)
+❯ Сверь дайджест с прошлым выпуском
+
+  | git:wip/weekly-digest ✗ | sonnet 5 11% ▓░░░░░░░░░ 111k/1M |…
+818	user — ✳ Handback notes — caffeinate ◂ claude --dangerously-skip-permissions — 80×24	
+⎿  Interrupted · What should Claude do instead?
+
+  | git:wip/handback ✓ | fable 5.1 10% ▓░░░░…
+831	user — ◑ Budget report — caffeinate ◂ claude --dangerously-skip-permissions — 80×24	
+◯ writer-01  Задача: черновик раздела · 7m 15s · ↓ 334.9k tokens
+◯ writer-02  Задача: таблица расходов · 3m 02s · ↓ 98.4k tokens
+
+Users/user/proj-c | git:main ✓ | opus 5.1 15% ▓▓░░░░░░ 150k/1M | 7d:9% (2d)
+99	user — ○ user | idle — -zsh — 80×24	
+Last login: Fri Sep 26 13:58:00 2026
+~ %
+876	

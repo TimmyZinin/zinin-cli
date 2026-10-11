@@ -1,0 +1,45 @@
+[
+  {
+    "candidate": "ts",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "paste_preserved": true,
+      "resize": true,
+      "output_present": true
+    },
+    "final": {
+      "selected": "r2",
+      "drafts": {
+        "t1/r1": "",
+        "t2/r2": "Привет 👩‍💻\nsecond"
+      },
+      "frames": 7,
+      "width": 80,
+      "height": 24
+    },
+    "bytes": 7962,
+    "duration": 5.0864403690211475
+  },
+  {
+    "candidate": "go",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "paste_preserved": false,
+      "resize": true,
+      "output_present": true
+    },
+    "final": {
+      "drafts": {
+        "t1/r1": "",
+        "t2/r2": "[200~ second[201~"
+      },
+      "height": 24,
+      "selected": "r2",
+      "width": 80
+    },
+    "bytes": 7287,
+    "duration": 5.121829929063097
+  }
+]

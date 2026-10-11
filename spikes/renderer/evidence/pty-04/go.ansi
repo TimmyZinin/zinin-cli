@@ -1,0 +1,159 @@
+[?25l[?2004hTREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=0 anchor=live[K
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039[K
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032[K
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft= queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[80D/agents 2
+[23A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+E t1/r1 draft=/agents 2 queue=1 (steering unsupported)[K
+
+
+[80D^[[200~Привет 👩‍💻
+second^[[201~[23ATREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=0 anchor=live[K
+1919 e1919>s1>r1>tool1>res1 line-1919 synthetic ts=1081[K
+1926 e1926>s1>r1>tool1>res1 line-1926 synthetic ts=1074[K
+1933 e1933>s1>r1>tool1>res1 line-1933 synthetic ts=1067[K
+1940 e1940>s1>r1>tool1>res1 line-1940 synthetic ts=1060[K
+1947 e1947>s1>r1>tool1>res1 line-1947 synthetic ts=1053[K
+1954 e1954>s1>r1>tool1>res1 line-1954 synthetic ts=1046[K
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039[K
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032[K
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft=/agents 2 queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[100D[29ATREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=0 anchor=live[K
+1877 e1877>s1>r1>tool1>res1 line-1877 synthetic ts=1123[K
+1884 e1884>s1>r1>tool1>res1 line-1884 synthetic ts=1116[K
+1891 e1891>s1>r1>tool1>res1 line-1891 synthetic ts=1109[K
+1898 e1898>s1>r1>tool1>res1 line-1898 synthetic ts=1102[K
+1905 e1905>s1>r1>tool1>res1 line-1905 synthetic ts=1095[K
+1912 e1912>s1>r1>tool1>res1 line-1912 synthetic ts=1088[K
+1919 e1919>s1>r1>tool1>res1 line-1919 synthetic ts=1081[K
+1926 e1926>s1>r1>tool1>res1 line-1926 synthetic ts=1074[K
+1933 e1933>s1>r1>tool1>res1 line-1933 synthetic ts=1067[K
+1940 e1940>s1>r1>tool1>res1 line-1940 synthetic ts=1060[K
+1947 e1947>s1>r1>tool1>res1 line-1947 synthetic ts=1053[K
+1954 e1954>s1>r1>tool1>res1 line-1954 synthetic ts=1046[K
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039[K
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032[K
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft=/agents 2 queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[120D[35ATREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=0 anchor=live[K
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039[K
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032[K
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft=/agents 2 queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[J[79D[23ATREE orchestrator waiting[K
+ r1 a1 synthetic working[K
+ r2 a2 synthetic working[K
+ r3 a3 synthetic working[K
+ r4 a4 synthetic waiting[K
+ r5 a5 synthetic waiting[K
+ r6 a6 synthetic waiting[K
+ r7 a7 synthetic waiting[K
+A svc/grp/t1 owner=a1 result=res1[K
+B executor/synthetic/r1/t1 working waiting=4[K
+C history new=0 anchor=live[K
+1961 e1961>s1>r1>tool1>res1 line-1961 synthetic ts=1039[K
+1968 e1968>s1>r1>tool1>res1 line-1968 synthetic ts=1032[K
+1975 e1975>s1>r1>tool1>res1 line-1975 synthetic ts=1025[K
+1982 e1982>s1>r1>tool1>res1 line-1982 synthetic ts=1018[K
+1989 e1989>s1>r1>tool1>res1 line-1989 synthetic ts=1011[K
+1996 e1996>s1>r1>tool1>res1 line-1996 synthetic ts=1004[K
+D step=s1 owner=a1 required working next=s2 done=0/2 /todo[K
+Result res1 rev=1 digest=synthetic evidence=fixture[K
+Handoff r1->r2 phase=preview[K
+E t1/r1 draft=/agents 2 queue=1 (steering unsupported)[K
+F r1 context=unknown status=working[K
+quota=unknown cost=unknown fresh=unknown[K
+[K[80D[2K[?2004l[?25h[?1002l[?1003l[?1006l

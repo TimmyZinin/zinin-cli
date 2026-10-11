@@ -1,0 +1,208 @@
+{
+  "chunks": [
+    {
+      "t": 0.2534,
+      "bytes": 6
+    },
+    {
+      "t": 0.3318,
+      "bytes": 2
+    },
+    {
+      "t": 0.3565,
+      "bytes": 8
+    },
+    {
+      "t": 0.4031,
+      "bytes": 980
+    },
+    {
+      "t": 0.4675,
+      "bytes": 950
+    },
+    {
+      "t": 0.5714,
+      "bytes": 956
+    },
+    {
+      "t": 0.6386,
+      "bytes": 954
+    },
+    {
+      "t": 0.7435,
+      "bytes": 956
+    },
+    {
+      "t": 0.777,
+      "bytes": 957
+    },
+    {
+      "t": 0.8572,
+      "bytes": 954
+    },
+    {
+      "t": 0.9963,
+      "bytes": 956
+    },
+    {
+      "t": 1.0321,
+      "bytes": 955
+    },
+    {
+      "t": 1.1752,
+      "bytes": 956
+    },
+    {
+      "t": 1.2018,
+      "bytes": 928
+    },
+    {
+      "t": 1.3631,
+      "bytes": 759
+    },
+    {
+      "t": 1.3632,
+      "bytes": 162
+    },
+    {
+      "t": 1.4644,
+      "bytes": 955
+    },
+    {
+      "t": 1.534,
+      "bytes": 954
+    },
+    {
+      "t": 1.6062,
+      "bytes": 955
+    },
+    {
+      "t": 1.6757,
+      "bytes": 927
+    },
+    {
+      "t": 1.7842,
+      "bytes": 1233
+    },
+    {
+      "t": 1.8862,
+      "bytes": 1545
+    },
+    {
+      "t": 1.9989,
+      "bytes": 928
+    },
+    {
+      "t": 2.1378,
+      "bytes": 652
+    },
+    {
+      "t": 2.1379,
+      "bytes": 275
+    },
+    {
+      "t": 5.3683,
+      "bytes": 8
+    }
+  ],
+  "sent": [
+    {
+      "t": 0.2511,
+      "hex": "647261667431"
+    },
+    {
+      "t": 0.3317,
+      "hex": "0932"
+    },
+    {
+      "t": 0.4126,
+      "hex": "1b"
+    },
+    {
+      "t": 0.5287,
+      "hex": "647261667432"
+    },
+    {
+      "t": 0.6091,
+      "hex": "0931"
+    },
+    {
+      "t": 0.6894,
+      "hex": "1b"
+    },
+    {
+      "t": 0.7697,
+      "hex": "21"
+    },
+    {
+      "t": 0.85,
+      "hex": "0932"
+    },
+    {
+      "t": 0.9303,
+      "hex": "1b"
+    },
+    {
+      "t": 1.0106,
+      "hex": "0909"
+    },
+    {
+      "t": 1.0909,
+      "hex": "1b5b48"
+    },
+    {
+      "t": 1.1847,
+      "hex": "0d"
+    },
+    {
+      "t": 1.268,
+      "hex": "1b"
+    },
+    {
+      "t": 1.3516,
+      "hex": "1b5b367e"
+    },
+    {
+      "t": 1.432,
+      "hex": "1b5b357e"
+    },
+    {
+      "t": 1.5123,
+      "hex": "1b5b46"
+    },
+    {
+      "t": 1.5926,
+      "hex": "1b5b48"
+    },
+    {
+      "t": 1.6728,
+      "hex": "0d"
+    },
+    {
+      "resize": [
+        100,
+        30
+      ]
+    },
+    {
+      "resize": [
+        120,
+        36
+      ]
+    },
+    {
+      "resize": [
+        79,
+        24
+      ]
+    },
+    {
+      "resize": [
+        80,
+        24
+      ]
+    }
+  ],
+  "stderr": "{\"selected\":\"r2\",\"drafts\":{\"t1/r1\":\"draft1!\",\"t2/r2\":\"draft2\"},\"frames\":20,\"width\":80,\"height\":24,\"notices\":[\"back to composer\",\"back to composer\",\"back to composer\",\"back to history\"],\"state\":\"working\",\"focus\":\"tool\",\"tool\":\"e2\",\"navigation\":[{\"key\":\"tab\",\"focus\":\"agents\",\"selected\":\"r1\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft1\"},{\"key\":\"2\",\"focus\":\"agents\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"\"},{\"key\":\"esc\",\"focus\":\"composer\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"\"},{\"key\":\"tab\",\"focus\":\"agents\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"1\",\"focus\":\"agents\",\"selected\":\"r1\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft1\"},{\"key\":\"esc\",\"focus\":\"composer\",\"selected\":\"r1\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft1\"},{\"key\":\"tab\",\"focus\":\"agents\",\"selected\":\"r1\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft1!\"},{\"key\":\"2\",\"focus\":\"agents\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"esc\",\"focus\":\"composer\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"tab\",\"focus\":\"agents\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"tab\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"home\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":0,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"enter\",\"focus\":\"tool\",\"selected\":\"r2\",\"anchor\":0,\"tool\":\"e2\",\"draft\":\"draft2\"},{\"key\":\"esc\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":0,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"pgdown\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":4,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"pgup\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":0,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"end\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":-1,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"home\",\"focus\":\"history\",\"selected\":\"r2\",\"anchor\":0,\"tool\":\"\",\"draft\":\"draft2\"},{\"key\":\"enter\",\"focus\":\"tool\",\"selected\":\"r2\",\"anchor\":0,\"tool\":\"e2\",\"draft\":\"draft2\"}]}\n",
+  "returncode": 0
+}

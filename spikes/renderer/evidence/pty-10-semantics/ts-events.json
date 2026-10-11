@@ -1,0 +1,188 @@
+{
+  "chunks": [
+    {
+      "t": 0.0395,
+      "bytes": 8
+    },
+    {
+      "t": 0.0816,
+      "bytes": 35
+    },
+    {
+      "t": 0.084,
+      "bytes": 435
+    },
+    {
+      "t": 0.085,
+      "bytes": 497
+    },
+    {
+      "t": 0.2624,
+      "bytes": 983
+    },
+    {
+      "t": 0.3961,
+      "bytes": 992
+    },
+    {
+      "t": 0.4587,
+      "bytes": 936
+    },
+    {
+      "t": 0.5333,
+      "bytes": 973
+    },
+    {
+      "t": 0.6224,
+      "bytes": 957
+    },
+    {
+      "t": 0.7282,
+      "bytes": 992
+    },
+    {
+      "t": 0.798,
+      "bytes": 996
+    },
+    {
+      "t": 0.904,
+      "bytes": 992
+    },
+    {
+      "t": 0.9397,
+      "bytes": 984
+    },
+    {
+      "t": 1.0101,
+      "bytes": 576
+    },
+    {
+      "t": 1.0102,
+      "bytes": 384
+    },
+    {
+      "t": 1.1967,
+      "bytes": 958
+    },
+    {
+      "t": 1.2685,
+      "bytes": 35
+    },
+    {
+      "t": 1.271,
+      "bytes": 919
+    },
+    {
+      "t": 1.3755,
+      "bytes": 936
+    },
+    {
+      "t": 1.4132,
+      "bytes": 940
+    },
+    {
+      "t": 1.4821,
+      "bytes": 1282
+    },
+    {
+      "t": 1.5887,
+      "bytes": 1624
+    },
+    {
+      "t": 1.734,
+      "bytes": 941
+    },
+    {
+      "t": 1.8397,
+      "bytes": 940
+    },
+    {
+      "t": 5.0736,
+      "bytes": 8
+    }
+  ],
+  "sent": [
+    {
+      "t": 0.2505,
+      "hex": "2f746f646f0d"
+    },
+    {
+      "t": 0.342,
+      "hex": "2f6167656e74730d"
+    },
+    {
+      "t": 0.4324,
+      "hex": "2f73636f70650d"
+    },
+    {
+      "t": 0.5227,
+      "hex": "2f636f6e746578740d"
+    },
+    {
+      "t": 0.6146,
+      "hex": "2f68616e646f66660d"
+    },
+    {
+      "t": 0.7049,
+      "hex": "2f68656c700d"
+    },
+    {
+      "t": 0.7952,
+      "hex": "626301610564"
+    },
+    {
+      "t": 0.8754,
+      "hex": "03"
+    },
+    {
+      "t": 0.9357,
+      "hex": "03"
+    },
+    {
+      "t": 0.9959,
+      "hex": "03"
+    },
+    {
+      "t": 1.1612,
+      "hex": "2f6167656e747320340d"
+    },
+    {
+      "t": 1.2414,
+      "hex": "03"
+    },
+    {
+      "t": 1.3016,
+      "hex": "1b"
+    },
+    {
+      "t": 1.3822,
+      "hex": "626301610564"
+    },
+    {
+      "resize": [
+        100,
+        30
+      ]
+    },
+    {
+      "resize": [
+        120,
+        36
+      ]
+    },
+    {
+      "resize": [
+        79,
+        24
+      ]
+    },
+    {
+      "resize": [
+        80,
+        24
+      ]
+    }
+  ],
+  "stderr": "{\"selected\":\"r4\",\"drafts\":{\"t1/r1\":\"\",\"t4/r4\":\"abcd\"},\"frames\":19,\"width\":80,\"height\":24,\"notices\":[\"/todo s1 required working owner=a1; s2 required queued; done=0/2\",\"/agents r1:working r2:working r3:working r4:waiting r5:waiting r6:waiting r7:waiting\",\"/scope svc/grp/t1\",\"/context r1 context=unknown quota=unknown cost=unknown\",\"/handoff r1->r2 preview synthetic only\",\"/help /todo /agents /scope /context /handoff /quit; Ctrl+A/E edit; Esc back\",\"interrupt requested r1 synthetic; repeat has no owned provider\",\"no owned provider; escalation disabled\",\"idle: /quit or Ctrl+D exits client\",\"back to composer\"],\"state\":\"waiting\"}\n",
+  "returncode": 0
+}

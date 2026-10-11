@@ -1,0 +1,2 @@
+# Preserve exact terminal capture bytes (CRLF/escapes); never normalize as text.
+*.ansi binary

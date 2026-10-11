@@ -1,0 +1,54 @@
+{
+  "packet_id": "E1-004-renderer-selection-proposed",
+  "threshold": 0.8,
+  "status": "PROPOSED_AWAITING_S0_RECEIPT",
+  "decision": "Условно выбрать TypeScript/Bun как направление следующего этапа renderer; не объявлять current spike production-ready или E1 PASS",
+  "candidate_source_commit": "cad907f",
+  "normative": [
+    "ARCHITECTURE §2: TypeScript preferred if acceptance passes; Go only for measurable reason",
+    "DECISIONS D08/O01: comparative spike; native packaging evidence pending",
+    "TUI §1–5: full matrix includes unresolved requirements",
+    "ACCEPTANCE Release gates: p95 input<50ms, event lag<250ms at 3 runs; record degradation at 7; E1 needs compatibility records and ADR"
+  ],
+  "evidence": {
+    "geometry": "batch-06-history: 152/152 × 16 cases per candidate",
+    "navigation": "pty-18-history-regression: 15/15 each",
+    "history_load": "history-load-03-verified: 15/15 each for TS/Go × 3/7, 8MiB",
+    "latency": "latency-02-acknowledged: 30 samples each; p95 visibility TS3=35.44ms Go3=39.55ms TS7=39.12ms Go7=67.36ms; Go opt-in FPS29",
+    "budgets": "budget-01: 2101 events, 2183168 text bytes/run, largest32768; full plain preserved, no cache/archive enforcement"
+  },
+  "rationale": [
+    "Existing TS/Bun CLI/core can share one toolchain",
+    "No measured necessity to add Go; same tested behavior",
+    "Go spike requires Linux-only framing; both input implementations still need hardening"
+  ],
+  "counterevidence": [
+    "latency-01 open-loop missed intermediate visible drafts; incomplete samples cannot be scored PASS",
+    "Go FPS30 rolling31 observed; FPS29 is empirical tuning not strict limiter",
+    "All timing is local PTY proxy with different arrival cadence, not native paint or general ranking"
+  ],
+  "open_gates": [
+    "cache/preview/archive budgets and search/export",
+    "readable help and binding completeness",
+    "event lag<250ms and approval priority",
+    "actual provider cancellation integration",
+    "canonical sprites/motion, palette/color, physical terminal, IME/screen reader, platform packaging",
+    "E1 adapter compatibility records"
+  ],
+  "alternatives": [
+    "Go selection: no measured justification for extra toolchain yet",
+    "Defer conditional selection and specify missing E1 evidence (REWORK)",
+    "Continue duplicate development of both candidates through all gaps"
+  ],
+  "proposal_limits": [
+    "No production entrypoint change before receipt",
+    "No accepted production renderer or waiver of acceptance",
+    "No new archive/storage architecture in this packet",
+    "Preserve Go fallback and all FAIL evidence; reopen on TS acceptance failure"
+  ],
+  "artifacts": [
+    "docs/e1/renderer-adr-proposed.md",
+    "docs/e1/renderer-results-08.md"
+  ],
+  "requested_receipt": "S0 запускает локальный jev_gate.py, возвращает verdict/score/ограничения через say. Разрешить условное TS направление либо REWORK с конкретным обязательным E1 evidence; production acceptance этим не выдаётся."
+}

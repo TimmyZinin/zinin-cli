@@ -1,0 +1,108 @@
+{
+  "fixture_sha256": "e2c98a9bcf5ed395f1264737d9f1de2cf06af85bf3429f7eeb2247dcd459d1be",
+  "fixture_generator": "budget-check.py",
+  "logical_input": {
+    "selected_events": 2101,
+    "selected_text_bytes": 2183168,
+    "largest_event_text_bytes": 32768
+  },
+  "limits": "Input accounting only, not runtime RSS/cache instrumentation. Arrays retain input events per source audit; no archive or budget enforcement exists.",
+  "results": [
+    {
+      "candidate": "ts",
+      "mode": "screen",
+      "returncode": 0,
+      "stderr": "",
+      "output_sha256": "1e99347be717066f09061485bb38aa929d386350baf3ba5c72a285a9ebd88d11",
+      "output_bytes": 1200,
+      "frame_lines": 24,
+      "history_rows": 6,
+      "all_event_ids_visible": false,
+      "middle_visible": false,
+      "full_large_event_visible": false,
+      "preview": [
+        "SYNTHETIC ZININ [o..] native",
+        "TREE orchestrator waiting",
+        " r1 a1 synthetic working",
+        "D step=s1 owner=a1 required working next=s2 done=0/2 /todo",
+        "Result res1 rev=1 digest=synthetic evidence=fixture",
+        "Handoff r1->r2 phase=preview",
+        "E t1/r1 draft= queue=1 (steering unsupported)",
+        "F r1 context=unknown status=working",
+        "quota=unknown cost=unknown fresh=unknown"
+      ]
+    },
+    {
+      "candidate": "ts",
+      "mode": "plain",
+      "returncode": 0,
+      "stderr": "",
+      "output_sha256": "9361a39612d36d59fc5558ccb873bb1df15580280e0dec5afd932585134d70f5",
+      "output_bytes": 2285605,
+      "frame_lines": 2119,
+      "history_rows": 2101,
+      "all_event_ids_visible": true,
+      "middle_visible": true,
+      "full_large_event_visible": true,
+      "preview": [
+        "SYNTHETIC ZININ [o..] plain",
+        "TREE orchestrator waiting",
+        " r1 a1 synthetic working",
+        "D step=s1 owner=a1 required working next=s2 done=0/2 /todo",
+        "Result res1 rev=1 digest=synthetic evidence=fixture",
+        "Handoff r1->r2 phase=preview",
+        "E t1/r1 draft= queue=1 (steering unsupported)",
+        "F r1 context=unknown status=working",
+        "quota=unknown cost=unknown fresh=unknown"
+      ]
+    },
+    {
+      "candidate": "go",
+      "mode": "screen",
+      "returncode": 0,
+      "stderr": "",
+      "output_sha256": "8aa46beff36563738a9da88a1a173b0d3b05c40ab25699960d6e9daefcec7433",
+      "output_bytes": 1313,
+      "frame_lines": 24,
+      "history_rows": 6,
+      "all_event_ids_visible": false,
+      "middle_visible": false,
+      "full_large_event_visible": false,
+      "preview": [
+        "SYNTHETIC ZININ [o..] native",
+        "TREE orchestrator waiting",
+        " r1 a1 synthetic working",
+        "D step=s1 owner=a1 required working next=s2 done=0/2 /todo",
+        "Result res1 rev=1 digest=synthetic evidence=fixture",
+        "Handoff r1->r2 phase=preview",
+        "E t1/r1 draft= queue=1 (steering unsupported)",
+        "F r1 context=unknown status=working",
+        "quota=unknown cost=unknown fresh=unknown"
+      ]
+    },
+    {
+      "candidate": "go",
+      "mode": "plain",
+      "returncode": 0,
+      "stderr": "",
+      "output_sha256": "04f86b0cd5f1b5a0b09a59569cc86f506596728481442346bbbfa23e4c7a6460",
+      "output_bytes": 2327618,
+      "frame_lines": 2119,
+      "history_rows": 2101,
+      "all_event_ids_visible": true,
+      "middle_visible": true,
+      "full_large_event_visible": true,
+      "preview": [
+        "SYNTHETIC ZININ [o..] plain",
+        "TREE orchestrator waiting",
+        " r1 a1 synthetic working",
+        "D step=s1 owner=a1 required working next=s2 done=0/2 /todo",
+        "Result res1 rev=1 digest=synthetic evidence=fixture",
+        "Handoff r1->r2 phase=preview",
+        "E t1/r1 draft= queue=1 (steering unsupported)",
+        "F r1 context=unknown status=working",
+        "quota=unknown cost=unknown fresh=unknown"
+      ]
+    }
+  ]
+}

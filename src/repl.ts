@@ -4,8 +4,12 @@ import { stdin, stdout } from "node:process";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { homedir, platform } from "node:os";
-// @ts-ignore — CJS-модуль баннера
-import banner from "./banner-v2.js";
+// @ts-ignore — CJS-модуль баннера; грузится лениво, чтобы `zinin ps` не зависел от него
+let banner: any = null;
+const loadBanner = async () => {
+  if (!banner) banner = (await import("./banner-v2.js").catch(() => null))?.default ?? { MASCOT: "◆", splash: () => {} };
+  return banner;
+};
 import { streamChatFallback, defaultModel, MODELS, loadKey, type Msg } from "./llm.ts";
 import { track, anonId, VERSION } from "./telemetry.ts";
 import { loadConfig, saveConfig } from "./config.ts";
@@ -34,7 +38,7 @@ const col = (hex: string, s: string) => {
   return `\x1b[38;2;${r};${g};${b}m${s}\x1b[0m`;
 };
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`;
-const MASCOT: string = banner.MASCOT;
+let MASCOT = "◆";
 const HOME = join(import.meta.dir, "..");
 
 function persona(): string {
@@ -157,7 +161,13 @@ async function pickModel(rl: any) {
   else console.log("  " + dim("без изменений\n"));
 }
 
+async function psMainDispatch(): Promise<void> {
+  const { psMain } = await import("./ps.ts");
+  await psMain(process.argv.slice(3));
+}
 async function main() {
+  if (process.argv[2] === "ps") { await psMainDispatch(); return; }
+  MASCOT = (await loadBanner()).MASCOT;
   banner.splash();
   const hasKey = !!loadKey();
   track("cli_start", { key: hasKey, mode: hasKey ? "direct" : "proxy" });

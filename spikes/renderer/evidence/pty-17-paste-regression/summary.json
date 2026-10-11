@@ -1,0 +1,59 @@
+[
+  {
+    "candidate": "ts",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "paste_preserved": true,
+      "resize": true,
+      "output_present": true,
+      "no_stderr_errors": true
+    },
+    "final": {
+      "selected": "r2",
+      "drafts": {
+        "t1/r1": "",
+        "t2/r2": "Привет 👩‍💻\nsecond"
+      },
+      "frames": 7,
+      "width": 80,
+      "height": 24,
+      "notices": [],
+      "state": "working",
+      "focus": "composer",
+      "tool": "",
+      "anchor": -1,
+      "navigation": []
+    },
+    "bytes": 8067,
+    "duration": 5.084177786018699
+  },
+  {
+    "candidate": "go",
+    "checks": {
+      "exit_clean": true,
+      "selected": true,
+      "paste_preserved": true,
+      "resize": true,
+      "output_present": true,
+      "no_stderr_errors": true
+    },
+    "final": {
+      "anchor": -1,
+      "drafts": {
+        "t1/r1": "",
+        "t2/r2": "Привет 👩‍💻\nsecond"
+      },
+      "focus": "composer",
+      "height": 24,
+      "navigation": null,
+      "notices": null,
+      "selected": "r2",
+      "state": "working",
+      "tool": "",
+      "width": 80
+    },
+    "bytes": 7163,
+    "duration": 5.031600950984284
+  }
+]

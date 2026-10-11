@@ -1,0 +1,81 @@
+{
+  "series": "e2r3-after",
+  "created_utc": "2026-09-25T07:49:57.033771+00:00",
+  "platform": "Linux-6.8.0-139-generic-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpu_count": 4,
+  "clock": "namespace(implementation='clock_gettime(CLOCK_MONOTONIC)', monotonic=True, adjustable=False, resolution=1e-09)",
+  "method": "paired sequential rounds, alternating candidate order; no concurrent benchmark children; 30 acknowledged probes/case; 3 and 7 streams; Go FPS29, TS 34ms; 80x24 xterm-256color NO_COLOR=1",
+  "rounds": [
+    6,
+    10
+  ],
+  "hashes": {
+    "runtime/bun-1.3.0/bun": "70ce58104a5d2a81b254f5b5c77bbd890dcdb1ef3499c554472f6625199e1df9",
+    "runtime/renderer-go": "48e872d0c9b3dcb6a31722f34a1f12beb0cfc814431c28a00c874326407c2820",
+    "zinin-cli/spikes/renderer/ts.ts": "97c4e371b9ac5a840ff31d9a858f8fc2244bdebb8caa85c59843d94d609b6908",
+    "zinin-cli/spikes/renderer/go/main.go": "46fd6c7b722984a07cf31c817727bcd99d95f99d576d508ebe7afde3b7331bb1",
+    "zinin-cli/spikes/renderer/fixture.json": "00f47a7b76431cb0bd7c93370d8e7f0729b7129a101056d5eceee098e3730dcd",
+    "zinin-cli/spikes/renderer/latency-check.py": "d4f5e945db434cadb9668642e44f792f1ee1141d14cb9f298a56751f0927a85f"
+  },
+  "trials": [
+    {
+      "round": 6,
+      "directory": "e2r3-after-round-06",
+      "command": [
+        "/usr/bin/python3",
+        "/home/agents/work/zinin-harness-e2/zinin-cli/spikes/renderer/latency-check.py",
+        "e2r3-after-round-06",
+        "--fps=29",
+        "--reverse"
+      ],
+      "returncode": 0
+    },
+    {
+      "round": 7,
+      "directory": "e2r3-after-round-07",
+      "command": [
+        "/usr/bin/python3",
+        "/home/agents/work/zinin-harness-e2/zinin-cli/spikes/renderer/latency-check.py",
+        "e2r3-after-round-07",
+        "--fps=29"
+      ],
+      "returncode": 0
+    },
+    {
+      "round": 8,
+      "directory": "e2r3-after-round-08",
+      "command": [
+        "/usr/bin/python3",
+        "/home/agents/work/zinin-harness-e2/zinin-cli/spikes/renderer/latency-check.py",
+        "e2r3-after-round-08",
+        "--fps=29",
+        "--reverse"
+      ],
+      "returncode": 0
+    },
+    {
+      "round": 9,
+      "directory": "e2r3-after-round-09",
+      "command": [
+        "/usr/bin/python3",
+        "/home/agents/work/zinin-harness-e2/zinin-cli/spikes/renderer/latency-check.py",
+        "e2r3-after-round-09",
+        "--fps=29"
+      ],
+      "returncode": 0
+    },
+    {
+      "round": 10,
+      "directory": "e2r3-after-round-10",
+      "command": [
+        "/usr/bin/python3",
+        "/home/agents/work/zinin-harness-e2/zinin-cli/spikes/renderer/latency-check.py",
+        "e2r3-after-round-10",
+        "--fps=29",
+        "--reverse"
+      ],
+      "returncode": 0
+    }
+  ]
+}
