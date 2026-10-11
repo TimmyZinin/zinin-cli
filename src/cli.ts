@@ -107,6 +107,14 @@ export async function main(args: string[]): Promise<number> {
       return 1;
     }
   }
+  if (command === "watch") {
+    if (rest.length) {
+      process.stderr.write("zinin watch: лишние аргументы\n");
+      return 2;
+    }
+    try { await (await import("./watch.ts")).watchMain(); return 0; }
+    catch (error) { process.stderr.write(`${(error as Error).message}\n`); return 1; }
+  }
   process.stderr.write(`zinin: неизвестная команда ${command}. См. zinin --help\n`);
   return 2;
 }
