@@ -18,6 +18,7 @@ export function help(): string {
   zinin say TYPE REF TEXT  Сообщить S0 через шину
   zinin watch             Живой экран (выход: q)
   zinin launch task.md [--cwd DIR] [--engine codex|claude]  Новое окно
+  zinin word ИМЯ|UUID "текст"  Слово потоку Codex
   zinin repl              Старый AI-харнес
   zinin --version         Версия текущего checkout
 `;
@@ -57,6 +58,16 @@ export async function main(args: string[]): Promise<number> {
       if (!result.thread) { process.stderr.write(`первая строка с UUID не пришла; владелец окна записан в ${result.statePath}. Повторно окно не открывайте.\n`); return 1; }
       return 0;
     } catch (error) { process.stderr.write(`zinin launch: ${(error as Error).message}\n`); return 1; }
+  }
+  if (command === "word") {
+    if (rest.length !== 2 || !rest[0] || !rest[1]) {
+      process.stderr.write('usage: zinin word ИМЯ|UUID "текст"\n'); return 2;
+    }
+    try {
+      const thread = (await import("./word.ts")).queueWord(rest[0], rest[1]);
+      process.stdout.write(`слово в очереди: thread ${thread}\n`);
+      return 0;
+    } catch (error) { process.stderr.write(`zinin word: ${(error as Error).message}\n`); return 1; }
   }
   if (command === "ps") {
     if (rest.some(arg => arg !== "--json")) {
