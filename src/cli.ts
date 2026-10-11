@@ -17,6 +17,7 @@ export function help(): string {
   zinin board [направление]  Доска аппарата
   zinin say TYPE REF TEXT  Сообщить S0 через шину
   zinin watch             Живой экран (выход: q)
+  zinin launch task.md [--cwd DIR] [--engine codex|claude]  Новое окно
   zinin repl              Старый AI-харнес
   zinin --version         Версия текущего checkout
 `;
@@ -39,6 +40,23 @@ export async function main(args: string[]): Promise<number> {
     }
     await import("./repl.ts");
     return 0;
+  }
+  if (command === "launch") {
+    const task = rest[0];
+    let cwd: string | undefined;
+    let engine: "codex" | "claude" | undefined;
+    for (let i = 1; i < rest.length; i++) {
+      if (rest[i] === "--cwd" && rest[i + 1]) cwd = rest[++i];
+      else if (rest[i] === "--engine" && ["codex", "claude"].includes(rest[i + 1])) engine = rest[++i] as typeof engine;
+      else { process.stderr.write("usage: zinin launch task.md [--cwd DIR] [--engine codex|claude]\n"); return 2; }
+    }
+    if (!task || task.startsWith("-")) { process.stderr.write("usage: zinin launch task.md [--cwd DIR] [--engine codex|claude]\n"); return 2; }
+    try {
+      const result = await (await import("./launch.ts")).launch({ task, cwd, engine });
+      process.stdout.write(`окно ${result.window}, thread ${result.thread || "ожидается"}\n`);
+      if (!result.thread) { process.stderr.write(`первая строка с UUID не пришла; владелец окна записан в ${result.statePath}. Повторно окно не открывайте.\n`); return 1; }
+      return 0;
+    } catch (error) { process.stderr.write(`zinin launch: ${(error as Error).message}\n`); return 1; }
   }
   if (command === "ps") {
     if (rest.some(arg => arg !== "--json")) {
