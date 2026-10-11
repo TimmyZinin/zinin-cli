@@ -66,6 +66,23 @@ export async function main(args: string[]): Promise<number> {
       return 1;
     }
   }
+  if (command === "board") {
+    if (rest.length > 1 || rest[0]?.startsWith("-")) {
+      process.stderr.write("zinin board: укажите одно направление или запустите без аргументов\n");
+      return 2;
+    }
+    const script = join(process.env.APPARAT_HOME || join(homedir(), "apparat"), "state/board.py");
+    const args = rest.length ? ["show", rest[0]] : ["tim"];
+    try {
+      const child = Bun.spawnSync(["python3", script, ...args], { stdout: "pipe", stderr: "pipe" });
+      process.stdout.write(child.stdout);
+      process.stderr.write(child.stderr);
+      return child.exitCode ?? 1;
+    } catch (error) {
+      process.stderr.write(`источник board.py недоступен: ${(error as Error).message}\n`);
+      return 1;
+    }
+  }
   process.stderr.write(`zinin: неизвестная команда ${command}. См. zinin --help\n`);
   return 2;
 }
