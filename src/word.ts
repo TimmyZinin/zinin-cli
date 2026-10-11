@@ -18,7 +18,7 @@ function firstJsonLine(path: string): any {
   finally { closeSync(fd); }
 }
 
-export function resolveWordTarget(target: string, stateDir = join(APPARAT, "state"),
+export function resolveWordTarget(target: string, stateDir = process.env.ZININ_STATE_DIR || join(APPARAT, "state"),
   sessionsDir = join(process.env.CODEX_HOME || join(homedir(), ".codex"), "sessions"), day = new Date()): string {
   if (UUID.test(target)) return target.toLowerCase();
   const matches = new Set<string>();

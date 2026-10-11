@@ -1,0 +1,16 @@
+{
+  "direction": "zinin-smoke7-1011",
+  "owner": {
+    "session": "ZININ-SMOKE7-1011",
+    "thread": "",
+    "window": "",
+    "tty": "",
+    "engine": "codex",
+    "cwd": "/Users/timofeyzinin/zinin-cli",
+    "command": "/Users/timofeyzinin/apparat/runs/zinin-launch/zinin-smoke7-1011-e42d4e19d475d719/zinin-smoke7-1011.command",
+    "last_thread": "01a12998-4a18-7dd1-899e-7fcd3daef186",
+    "closed_at": "2026-10-11T06:14:06.247Z"
+  },
+  "updated_at": "2026-10-11T06:14:06.247Z",
+  "updated_by": "ZININ"
+}

@@ -43,7 +43,7 @@ export function renderTim(apparat = APPARAT, date = today()): string {
     }
   } catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
 
-  const stateDir = join(apparat, "state");
+  const stateDir = process.env.ZININ_STATE_DIR || join(apparat, "state");
   const states: any[] = [];
   for (const file of readdirSync(stateDir).filter(file => /^[a-z0-9_-]+\.json$/.test(file))) {
     try {
